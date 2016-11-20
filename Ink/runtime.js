@@ -1,6 +1,5467 @@
-﻿!function(t){"use strict";var e={};e["typeof"]="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol?"symbol":typeof t},e.classCallCheck=function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")},e.createClass=function(){function t(t,e){for(var n=0;n<e.length;n++){var i=e[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(t,i.key,i)}}return function(e,n,i){return n&&t(e.prototype,n),i&&t(e,i),e}}(),e["extends"]=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var n=arguments[e];for(var i in n)Object.prototype.hasOwnProperty.call(n,i)&&(t[i]=n[i])}return t},e.inherits=function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)},e.possibleConstructorReturn=function(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e};var n=function(){function t(){e.classCallCheck(this,t),this._isRelative,this._components=[],"string"==typeof arguments[0]?this.componentsString=arguments[0]:arguments[0]instanceof a&&arguments[1]instanceof t?(this._components.push(arguments[0]),this._components=this._components.concat(arguments[1])):arguments[0]instanceof Array&&(this._components=this._components.concat(arguments[0]),this._isRelative=!!arguments[1])}return e.createClass(t,[{key:"PathByAppendingPath",value:function(e){for(var n=new t,i=0,a=0;a<e.components.length&&e.components[a].isParent;++a)i++;for(var a=0;a<this.components.length-i;++a)n.components.push(this.components[a]);for(var a=i;a<e.components.length;++a)n.components.push(e.components[a]);return n}},{key:"toString",value:function(){return this.componentsString}},{key:"Equals",value:function(t){return null==t?!1:t.components.length!=this.components.length?!1:t.isRelative!=this.isRelative?!1:t.components==this.components}},{key:"isRelative",get:function(){return this._isRelative}},{key:"components",get:function(){return this._components}},{key:"head",get:function(){return this.components.length>0?this.components[0]:null}},{key:"tail",get:function(){if(this.components.length>=2){var e=this.components.slice(1,this.components.length);return new t(e)}return t.self}},{key:"length",get:function(){return this.components.length}},{key:"lastComponent",get:function(){return this.components.length>0?this.components[this.components.length-1]:null}},{key:"containsNamedComponent",get:function(){for(var t=0,e=this.components.length;e>t;t++)if(!this.components[t].isIndex)return!0;return!1}},{key:"componentsString",get:function(){var t=this.components.join(".");return this.isRelative?"."+t:t},set:function(t){var e=this;this.components.length=0;var n=t;if(null!=n&&""!=n){"."==n[0]&&(this._isRelative=!0,n=n.substring(1));var i=n.split(".");i.forEach(function(t){isNaN(parseInt(t))?e.components.push(new a(t)):e.components.push(new a(parseInt(t)))})}}}],[{key:"self",get:function(){var e=new t;return e._isRelative=!0,e}}]),t}(),a=function(){function t(n){e.classCallCheck(this,t),"string"==typeof n?(this._index=-1,this._name=n):(this._index=parseInt(n),this._name=null)}return e.createClass(t,[{key:"toString",value:function(){return this.isIndex?this.index.toString():this.name}},{key:"Equals",value:function(t){return null!=t&&t.isIndex==this.isIndex?this.isIndex?this.index==t.index:this.name==t.name:!1}},{key:"index",get:function(){return this._index}},{key:"name",get:function(){return this._name}},{key:"isIndex",get:function(){return this.index>=0}},{key:"isParent",get:function(){return this.name==n.parentId}}],[{key:"ToParent",value:function(){return new t(n.parentId)}}]),t}();n.parentId="^",n.Component=a;var r=function(){function t(){e.classCallCheck(this,t),this.parent=null,this._path=null}return e.createClass(t,[{key:"ResolvePath",value:function(t){if(t.isRelative){var e=this;return e instanceof p==!1&&(null==this.parent&&console.warn("Can't resolve relative path because we don't have a parent"),e=this.parent,"Container"!==e.constructor.name&&console.warn("Expected parent to be a container"),t=t.tail),e.ContentAtPath(t)}return this.rootContentContainer.ContentAtPath(t)}},{key:"ConvertPathToRelative",value:function(t){for(var e=this.path,i=Math.min(t.components.length,e.components.length),a=-1,r=0;i>r;++r){var o=e.components[r],s=t.components[r];if(!o.Equals(s))break;a=r}if(-1==a)return t;for(var u=e.components.length-1-a,l=[],h=0;u>h;++h)l.push(n.Component.ToParent());for(var c=a+1;c<t.components.length;++c)l.push(t.components[c]);var f=new n(l,!0);return f}},{key:"CompactPathString",value:function(t){var e=null,n=null;if(t.isRelative)n=t.componentsString,e=this.path.PathByAppendingPath(t).componentsString;else{var i=this.ConvertPathToRelative(t);n=i.componentsString,e=t.componentsString}return n.Length<e.Length?n:e}},{key:"Copy",value:function(){throw"Not Implemented"}},{key:"SetChild",value:function(t,e,n){t[e]&&(t[e]=null),t[e]=n,t[e]&&(t[e].parent=this)}},{key:"path",get:function(){if(null==this._path)if(null==this.parent)this._path=new n;else{for(var t=[],e=this,i=e.parent;i instanceof p;){var a=e;a.name&&a.hasValidName?t.unshift(new n.Component(a.name)):t.unshift(new n.Component(i.content.indexOf(e))),e=i,i=i.parent}this._path=new n(t)}return this._path}},{key:"rootContentContainer",get:function(){for(var t=this;t.parent;)t=t.parent;return t}}]),t}(),o={Int:0,Float:1,String:2,DivertTarget:3,VariablePointer:4},s=function(t){function i(t){e.classCallCheck(this,i);var n=e.possibleConstructorReturn(this,Object.getPrototypeOf(i).call(this));return n._valueType,n._isTruthy,n._valueObject,n}return e.inherits(i,t),e.createClass(i,[{key:"Cast",value:function(t){throw"Trying to casting an AbstractValue"}},{key:"Copy",value:function(t){return this.Create(t)}},{key:"valueType",get:function(){return this._valueType}},{key:"isTruthy",get:function(){return this._isTruthy}},{key:"valueObject",get:function(){return this._valueObject}}],[{key:"Create",value:function(t){if(t instanceof Boolean){var e=!!t;t=e?1:0}return Number.isInteger(Number(t))?new l(t):isNaN(t)?t instanceof String?new c(t):t instanceof n?new f(t):null:new h(t)}}]),i}(r),u=function(t){function n(t){e.classCallCheck(this,n);var i=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this));return i.value=t,i}return e.inherits(n,t),e.createClass(n,[{key:"toString",value:function(){return this.value.toString()}},{key:"value",get:function(){return this._value},set:function(t){this._value=t}},{key:"valueObject",get:function(){return this.value}}]),n}(s),l=function(t){function n(t){e.classCallCheck(this,n);var i=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this,t||0));return i._valueType=o.Int,i}return e.inherits(n,t),e.createClass(n,[{key:"Cast",value:function(t){if(t==this.valueType)return this;if(t==o.Float)return new h(parseFloat(this.value));if(t==o.String)return new c(""+this.value);throw"Unexpected type cast of Value to new ValueType"}},{key:"isTruthy",get:function(){return 0!=this.value}},{key:"valueType",get:function(){return o.Int}}]),n}(u),h=function(t){function n(t){e.classCallCheck(this,n);var i=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this,t||0));return i._valueType=o.Float,i}return e.inherits(n,t),e.createClass(n,[{key:"Cast",value:function(t){if(t==this.valueType)return this;if(t==o.Int)return new l(parseInt(this.value));if(t==o.String)return new c(""+this.value);throw"Unexpected type cast of Value to new ValueType"}},{key:"isTruthy",get:function(){return 0!=this._value}},{key:"valueType",get:function(){return o.Float}}]),n}(u),c=function(t){function n(t){e.classCallCheck(this,n);var i=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this,t||""));return i._valueType=o.String,i._isNewline="\n"==i.value,i._isInlineWhitespace=!0,i.value.split().every(function(t){return" "!=t&&"	"!=t?(i._isInlineWhitespace=!1,!1):!0}),i}return e.inherits(n,t),e.createClass(n,[{key:"Cast",value:function(t){if(t==this.valueType)return this;if(t==o.Int){var e;return(e=parseInt(value))?new l(e):null}if(t==o.Float){var n;return(n=n(value))?new h(n):null}throw"Unexpected type cast of Value to new ValueType"}},{key:"valueType",get:function(){return o.String}},{key:"isTruthy",get:function(){return this.value.length>0}},{key:"isNewline",get:function(){return this._isNewline}},{key:"isInlineWhitespace",get:function(){return this._isInlineWhitespace}},{key:"isNonWhitespace",get:function(){return!this.isNewline&&!this.isInlineWhitespace}}]),n}(u),f=function(t){function n(t){e.classCallCheck(this,n);var i=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this,t));return i._valueType=o.DivertTarget,i}return e.inherits(n,t),e.createClass(n,[{key:"Cast",value:function(t){if(t==this.valueType)return this;throw"Unexpected type cast of Value to new ValueType"}},{key:"toString",value:function(){return"DivertTargetValue("+this.targetPath+")"}},{key:"targetPath",get:function(){return this.value},set:function(t){this.value=t}},{key:"isTruthy",get:function(){throw"Shouldn't be checking the truthiness of a divert target"}}]),n}(u),v=function(t){function n(t,i){e.classCallCheck(this,n);var a=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this,t));return a._valueType=o.VariablePointer,a.contextIndex="undefined"!=typeof i?i:-1,a}return e.inherits(n,t),e.createClass(n,[{key:"Cast",value:function(t){if(t==this.valueType)return this;throw"Unexpected type cast of Value to new ValueType"}},{key:"toString",value:function(){return"VariablePointerValue("+this.variableName+")"}},{key:"Copy",value:function(){return new n(this.variableName,this.contextIndex)}},{key:"variableName",get:function(){return this.value},set:function(t){this.value=t}},{key:"isTruthy",get:function(){throw"Shouldn't be checking the truthiness of a variable pointer"}}]),n}(u),d=function(t){function n(t){e.classCallCheck(this,n);var i=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this,t));return i.message=t,i.name="StoryException",i}return e.inherits(n,t),n}(Error),p=function(t){function n(){e.classCallCheck(this,n);var t=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this));return t.name="",t._content=[],t.namedContent={},t.visitsShouldBeCounted=!1,t.turnIndexShouldBeCounted=!1,t.countingAtStartOnly=!1,t.CountFlags={Visits:1,Turns:2,CountStartOnly:4},t._pathToFirstLeafContent=null,t}return e.inherits(n,t),e.createClass(n,[{key:"AddContent",value:function(t){var e=this;if(t instanceof Array)t.forEach(function(t){e.AddContent(t)});else{if(this._content.push(t),t.parent)throw"content is already in "+t.parent;t.parent=this,this.TryAddNamedContent(t)}}},{key:"TryAddNamedContent",value:function(t){t.hasValidName&&t.name&&this.AddToNamedContentOnly(t)}},{key:"AddToNamedContentOnly",value:function(t){t instanceof r==!1&&console.warn("Can only add Runtime.Objects to a Runtime.Container"),t.parent=this,this.namedContent[t.name]=t}},{key:"ContentAtPath",value:function(t,e){e="undefined"!=typeof e?e:t.components.length;for(var i=this,a=this,r=0;e>r;++r){var o=t.components[r];if(!(i instanceof n))throw"Path continued, but previous object wasn't a container: "+a;a=i.ContentWithPathComponent(o),i=a}return a}},{key:"InsertContent",value:function(t,e){if(this.content[i]=t,t.parent)throw"content is already in "+t.parent;t.parent=this,this.TryAddNamedContent(t)}},{key:"AddContentsOfContainer",value:function(t){var e=this;this.content=this.content.concat(t.content),t.content.forEach(function(t){t.parent=e,e.TryAddNamedContent(t)})}},{key:"ContentWithPathComponent",value:function(t){if(t.isIndex)return t.index>=0&&t.index<this.content.length?this.content[t.index]:null;if(t.isParent)return this.parent;var e=null;if(e=this.namedContent[t.name])return e;throw new d("Content '"+t.name+"' not found at path: '"+this.path+"'")}},{key:"BuildStringOfHierarchy",value:function(t,e,i){function a(){for(var n=4,i=0;n*e>i;++i)t+=" "}if(0==arguments.length)return this.BuildStringOfHierarchy("",0,null);a(),t+="[",this.hasValidName&&(t+=" ("+this.name+")"),this==i&&(t+="  <---"),t+="\n",e++;for(var r=0;r<this.content.length;++r){var o=this.content[r];if(o instanceof n){var s=o;s.BuildStringOfHierarchy(t,e,i)}else a(),o instanceof c?(t+='"',t+=o.toString().replace("\n","\\n"),t+='"'):t+=o.toString();r!=this.content.length-1&&(t+=","),o instanceof n||o!=i||(t+="  <---"),t+="\n"}var u={};for(var l in this.namedContent)this.content.indexOf(this.namedContent[l])>=0||(u[l]=this.namedContent[l]);if(Object.keys(u).length>0){a(),t+="\n",t+="-- named: --";for(var l in u){u[l]instanceof n||console.warn("Can only print out named Containers");var s=u[l];s.BuildStringOfHierarchy(t,e,i),t+="\n"}}e--,a(),t+="]"}},{key:"hasValidName",get:function(){return null!=this.name&&this.name.length>0}},{key:"content",get:function(){return this._content},set:function(t){this.AddContent(t)}},{key:"namedOnlyContent",get:function(){var t={};for(var e in this.namedContent)t[e]=this.namedContent[e];return this.content.forEach(function(e){var n=e;n.name&&n.hasValidName&&delete t[n.name]}),0==t.length&&(t=null),t},set:function(t){var e=this.namedOnlyContent;if(null!=e)for(var n in e)delete this.namedContent[n];if(null!=t)for(var n in t){var i=t[n];i.name&&"undefined"!=typeof i.hasValidName&&this.AddToNamedContentOnly(i)}}},{key:"countFlags",get:function(){var t=0;return this.visitsShouldBeCounted&&(t|=this.CountFlags.Visits),this.turnIndexShouldBeCounted&&(t|=this.CountFlags.Turns),this.countingAtStartOnly&&(t|=this.CountFlags.CountStartOnly),t==this.CountFlags.CountStartOnly&&(t=0),t},set:function(t){var e=t;(e&this.CountFlags.Visits)>0&&(this.visitsShouldBeCounted=!0),(e&this.CountFlags.Turns)>0&&(this.turnIndexShouldBeCounted=!0),(e&this.CountFlags.CountStartOnly)>0&&(this.countingAtStartOnly=!0)}},{key:"pathToFirstLeafContent",get:function(){return null==this._pathToFirstLeafContent&&(this._pathToFirstLeafContent=this.path.PathByAppendingPath(this.internalPathToFirstLeafContent)),this._pathToFirstLeafContent}},{key:"internalPathToFirstLeafContent",get:function(){for(var t=new Path,e=this;e instanceof n;)e.content.length>0&&(t.components.push(new Path.Component(0)),e=e.content[0]);return t}}]),n}(r),y=function(){function t(n){e.classCallCheck(this,t),this.glueType=n}return e.createClass(t,[{key:"toString",value:function(){switch(this.glueType){case C.Bidirectional:return"BidirGlue";case C.Left:return"LeftGlue";case C.Right:return"RightGlue"}return"UnexpectedGlueType"}},{key:"isLeft",get:function(){return this.glueType==C.Left}},{key:"isBi",get:function(){return this.glueType==C.Bidirectional}},{key:"isRight",get:function(){return this.glueType==C.Right}}]),t}(),C={Bidirectional:0,Left:1,Right:2},g=function(t){function n(t){e.classCallCheck(this,n);var i=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this));return i._commandType="undefined"!=typeof t?t:k.NotSet,i}return e.inherits(n,t),e.createClass(n,[{key:"copy",value:function(){return new n(this.commandType)}},{key:"toString",value:function(){return this.commandType.toString()}},{key:"commandType",get:function(){return this._commandType}}],[{key:"EvalStart",value:function(){return new n(k.EvalStart)}},{key:"EvalOutput",value:function(){return new n(k.EvalOutput)}},{key:"EvalEnd",value:function(){return new n(k.EvalEnd)}},{key:"Duplicate",value:function(){return new n(k.Duplicate)}},{key:"PopEvaluatedValue",value:function(){return new n(k.PopEvaluatedValue)}},{key:"PopFunction",value:function(){return new n(k.PopFunction)}},{key:"PopTunnel",value:function(){return new n(k.PopTunnel)}},{key:"BeginString",value:function(){return new n(k.BeginString)}},{key:"EndString",value:function(){return new n(k.EndString)}},{key:"NoOp",value:function(){return new n(k.NoOp)}},{key:"ChoiceCount",value:function(){return new n(k.ChoiceCount)}},{key:"TurnsSince",value:function(){return new n(k.TurnsSince)}},{key:"VisitIndex",value:function(){return new n(k.VisitIndex)}},{key:"SequenceShuffleIndex",value:function(){return new n(k.SequenceShuffleIndex)}},{key:"StartThread",value:function(){return new n(k.StartThread)}},{key:"Done",value:function(){return new n(k.Done)}},{key:"End",value:function(){return new n(k.End)}}]),n}(r),k={NotSet:-1,EvalStart:0,EvalOutput:1,EvalEnd:2,Duplicate:3,PopEvaluatedValue:4,PopFunction:5,PopTunnel:6,BeginString:7,EndString:8,NoOp:9,ChoiceCount:10,TurnsSince:11,VisitIndex:12,SequenceShuffleIndex:13,StartThread:14,Done:15,End:16};k.TOTAL_VALUES=Object.keys(k).length-1,g.CommandType=k;var m={Tunnel:0,Function:1},b=function(t){function i(t){e.classCallCheck(this,i);var n=e.possibleConstructorReturn(this,Object.getPrototypeOf(i).call(this));return n._targetPath,n._targetContent,n.variableDivertName,n.pushesToStack,n.stackPushType,n.isExternal,n.isConditional,n.externalArgs,n.pushesToStack=!1,t&&(n.pushesToStack=!0,n.stackPushType=t),n}return e.inherits(i,t),e.createClass(i,[{key:"Equals",value:function(t){var e=t;return e instanceof i&&this.hasVariableTarget==e.hasVariableTarget?this.hasVariableTarget?this.variableDivertName==e.variableDivertName:this.targetPath.Equals(e.targetPath):!1}},{key:"toString",value:function(){if(this.hasVariableTarget)return"Divert(variable: "+this.variableDivertName+")";if(null==this.targetPath)return"Divert(null)";var t="",e=this.targetPath.toString(),n=null;return null!=n&&(e="line "+n),t+="Divert",this.pushesToStack&&(t+=this.stackPushType==m.Function?" function":" tunnel"),t+=" (",t+=e,t+=")"}},{key:"targetPath",get:function(){if(null!=this._targetPath&&this._targetPath.isRelative){var t=this.targetContent;t&&(this._targetPath=t.path)}return this._targetPath},set:function(t){this._targetPath=t,this._targetContent=null}},{key:"targetContent",get:function(){return null==this._targetContent&&(this._targetContent=this.ResolvePath(this._targetPath)),this._targetContent}},{key:"targetPathString",get:function(){return null==this.targetPath?null:this.CompactPathString(this.targetPath)},set:function(t){null==t?this.targetPath=null:this.targetPath=new n(t)}},{key:"hasVariableTarget",get:function(){return null!=this.variableDivertName}}]),i}(r),S=function(t){function i(t){e.classCallCheck(this,i);var n=e.possibleConstructorReturn(this,Object.getPrototypeOf(i).call(this));return n.pathOnChoice,n.hasCondition,n.hasStartContent,n.hasChoiceOnlyContent,n.onceOnly,n.isInvisibleDefault,n.onceOnly=!!t,n}return e.inherits(i,t),e.createClass(i,[{key:"toString",value:function(){var t=null,e=this.pathOnChoice.toString();return null!=t&&(e=" line "+t),"Choice: -> "+e}},{key:"choiceTarget",get:function(){return this.ResolvePath(this.pathOnChoice)}},{key:"pathStringOnChoice",get:function(){return this.CompactPathString(this.pathOnChoice)},set:function(t){this.pathOnChoice=new n(t)}},{key:"flags",get:function(){var t=0;return this.hasCondition&&(t|=1),this.hasStartContent&&(t|=2),this.hasChoiceOnlyContent&&(t|=4),this.isInvisibleDefault&&(t|=8),this.onceOnly&&(t|=16),t},set:function(t){this.hasCondition=(1&t)>0,this.hasStartContent=(2&t)>0,this.hasChoiceOnlyContent=(4&t)>0,this.isInvisibleDefault=(8&t)>0,this.onceOnly=(16&t)>0}}]),i}(r),T=function(t){function i(t){e.classCallCheck(this,i);var n=e.possibleConstructorReturn(this,Object.getPrototypeOf(i).call(this));return n.name=t,n.pathForCount,n}return e.inherits(i,t),e.createClass(i,[{key:"toString",value:function(){if(null!=this.name)return"var("+this.name+")";var t=this.pathStringForCount;return"read_count("+t+")"}},{key:"containerForCount",get:function(){return this.ResolvePath(this.pathForCount)}},{key:"pathStringForCount",get:function(){return null==this.pathForCount?null:this.CompactPathString(this.pathForCount)},set:function(t){null==t?this.pathForCount=null:this.pathForCount=new n(t)}}]),i}(r),O=function(t){function n(t,i){e.classCallCheck(this,n);var a=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this));return a._variableName=t||null,a._isNewDeclaration=!!i,a.isGlobal,a}return e.inherits(n,t),e.createClass(n,[{key:"toString",value:function(){return"VarAssign to "+this.variableName}},{key:"variableName",get:function(){return this._variableName}},{key:"isNewDeclaration",get:function(){return this._isNewDeclaration}}]),n}(r),_=function(t){function n(){return e.classCallCheck(this,n),e.possibleConstructorReturn(this,Object.getPrototypeOf(n).apply(this,arguments))}return e.inherits(n,t),n}(r),E=function(t){function n(t){e.classCallCheck(this,n);var i=e.possibleConstructorReturn(this,Object.getPrototypeOf(n).call(this));return i.name=t,i._numberOfParameters,i._prototype,i._isPrototype,i._operationFuncs=null,n.GenerateNativeFunctionsIfNecessary(),i}return e.inherits(n,t),e.createClass(n,[{key:"Call",value:function(t){if(this._prototype)return this._prototype.Call(t);if(this.numberOfParameters!=t.length)throw"Unexpected number of parameters";t.forEach(function(t){if(t instanceof _)throw new d("Attempting to perform operation on a void value. Did you forget to 'return' a value from a function you called here?")});var e=this.CoerceValuesToSingleType(t),n=e[0].valueType;return n==o.Int?this.CallType(e):n==o.Float?this.CallType(e):n==o.String?this.CallType(e):n==o.DivertTarget?this.CallType(e):null}},{key:"CallType",value:function(t){var e=t[0],n=e.valueType,i=e,a=t.length;if(2==a||1==a){var r=this._operationFuncs[n];if(!r)throw new d("Can not perform operation '"+this.name+"' on "+n);if(2==a){var o=t[1],s=o,l=r,h=l(i.value,s.value);return u.Create(h)}var l=r,h=l(i.value);return u.Create(h)}throw"Unexpected number of parameters to NativeFunctionCall: "+t.length}},{key:"CoerceValuesToSingleType",value:function(t){var e=o.Int;t.forEach(function(t){var n=t;n.valueType>e&&(e=n.valueType)});var n=[];return t.forEach(function(t){var i=t.Cast(e);n.push(i)}),n}},{key:"AddOpFuncForType",value:function(t,e){null==this._operationFuncs&&(this._operationFuncs={}),this._operationFuncs[t]=e}},{key:"toString",value:function(){return"Native '"+this.name+"'"}},{key:"name",get:function(){return this._name},set:function(t){this._name=t,this._isPrototype||(this._prototype=n._nativeFunctions[this._name])}},{key:"numberOfParameters",get:function(){return this._prototype?this._prototype.numberOfParameters:this._numberOfParameters},set:function(t){this._numberOfParameters=t}}],[{key:"internalConstructor",value:function(t,e){var i=new n(t);return i._isPrototype=!0,i.numberOfParameters=e,i}},{key:"CallWithName",value:function(t){return new n(t)}},{key:"CallExistsWithName",value:function(t){return this.GenerateNativeFunctionsIfNecessary(),this._nativeFunctions[t]}},{key:"GenerateNativeFunctionsIfNecessary",value:function(){if(null==this._nativeFunctions){this._nativeFunctions={},this.AddIntBinaryOp(this.Add,function(t,e){return t+e}),this.AddIntBinaryOp(this.Subtract,function(t,e){return t-e}),this.AddIntBinaryOp(this.Multiply,function(t,e){return t*e}),this.AddIntBinaryOp(this.Divide,function(t,e){return t/e}),this.AddIntBinaryOp(this.Mod,function(t,e){return t%e}),this.AddIntUnaryOp(this.Negate,function(t){return-t}),this.AddIntBinaryOp(this.Equal,function(t,e){return t==e?1:0}),this.AddIntBinaryOp(this.Greater,function(t,e){return t>e?1:0}),this.AddIntBinaryOp(this.Less,function(t,e){return e>t?1:0}),this.AddIntBinaryOp(this.GreaterThanOrEquals,function(t,e){return t>=e?1:0}),this.AddIntBinaryOp(this.LessThanOrEquals,function(t,e){return e>=t?1:0}),this.AddIntBinaryOp(this.NotEquals,function(t,e){return t!=e?1:0}),this.AddIntUnaryOp(this.Not,function(t){return 0==t?1:0}),this.AddIntBinaryOp(this.And,function(t,e){return 0!=t&&0!=e?1:0}),this.AddIntBinaryOp(this.Or,function(t,e){return 0!=t||0!=e?1:0}),this.AddIntBinaryOp(this.Max,function(t,e){return Math.max(t,e)}),this.AddIntBinaryOp(this.Min,function(t,e){return Math.min(t,e)}),this.AddFloatBinaryOp(this.Add,function(t,e){return t+e}),this.AddFloatBinaryOp(this.Subtract,function(t,e){return t-e}),this.AddFloatBinaryOp(this.Multiply,function(t,e){return t*e}),this.AddFloatBinaryOp(this.Divide,function(t,e){return t/e}),this.AddFloatBinaryOp(this.Mod,function(t,e){return t%e}),this.AddFloatUnaryOp(this.Negate,function(t){return-t}),this.AddFloatBinaryOp(this.Equal,function(t,e){return t==e?1:0}),this.AddFloatBinaryOp(this.Greater,function(t,e){return t>e?1:0}),this.AddFloatBinaryOp(this.Less,function(t,e){return e>t?1:0}),this.AddFloatBinaryOp(this.GreaterThanOrEquals,function(t,e){return t>=e?1:0}),this.AddFloatBinaryOp(this.LessThanOrEquals,function(t,e){return e>=t?1:0}),this.AddFloatBinaryOp(this.NotEquals,function(t,e){return t!=e?1:0}),this.AddFloatUnaryOp(this.Not,function(t){return 0==t?1:0}),this.AddFloatBinaryOp(this.And,function(t,e){return 0!=t&&0!=e?1:0}),this.AddFloatBinaryOp(this.Or,function(t,e){return 0!=t||0!=e?1:0}),this.AddFloatBinaryOp(this.Max,function(t,e){return Math.max(t,e)}),this.AddFloatBinaryOp(this.Min,function(t,e){return Math.min(t,e)}),this.AddStringBinaryOp(this.Add,function(t,e){return t+e}),this.AddStringBinaryOp(this.Equal,function(t,e){return t===e?1:0});var t=function(t,e){return t.Equals(e)?1:0};this.AddOpToNativeFunc(this.Equal,2,o.DivertTarget,t)}}},{key:"AddOpToNativeFunc",value:function(t,e,i,a){var r=this._nativeFunctions[t];r||(r=n.internalConstructor(t,e),this._nativeFunctions[t]=r),r.AddOpFuncForType(i,a)}},{key:"AddIntBinaryOp",value:function(t,e){this.AddOpToNativeFunc(t,2,o.Int,e)}},{key:"AddIntUnaryOp",value:function(t,e){this.AddOpToNativeFunc(t,1,o.Int,e)}},{key:"AddFloatBinaryOp",value:function(t,e){this.AddOpToNativeFunc(t,2,o.Float,e)}},{key:"AddFloatUnaryOp",value:function(t,e){this.AddOpToNativeFunc(t,1,o.Float,e)}},{key:"AddStringBinaryOp",value:function(t,e){this.AddOpToNativeFunc(t,2,o.String,e)}}]),n}(r);E.Add="+",E.Subtract="-",E.Divide="/",E.Multiply="*",E.Mod="%",E.Negate="~",E.Equal="==",E.Greater=">",E.Less="<",E.GreaterThanOrEquals=">=",E.LessThanOrEquals="<=",E.NotEquals="!=",E.Not="!",E.And="&&",E.Or="||",E.Min="MIN",E.Max="MAX",E._nativeFunctions=null;var x=function(){function t(n){e.classCallCheck(this,t),this.text,this.index,this.choicePoint,this.threadAtGeneration,this._originalThreadIndex,this._originalChoicePath,n&&(this.choicePoint=n)}return e.createClass(t,[{key:"pathStringOnChoice",get:function(){return this.choicePoint.pathStringOnChoice}}]),t}(),w=function(){function t(){e.classCallCheck(this,t)}return e.createClass(t,null,[{key:"ListToJArray",value:function(t){var e=this,n=[];return t.forEach(function(t){n.push(e.RuntimeObjectToJToken(t))}),n}},{key:"JArrayToRuntimeObjList",value:function(t,e){var n=t.length;e&&n--;for(var i=[],a=0;n>a;a++){var r=t[a],o=this.JTokenToRuntimeObject(r);i.push(o)}return i}},{key:"JObjectToDictionaryRuntimeObjs",value:function(t){var e={};for(var n in t)e[n]=this.JTokenToRuntimeObject(t[n]);return e}},{key:"DictionaryRuntimeObjsToJObject",value:function(t){var e={};for(var n in t){var i=t[n];i instanceof r&&(e[n]=this.RuntimeObjectToJToken(i))}return e}},{key:"JObjectToIntDictionary",value:function(t){var e={};for(var n in t)e[n]=parseInt(t[n]);return e}},{key:"IntDictionaryToJObject",value:function(t){var e={};for(var n in t)e[n]=t[n];return e}},{key:"JTokenToRuntimeObject",value:function(t){if(!isNaN(t)&&"\n"!==t)return u.Create(t);if("string"==typeof t){var i=t.toString(),a=i[0];if("^"==a)return new c(i.substring(1));if("\n"==a&&1==i.length)return new c("\n");if("<>"==i)return new y(C.Bidirectional);if("G<"==i)return new y(C.Left);if("G>"==i)return new y(C.Right);for(var r=0;r<P.length;++r){var o=P[r];if(i==o)return new g(r)}if(E.CallExistsWithName(i))return E.CallWithName(i);if("->->"==i)return g.PopTunnel();if("~ret"==i)return g.PopFunction();if("void"==i)return new _}if("object"===("undefined"==typeof t?"undefined":e["typeof"](t))&&t instanceof Array==!1){var s,l=t;if(l["^->"])return s=l["^->"],new f(new n(s.toString()));if(l["^var"]){s=l["^var"];var h=new v(s.toString());return l.ci&&(s=l.ci,h.contextIndex=parseInt(s)),h}var d=!1,p=!1,k=m.Function,x=!1;if((s=l["->"])?d=!0:(s=l["f()"])?(d=!0,p=!0,k=m.Function):(s=l["->t->"])?(d=!0,p=!0,k=m.Tunnel):(s=l["x()"])&&(d=!0,x=!0,p=!1,k=m.Function),d){var w=new b;w.pushesToStack=p,w.stackPushType=k,w.isExternal=x;var I=s.toString();return(s=l["var"])?w.variableDivertName=I:w.targetPathString=I,w.isConditional=!!l.c,x&&(s=l.exArgs)&&(w.externalArgs=parseInt(s)),w}if(s=l["*"]){var V=new S;return V.pathStringOnChoice=s.toString(),(s=l.flg)&&(V.flags=parseInt(s)),V}if(s=l["VAR?"])return new T(s.toString());if(s=l["CNT?"]){var N=new T;return N.pathStringForCount=s.toString(),N}var F=!1,A=!1;if((s=l["VAR="])?(F=!0,A=!0):(s=l["temp="])&&(F=!0,A=!1),F){var j=s.toString(),R=!l.re,B=new O(j,R);return B.isGlobal=A,B}if(null!=l.originalChoicePath)return this.JObjectToChoice(l)}if(t instanceof Array)return this.JArrayToContainer(t);if(null==t)return null;throw"Failed to convert token to runtime object: "+JSON.stringify(t)}},{key:"RuntimeObjectToJToken",value:function(t){var e=t;if(e instanceof p)return this.ContainerToJArray(e);var n=t;if(n instanceof b){var i="->";n.isExternal?i="x()":n.pushesToStack&&(n.stackPushType==m.Function?i="f()":n.stackPushType==m.Tunnel&&(i="->t->"));var a;a=n.hasVariableTarget?n.variableDivertName:n.targetPathString;var r={};return r[i]=a,n.hasVariableTarget&&(r["var"]=!0),n.isConditional&&(r.c=!0),n.externalArgs>0&&(r.exArgs=n.externalArgs),r}var o=t;if(o instanceof S){var r={};return r["*"]=o.pathStringOnChoice,r.flg=o.flags,r}var s=t;if(s instanceof l)return s.value;var u=t;if(u instanceof h)return u.value;var d=t;if(d instanceof c)return d.isNewline?"\n":"^"+d.value;var C=t;if(C instanceof f)return{"^->":C.value.componentsString};var k=t;if(k instanceof v)return{"^var":k.value,ci:k.contextIndex};var w=t;if(w instanceof y)return w.isBi?"<>":w.isLeft?"G<":"G>";var I=t;if(I instanceof g)return P[parseInt(I.commandType)];var V=t;if(V instanceof E)return V.name;var N=t;if(N instanceof T){var r={},F=N.pathStringForCount;return null!=F?r["CNT?"]=F:r["VAR?"]=N.name,r}var A=t;if(A instanceof O){var j=A.isGlobal?"VAR=":"temp=",r={};return r[j]=A.variableName,A.isNewDeclaration||(r.re=!0),r}var R=t;if(R instanceof _)return"void";var B=t;if(B instanceof x)return this.ChoiceToJObject(B);throw"Failed to convert runtime object to Json token: "+t}},{key:"ContainerToJArray",value:function(t){var e=this.ListToJArray(t.content),n=t.namedOnlyContent,i=t.countFlags;if(null!=n&&n.length>0||i>0||null!=t.name){var a;null!=n?(a=this.DictionaryRuntimeObjsToJObject(n),a.forEach(function(t){var e=t.Value;if(null!=e){var n=e[e.length-1];if(null!=n)throw"Cleaning attrJObj not implemented"}})):a={},i>0&&(a["#f"]=i),null!=t.name&&(a["#n"]=t.name),e.push(a)}else e.push(null);return e}},{key:"JArrayToContainer",value:function(t){var e=new p;e.content=this.JArrayToRuntimeObjList(t,!0);var n=t[t.length-1];if(null!=n){var i={};for(var a in n)if("#f"==a)e.countFlags=parseInt(n[a]);else if("#n"==a)e.name=n[a].toString();else{var r=this.JTokenToRuntimeObject(n[a]),o=r;o instanceof p&&(o.name=a),i[a]=r}e.namedOnlyContent=i}return e}},{key:"JObjectToChoice",value:function(t){var e=new x;return e.text=t.text.toString(),e.index=parseInt(t.index),e.originalChoicePath=t.originalChoicePath.toString(),e.originalThreadIndex=parseInt(t.originalThreadIndex),e}},{key:"ChoiceToJObject",value:function(t){var e={};return e.text=t.text,e.index=t.index,e.originalChoicePath=t.originalChoicePath,e.originalThreadIndex=t.originalThreadIndex,e}}]),t}(),P=[];P[g.CommandType.EvalStart]="ev",P[g.CommandType.EvalOutput]="out",P[g.CommandType.EvalEnd]="/ev",P[g.CommandType.Duplicate]="du",P[g.CommandType.PopEvaluatedValue]="pop",P[g.CommandType.PopFunction]="~ret",P[g.CommandType.PopTunnel]="->->",P[g.CommandType.BeginString]="str",
-P[g.CommandType.EndString]="/str",P[g.CommandType.NoOp]="nop",P[g.CommandType.ChoiceCount]="choiceCnt",P[g.CommandType.TurnsSince]="turns",P[g.CommandType.VisitIndex]="visit",P[g.CommandType.SequenceShuffleIndex]="seq",P[g.CommandType.StartThread]="thread",P[g.CommandType.Done]="done",P[g.CommandType.End]="end";for(var I=0;I<g.CommandType.TOTAL_VALUES;++I)if(null==P[I])throw"Control command not accounted for in serialisation";var V=function(){function t(n,i,a,r){e.classCallCheck(this,t),this.currentContainer=i,this.currentContentIndex=a,this.inExpressionEvaluation=r||!1,this.temporaryVariables={},this.type=n}return e.createClass(t,[{key:"Copy",value:function(){var n=new t(this.type,this.currentContainer,this.currentContentIndex,this.inExpressionEvaluation);return e["extends"](n.temporaryVariables,this.temporaryVariables),n}},{key:"currentObject",get:function(){return this.currentContainer&&this.currentContentIndex<this.currentContainer.content.length?this.currentContainer.content[this.currentContentIndex]:null},set:function(t){var e=t;return null==e?(this.currentContainer=null,void(this.currentContentIndex=0)):(this.currentContainer=e.parent,this.currentContainer instanceof p&&(this.currentContentIndex=this.currentContainer.content.indexOf(e)),void(this.currentContainer instanceof p!=!1&&-1!=this.currentContentIndex||(this.currentContainer=e,this.currentContentIndex=0)))}}]),t}(),N=function(){function t(i,a){var r=this;if(e.classCallCheck(this,t),this.callstack=[],this.threadIndex=0,this.previousContentObject=null,i&&a){var o=i;this.threadIndex=parseInt(o.threadIndex);var s=o.callstack;s.forEach(function(t){var e=t,i=parseInt(e.type),o=null,s=0,u=null,l=e.cPath;"undefined"!=typeof l&&(u=l.toString(),o=a.ContentAtPath(new n(u)),s=parseInt(e.idx));var h=!!e.exp,c=new V(i,o,s,h),f=e.temp;c.temporaryVariables=w.JObjectToDictionaryRuntimeObjs(f),r.callstack.push(c)});var u=o.previousContentObject;if("undefined"!=typeof u){var l=new n(u.toString());this.previousContentObject=a.ContentAtPath(l)}}}return e.createClass(t,[{key:"Copy",value:function(){var e=new t;return e.threadIndex=this.threadIndex,this.callstack.forEach(function(t){e.callstack.push(t.Copy())}),e.previousContentObject=this.previousContentObject,e}},{key:"jsonToken",get:function(){var t={},e=[];return this.callstack.forEach(function(t){var n={};t.currentContainer&&(n.cPath=t.currentContainer.path.componentsString,n.idx=t.currentContentIndex),n.exp=t.inExpressionEvaluation,n.type=parseInt(t.type),n.temp=w.DictionaryRuntimeObjsToJObject(t.temporaryVariables),e.push(n)}),t.callstack=e,t.threadIndex=this.threadIndex,null!=this.previousContentObject&&(t.previousContentObject=this.previousContentObject.path.toString()),t}}]),t}(),F=function(){function t(n){var i=this;e.classCallCheck(this,t),this._threads=[],this._threadCounter=0,this._threads.push(new N),n instanceof t?(this._threads=[],n._threads.forEach(function(t){i._threads.push(t.Copy())})):this._threads[0].callstack.push(new V(m.Tunnel,n,0))}return e.createClass(t,[{key:"CanPop",value:function(t){return this.canPop?null==t?!0:this.currentElement.type==t:!1}},{key:"Pop",value:function(t){return this.CanPop(t)?void this.callStack.pop():void console.error("Mismatched push/pop in Callstack")}},{key:"Push",value:function(t){this.callStack.push(new V(t,this.currentElement.currentContainer,this.currentElement.currentContentIndex,!1))}},{key:"PushThread",value:function(){var t=this.currentThread.Copy();t.threadIndex=this._threadCounter,this._threadCounter++,this._threads.push(t)}},{key:"PopThread",value:function(){this.canPopThread?this._threads.splice(this._threads.indexOf(this.currentThread),1):console.error("Can't pop thread")}},{key:"SetJsonToken",value:function(t,e){var n=this;this._threads.length=0;var i=t,a=i.threads;a.forEach(function(t){var i=new N(t,e);n._threads.push(i)}),this._threadCounter=parseInt(i.threadCounter)}},{key:"GetJsonToken",value:function(){var t={},e=[];return this._threads.forEach(function(t){e.push(t.jsonToken)}),t.threads=e,t.threadCounter=this._threadCounter,t}},{key:"GetTemporaryVariableWithName",value:function(t,e){e="undefined"==typeof e?-1:e,-1==e&&(e=this.currentElementIndex+1);var n=null,i=this.callStack[e-1];return(n=i.temporaryVariables[t])?n:null}},{key:"SetTemporaryVariable",value:function(t,e,n,i){i="undefined"==typeof i?-1:i,-1==i&&(i=this.currentElementIndex+1);var a=this.callStack[i-1];if(!n&&!a.temporaryVariables[t])throw new d("Could not find temporary variable to set: "+t);a.temporaryVariables[t]=e}},{key:"ContextForVariableNamed",value:function(t){return this.currentElement.temporaryVariables[t]?this.currentElementIndex+1:0}},{key:"ThreadWithIndex",value:function(t){var e=this._threads.filter(function(e){return e.threadIndex==t?e:void 0});return e[0]}},{key:"currentThread",get:function(){return this._threads[this._threads.length-1]},set:function(t){1!=this._threads.length&&console.warn("Shouldn't be directly setting the current thread when we have a stack of them"),this._threads.length=0,this._threads.push(t)}},{key:"callStack",get:function(){return this.currentThread.callstack}},{key:"elements",get:function(){return this.callStack}},{key:"currentElement",get:function(){return this.callStack[this.callStack.length-1]}},{key:"currentElementIndex",get:function(){return this.callStack.length-1}},{key:"canPop",get:function(){return this.callStack.length>1}},{key:"canPopThread",get:function(){return this._threads.length>1}}]),t}(),A=function(){function t(n){e.classCallCheck(this,t),this._globalVariables={},this._callStack=n,this._batchObservingVariableChanges=null,this._changedVariables=null,this.variableChangedEvent=null,this.variableChangedEventCallbacks=[];try{var i=new Proxy(this,{get:function(t,e){return e in t?t[e]:t.$(e)},set:function(t,e,n){return e in t?t[e]=n:t.$(e,n),!0}});return i}catch(a){}}return e.createClass(t,[{key:"ObserveVariableChange",value:function(t){var e=this;null==this.variableChangedEvent&&(this.variableChangedEvent=function(t,n){e.variableChangedEventCallbacks.forEach(function(e){e(t,n)})}),this.variableChangedEventCallbacks.push(t)}},{key:"CopyFrom",value:function(t){this._globalVariables=t._globalVariables,this.variableChangedEvent=t.variableChangedEvent,t.batchObservingVariableChanges!=this.batchObservingVariableChanges&&(t.batchObservingVariableChanges?(this._batchObservingVariableChanges=!0,this._changedVariables=t._changedVariables):(this._batchObservingVariableChanges=!1,this._changedVariables=null))}},{key:"GetVariableWithName",value:function(t,e){"undefined"==typeof e&&(e=-1);var n=this.GetRawVariableWithName(t,e),i=n;return i instanceof v&&(n=this.ValueAtVariablePointer(i)),n}},{key:"GetRawVariableWithName",value:function(t,e){var n=null;if((0==e||-1==e)&&(n=this._globalVariables[t]))return n;if(n=this._callStack.GetTemporaryVariableWithName(t,e),null==n)throw"RUNTIME ERROR: Variable '"+t+"' could not be found in context '"+e+"'. This shouldn't be possible so is a bug in the ink engine. Please try to construct a minimal story that reproduces the problem and report to inkle, thank you!";return n}},{key:"ValueAtVariablePointer",value:function(t){return this.GetVariableWithName(t.variableName,t.contextIndex)}},{key:"Assign",value:function(t,e){var n=t.variableName,i=-1,a=!1;if(a=t.isNewDeclaration?t.isGlobal:!!this._globalVariables[n],t.isNewDeclaration){var r=e;if(r instanceof v){var o=this.ResolveVariablePointer(r);e=o}}else{var s=null;do s=this.GetRawVariableWithName(n,i),s instanceof v&&(n=s.variableName,i=s.contextIndex,a=0==i);while(s instanceof v)}a?this.SetGlobal(n,e):this._callStack.SetTemporaryVariable(n,e,t.isNewDeclaration,i)}},{key:"SetGlobal",value:function(t,e){var n=null;n=this._globalVariables[t],this._globalVariables[t]=e,null!=this.variableChangedEvent&&e!==n&&(this.batchObservingVariableChanges?this._changedVariables.push(t):this.variableChangedEvent(t,e))}},{key:"ResolveVariablePointer",value:function(t){var e=t.contextIndex;-1==e&&(e=this.GetContextIndexOfVariableNamed(t.variableName));var n=this.GetRawVariableWithName(t.variableName,e),i=n;return i instanceof v?i:new v(t.variableName,e)}},{key:"GetContextIndexOfVariableNamed",value:function(t){return this._globalVariables[t]?0:this._callStack.currentElementIndex}},{key:"$",value:function(t,e){if("undefined"==typeof e){var n=this._globalVariables[t];return"undefined"!=typeof n?n.valueObject:null}var i=u.Create(e);if(null==i)throw new d(null==e?"Cannot pass null to VariableState":"Invalid value passed to VariableState: "+e.toString());this.SetGlobal(t,i)}},{key:"batchObservingVariableChanges",get:function(){return this._batchObservingVariableChanges},set:function(t){var e=this;t=!!t,this._batchObservingVariableChanges=t,t?this._changedVariables=[]:(null!=this._changedVariables&&this._changedVariables.forEach(function(t){var n=e._globalVariables[t];e.variableChangedEvent(t,n)}),this._changedVariables=null)}},{key:"jsonToken",get:function(){return w.DictionaryRuntimeObjsToJObject(this._globalVariables)},set:function(t){this._globalVariables=w.JObjectToDictionaryRuntimeObjs(t)}}]),t}(),j=function(){function t(n){e.classCallCheck(this,t),this._seed=n%2147483647,this._seed<=0&&(this._seed+=2147483646)}return e.createClass(t,[{key:"next",value:function(){return this._seed=16807*this._seed%2147483647}},{key:"nextFloat",value:function(){return(this.next()-1)/2147483646}}]),t}(),R=function(){function t(n){e.classCallCheck(this,t),this.story=n,this._outputStream=[],this._evaluationStack=[],this._callStack=new F(n.rootContentContainer),this._variablesState=new A(this._callStack),this._visitCounts={},this._turnIndices={},this._currentTurnIndex=-1,this.divertedTargetObject=null;var i=(new Date).getTime();this._storySeed=i+"-"+Math.round(9999*Math.random()),this._storySeed=new j(i).next()%100,this._currentChoices=[],this._currentErrors=null,this._currentRightGlue,this.didSafeExit=!1,this.GoToStart()}return e.createClass(t,[{key:"GoToStart",value:function(){this.callStack.currentElement.currentContainer=this.story.mainContentContainer,this.callStack.currentElement.currentContentIndex=0}},{key:"ResetErrors",value:function(){this._currentErrors=null}},{key:"ResetOutput",value:function(){this._outputStream.length=0}},{key:"PushEvaluationStack",value:function(t){this.evaluationStack.push(t)}},{key:"PopEvaluationStack",value:function(t){if(t){if(t>this.evaluationStack.length)throw"trying to pop too many objects";var e=this.evaluationStack.splice(this.evaluationStack.length-t,t);return e}var n=this.evaluationStack.pop();return n}},{key:"PeekEvaluationStack",value:function(){return this.evaluationStack[this.evaluationStack.length-1]}},{key:"PushToOutputStream",value:function(t){var e=this,n=t;if(n instanceof c){var i=this.TrySplittingHeadTailWhitespace(n);if(null!=i)return void i.forEach(function(t){e.PushToOutputStreamIndividual(t)})}this.PushToOutputStreamIndividual(t)}},{key:"TrySplittingHeadTailWhitespace",value:function(t){for(var e=t.value,n=-1,i=-1,a=0;a<e.length;++a){var r=e[a];if("\n"!=r){if(" "==r||"	"==r)continue;break}-1==n&&(n=a),i=a}for(var o=-1,s=-1,a=0;a<e.length;++a){var r=e[a];if("\n"!=r){if(" "==r||"	"==r)continue;break}-1==o&&(o=a),s=a}if(-1==n&&-1==o)return null;var u=[],l=0,h=e.length;if(-1!=n){if(n>0){var f=e.substring(0,n);u.push(f)}u.push(new c("\n")),l=i+1}if(-1!=o&&(h=s),h>l){var v=e.substring(l,h-l);u.push(new c(v))}if(-1!=o&&s>i&&(u.push(new c("\n")),o<e.length-1)){var d=e.Length-o-1,p=new c(e.substring(o+1,d));u.push(p)}return u}},{key:"PushToOutputStreamIndividual",value:function(t){var e=t,n=t,i=!0;if(e instanceof y){var a=e.isLeft&&this._currentRightGlue&&e.parent==this._currentRightGlue.parent;a&&(this._currentRightGlue=null),(e.isLeft||e.isBi)&&this.TrimNewlinesFromOutputStream(a);var r=e.isRight&&null==this._currentRightGlue;r&&(this._currentRightGlue=e),i=e.isBi||r}else n instanceof c&&(-1!=this.currentGlueIndex?n.isNewline?(this.TrimFromExistingGlue(),i=!1):n.isNonWhitespace&&(this.RemoveExistingGlue(),this._currentRightGlue=null):n.isNewline&&(!this.outputStreamEndsInNewline&&this.outputStreamContainsContent||(i=!1)));i&&this._outputStream.push(t)}},{key:"TrimNewlinesFromOutputStream",value:function(t){for(var e=-1,n=-1,i=!1,a=this._outputStream.length-1;a>=0;){var r=this._outputStream[a],o=r,s=r,u=r;if(o instanceof g||s instanceof c&&s.isNonWhitespace){if(i=!0,!t)break}else{if(t&&u instanceof y&&u.isRight){n=a;break}s instanceof c&&s.isNewline&&!i&&(e=a)}a--}if(e>=0)for(a=e;a<this._outputStream.length;){var l=this._outputStream[a];l instanceof c?this._outputStream.splice(a,1):a++}t&&n>-1&&this._outputStream.splice(n,1)}},{key:"TrimFromExistingGlue",value:function(){for(var t=this.currentGlueIndex;t<this._outputStream.length;){var e=this._outputStream[t];e instanceof c&&!e.isNonWhitespace?this._outputStream.splice(t,1):t++}}},{key:"RemoveExistingGlue",value:function(){for(var t=this._outputStream.length-1;t>=0;t--){var e=this._outputStream[t];if(e instanceof y)this._outputStream.splice(t,1);else if(e instanceof g)break}}},{key:"ForceEndFlow",value:function(){for(this.currentContentObject=null;this.callStack.canPopThread;)this.callStack.PopThread();for(;this.callStack.canPop;)callStack.Pop();this.currentChoices.length=0,this.didSafeExit=!0}},{key:"SetChosenPath",value:function(t){this.currentChoices.length=0,this.currentPath=t,this._currentTurnIndex++}},{key:"AddError",value:function(t){null==this._currentErrors&&(this._currentErrors=[]),this._currentErrors.push(t)}},{key:"VisitCountAtPathString",value:function(t){var e;return(e=this.visitCounts[t])?e:0}},{key:"Copy",value:function(){var e=new t(this.story);return e.outputStream.push.apply(e.outputStream,this._outputStream),e.currentChoices.push.apply(e.currentChoices,this.currentChoices),this.hasError&&(e.currentErrors=[],e.currentErrors.push.apply(e.currentErrors,this.currentErrors)),e._callStack=new F(this.callStack),e._currentRightGlue=this._currentRightGlue,e._variablesState=new A(e.callStack),e.variablesState.CopyFrom(this.variablesState),e.evaluationStack.push.apply(e.evaluationStack,this.evaluationStack),null!=this.divertedTargetObject&&(e.divertedTargetObject=this.divertedTargetObject),e.previousContentObject=this.previousContentObject,e._visitCounts=this._visitCounts,e._turnIndices=this._turnIndices,e._currentTurnIndex=this.currentTurnIndex,e._storySeed=this.storySeed,e.didSafeExit=this.didSafeExit,e}},{key:"toJson",value:function(t){return JSON.stringify(this.jsonToken,null,t?2:0)}},{key:"LoadJson",value:function(t){this.jsonToken=JSON.parse(t)}},{key:"currentChoices",get:function(){return this._currentChoices}},{key:"currentErrors",get:function(){return this._currentErrors}},{key:"callStack",get:function(){return this._callStack}},{key:"visitCounts",get:function(){return this._visitCounts}},{key:"turnIndices",get:function(){return this._turnIndices}},{key:"currentTurnIndex",get:function(){return this._currentTurnIndex}},{key:"variablesState",get:function(){return this._variablesState}},{key:"storySeed",get:function(){return this._storySeed}},{key:"currentContentObject",get:function(){return this.callStack.currentElement.currentObject},set:function(t){this.callStack.currentElement.currentObject=t}},{key:"hasError",get:function(){return null!=this.currentErrors&&this.currentErrors.length>0}},{key:"inExpressionEvaluation",get:function(){return this.callStack.currentElement.inExpressionEvaluation},set:function(t){this.callStack.currentElement.inExpressionEvaluation=t}},{key:"evaluationStack",get:function(){return this._evaluationStack}},{key:"outputStreamEndsInNewline",get:function(){if(this._outputStream.length>0)for(var t=this._outputStream.length-1;t>=0;t--){var e=this._outputStream[t];if(e instanceof g)break;var n=this._outputStream[t];if(n instanceof c){if(n.isNewline)return!0;if(n.isNonWhitespace)break}}return!1}},{key:"outputStreamContainsContent",get:function(){for(var t=0;t<this._outputStream.length;t++)if(this._outputStream[t]instanceof c)return!0;return!1}},{key:"currentGlueIndex",get:function(){for(var t=this._outputStream.length-1;t>=0;t--){var e=this._outputStream[t],n=e;if(n instanceof y)return t;if(e instanceof g)break}return-1}},{key:"inStringEvaluation",get:function(){for(var t=this._outputStream.length-1;t>=0;t--){var e=this._outputStream[t];if(e instanceof g&&e.commandType==g.CommandType.BeginString)return!0}return!1}},{key:"currentText",get:function(){var t="";return this._outputStream.forEach(function(e){var n=e;n instanceof c&&(t+=n.value)}),t}},{key:"outputStream",get:function(){return this._outputStream}},{key:"currentPath",get:function(){return null==this.currentContentObject?null:this.currentContentObject.path},set:function(t){null!=t?this.currentContentObject=this.story.ContentAtPath(t):this.currentContentObject=null}},{key:"currentContainer",get:function(){return this.callStack.currentElement.currentContainer}},{key:"previousContentObject",get:function(){return this.callStack.currentThread.previousContentObject},set:function(t){this.callStack.currentThread.previousContentObject=t}},{key:"jsonToken",get:function(){var e=this,n={},i=null;if(this.currentChoices.forEach(function(t){t.originalChoicePath=t.choicePoint.path.componentsString,t.originalThreadIndex=t.threadAtGeneration.threadIndex,null==e.callStack.ThreadWithIndex(t.originalThreadIndex)&&(null==i&&(i={}),i[t.originalThreadIndex.toString()]=t.threadAtGeneration.jsonToken)}),null!=this.choiceThreads&&(n.choiceThreads=this.choiceThreads),n.callstackThreads=this.callStack.GetJsonToken(),n.variablesState=this.variablesState.jsonToken,n.evalStack=w.ListToJArray(this.evaluationStack),n.outputStream=w.ListToJArray(this._outputStream),n.currentChoices=w.ListToJArray(this.currentChoices),this._currentRightGlue){var a=this._outputStream.indexOf(this._currentRightGlue);-1!=a&&(n.currRightGlue=this._outputStream.indexOf(this._currentRightGlue))}return null!=this.divertedTargetObject&&(n.currentDivertTarget=this.divertedTargetObject.path.componentsString),n.visitCounts=w.IntDictionaryToJObject(this.visitCounts),n.turnIndices=w.IntDictionaryToJObject(this.turnIndices),n.turnIdx=this.currentTurnIndex,n.storySeed=this.storySeed,n.inkSaveVersion=t.kInkSaveStateVersion,n.inkFormatVersion=this.story.inkVersionCurrent,n},set:function(e){var i=this,a=e,r=a.inkSaveVersion;if(null==r)throw new d("ink save format incorrect, can't load.");if(parseInt(r)<t.kMinCompatibleLoadVersion)throw new d("Ink save format isn't compatible with the current version (saw '"+r+"', but minimum is "+t.kMinCompatibleLoadVersion+"), so can't load.");this.callStack.SetJsonToken(a.callstackThreads,this.story),this.variablesState.jsonToken=a.variablesState,this._evaluationStack=w.JArrayToRuntimeObjList(a.evalStack),this._outputStream=w.JArrayToRuntimeObjList(a.outputStream),this._currentChoices=w.JArrayToRuntimeObjList(a.currentChoices);var o;if(o=a.currRightGlue){var s=parseInt(o);s>=0&&(this._currentRightGlue=this._outputStream[s])}var u=a.currentDivertTarget;if(null!=u){var l=new n(u.toString());this.divertedTargetObject=this.story.ContentAtPath(l)}this._visitCounts=w.JObjectToIntDictionary(a.visitCounts),this._turnIndices=w.JObjectToIntDictionary(a.turnIndices),this._currentTurnIndex=parseInt(a.turnIdx),this._storySeed=parseInt(a.storySeed);var h=a.choiceThreads;this.currentChoices.forEach(function(t){t.choicePoint=i.story.ContentAtPath(new n(t.originalChoicePath));var e=i.callStack.ThreadWithIndex(t.originalThreadIndex);if(null!=e)t.threadAtGeneration=e;else{var a=h[t.originalThreadIndex.toString()];t.threadAtGeneration=new F.Thread(a,i.story)}})}}]),t}();R.kInkSaveStateVersion=4,R.kMinCompatibleLoadVersion=4,Number.isInteger||(Number.isInteger=function(t){return"number"==typeof t&&isFinite(t)&&t>-9007199254740992&&9007199254740992>t&&Math.floor(t)===t});var B=function(t){function i(t){e.classCallCheck(this,i);var n=e.possibleConstructorReturn(this,Object.getPrototypeOf(i).call(this));if(n.inkVersionCurrent=12,n.inkVersionMinimumCompatible=12,n._variableObservers=null,n._externals={},t instanceof p)n._mainContentContainer=t;else{var a="string"==typeof t?JSON.parse(t):t,r=a.inkVersion;if(null==r)throw"ink version number not found. Are you sure it's a valid .ink.json file?";var o=parseInt(r);if(o>n.inkVersionCurrent)throw"Version of ink used to build story was newer than the current verison of the engine";if(o<n.inkVersionMinimumCompatible)throw"Version of ink used to build story is too old to be loaded by this verison of the engine";o!=n.inkVersionCurrent&&console.warn("WARNING: Version of ink used to build story doesn't match current version of engine. Non-critical, but recommend synchronising.");var s=a.root;if(null==s)throw"Root node for ink not found. Are you sure it's a valid .ink.json file?";n._mainContentContainer=w.JTokenToRuntimeObject(s),n._hasValidatedExternals=null,n.allowExternalFunctionFallbacks=!1,n.ResetState()}return n}return e.inherits(i,t),e.createClass(i,[{key:"ToJsonString",value:function(){var t=w.RuntimeObjectToJToken(this._mainContentContainer),e={};return e.inkVersion=this.inkVersionCurrent,e.root=t,JSON.stringify(e)}},{key:"ResetState",value:function(){this._state=new R(this),this._state.variablesState.ObserveVariableChange(this.VariableStateDidChangeEvent.bind(this)),this.ResetGlobals()}},{key:"ResetErrors",value:function(){this._state.ResetErrors()}},{key:"ResetCallstack",value:function(){this._state.ForceEndFlow()}},{key:"ResetGlobals",value:function(){if(this._mainContentContainer.namedContent["global decl"]){var t=this.state.currentPath;this.ChoosePathString("global decl"),this.ContinueInternal(),this.state.currentPath=t}}},{key:"Continue",value:function(){return this._hasValidatedExternals||this.ValidateExternalBindings(),this.ContinueInternal()}},{key:"ContinueInternal",value:function(){if(!this.canContinue)throw new d("Can't continue - should check canContinue before calling Continue");this._state.ResetOutput(),this._state.didSafeExit=!1,this._state.variablesState.batchObservingVariableChanges=!0;try{var t=null;do if(this.Step(),this.canContinue||this.TryFollowDefaultInvisibleChoice(),!this.state.inStringEvaluation){if(null!=t){var e=this.currentText,n=t.currentText.length;if(e!==t.currentText){if(e.length>=n&&"\n"==e[n-1]){this.RestoreStateSnapshot(t);break}t=null}}this.state.outputStreamEndsInNewline&&(t=this.canContinue?this.StateSnapshot():null)}while(this.canContinue);null!=t&&this.RestoreStateSnapshot(t),this.canContinue||(this.state.callStack.canPopThread&&this.Error("Thread available to pop, threads should always be flat by the end of evaluation?"),0!=this.currentChoices.length||this.state.didSafeExit||null!=this._temporaryEvaluationContainer||(this.state.callStack.CanPop(m.Tunnel)?this.Error("unexpectedly reached end of content. Do you need a '->->' to return from a tunnel?"):this.state.callStack.CanPop(m.Function)?this.Error("unexpectedly reached end of content. Do you need a '~ return'?"):this.state.callStack.canPop?this.Error("unexpectedly reached end of content for unknown reason. Please debug compiler!"):this.Error("ran out of content. Do you need a '-> DONE' or '-> END'?")))}catch(i){throw i}finally{this.state.didSafeExit=!1,this._state.variablesState.batchObservingVariableChanges=!1}return this.currentText}},{key:"ContinueMaximally",value:function(){for(var t="";this.canContinue;)t+=this.Continue();return t}},{key:"ContentAtPath",value:function(t){return this.mainContentContainer.ContentAtPath(t)}},{key:"StateSnapshot",value:function(){return this.state.Copy()}},{key:"RestoreStateSnapshot",value:function(t){this._state=t}},{key:"Step",value:function(){var t=!0,e=this.state.currentContentObject;if(null!=e){for(var n=e;n instanceof p&&(this.VisitContainer(n,!0),0!=n.content.length);)e=n.content[0],this.state.callStack.currentElement.currentContentIndex=0,this.state.callStack.currentElement.currentContainer=n,n=e;n=this.state.callStack.currentElement.currentContainer;var i=this.PerformLogicAndFlowControl(e);if(null!=this.state.currentContentObject){i&&(t=!1);var a=e;if(a instanceof S){var r=this.ProcessChoice(a);r&&this.state.currentChoices.push(r),e=null,t=!1}if(e instanceof p&&(t=!1),t){var o=e;if(o instanceof v&&-1==o.contextIndex){var s=this.state.callStack.ContextForVariableNamed(o.variableName);e=new v(o.variableName,s)}this.state.inExpressionEvaluation?this.state.PushEvaluationStack(e):this.state.PushToOutputStream(e)}this.NextContent();var u=e;u instanceof g&&u.commandType==g.CommandType.StartThread&&this.state.callStack.PushThread()}}}},{key:"VisitContainer",value:function(t,e){t.countingAtStartOnly&&!e||(t.visitsShouldBeCounted&&this.IncrementVisitCountForContainer(t),t.turnIndexShouldBeCounted&&this.RecordTurnIndexVisitToContainer(t))}},{key:"VisitChangedContainersDueToDivert",value:function(){var t=this.state.previousContentObject,e=this.state.currentContentObject;if(e){var n=[];if(t)for(var i=t instanceof p?t:t.parent;i instanceof p;)n.push(i),i=i.parent;for(var a=e,r=a.parent;r instanceof p&&n.indexOf(r)<0;){var o=r.content.length>0&&a==r.content[0];this.VisitContainer(r,o),a=r,r=r.parent}}}},{key:"ProcessChoice",value:function(t){var e=!0;if(t.hasCondition){var n=this.state.PopEvaluationStack();this.IsTruthy(n)||(e=!1)}var i="",a="";if(t.hasChoiceOnlyContent){var r=this.state.PopEvaluationStack();a=r.value}if(t.hasStartContent){var o=this.state.PopEvaluationStack();i=o.value}if(t.onceOnly){var s=this.VisitCountForContainer(t.choiceTarget);s>0&&(e=!1)}var u=new x(t);return u.threadAtGeneration=this.state.callStack.currentThread.Copy(),e?(u.text=i+a,u):null}},{key:"IsTruthy",value:function(t){var e=!1;if(t instanceof u){var n=t;if(n instanceof f){var i=n;return this.Error("Shouldn't use a divert target (to "+i.targetPath+") as a conditional value. Did you intend a function call 'likeThis()' or a read count check 'likeThis'? (no arrows)"),!1}return n.isTruthy}return e}},{key:"PerformLogicAndFlowControl",value:function(t){if(null==t)return!1;if(t instanceof b){var e=t;if(e.isConditional){var n=this.state.PopEvaluationStack();if(!this.IsTruthy(n))return!0}if(e.hasVariableTarget){var i=e.variableDivertName,a=this.state.variablesState.GetVariableWithName(i);if(!(a instanceof f)){var r=a,o="Tried to divert to a target from a variable, but the variable ("+i+") didn't contain a divert target, it ";o+=r instanceof l&&0==r.value?"was empty/null (the value 0).":"contained '"+a+"'.",this.Error(o)}var s=a;this.state.divertedTargetObject=this.ContentAtPath(s.targetPath)}else{if(e.isExternal)return this.CallExternalFunction(e.targetPathString,e.externalArgs),!0;this.state.divertedTargetObject=e.targetContent}return e.pushesToStack&&this.state.callStack.Push(e.stackPushType),null!=this.state.divertedTargetObject||e.isExternal||(e&&null!=e.debugMetadata.sourceName?this.Error("Divert target doesn't exist: "+e.debugMetadata.sourceName):this.Error("Divert resolution failed: "+e)),!0}if(t instanceof g){var u=t;switch(u.commandType){case g.CommandType.EvalStart:this.state.inExpressionEvaluation&&console.warn("Already in expression evaluation?"),this.state.inExpressionEvaluation=!0;break;case g.CommandType.EvalEnd:this.state.inExpressionEvaluation||console.warn("Not in expression evaluation mode"),this.state.inExpressionEvaluation=!1;break;case g.CommandType.EvalOutput:if(this.state.evaluationStack.length>0){var h=this.state.PopEvaluationStack();if(!(h instanceof _)){var v=new c(h.toString());this.state.PushToOutputStream(v)}}break;case g.CommandType.NoOp:break;case g.CommandType.Duplicate:this.state.PushEvaluationStack(this.state.PeekEvaluationStack());break;case g.CommandType.PopEvaluatedValue:this.state.PopEvaluationStack();break;case g.CommandType.PopFunction:case g.CommandType.PopTunnel:var d=u.commandType==g.CommandType.PopFunction?m.Function:m.Tunnel;if(this.state.callStack.currentElement.type==d&&this.state.callStack.canPop)this.state.callStack.Pop();else{var p=new{};p[m.Function]="function return statement (~ return)",p[m.Tunnel]="tunnel onwards statement (->->)";var y=p[this.state.callStack.currentElement.type];this.state.callStack.canPop||(y="end of flow (-> END or choice)");var C="Found "+p[d]+", when expected "+y;this.Error(C)}break;case g.CommandType.BeginString:this.state.PushToOutputStream(u),this.state.inExpressionEvaluation||console.warn("Expected to be in an expression when evaluating a string"),this.state.inExpressionEvaluation=!1;break;case g.CommandType.EndString:for(var k=[],S=0,x=this.state.outputStream.length-1;x>=0;--x){var w=this.state.outputStream[x];S++;var P=w;if(P instanceof g&&P.commandType==g.CommandType.BeginString)break;w instanceof c&&k.push(w)}this.state.outputStream.splice(this.state.outputStream.length-S,S),k=k.reverse();var I="";k.forEach(function(t){I+=t.toString()}),this.state.inExpressionEvaluation=!0,this.state.PushEvaluationStack(new c(I));break;case g.CommandType.ChoiceCount:var V=this.currentChoices.length;this.state.PushEvaluationStack(new l(V));break;case g.CommandType.TurnsSince:var s=this.state.PopEvaluationStack();if(!(s instanceof f)){var N="";s instanceof l&&(N=". Did you accidentally pass a read count ('knot_name') instead of a target ('-> knot_name')?"),this.Error("TURNS_SINCE expected a divert target (knot, stitch, label name), but saw "+s+N);break}var F=s,A=this.ContentAtPath(F.targetPath),j=this.TurnsSinceForContainer(A);this.state.PushEvaluationStack(new l(j));break;case g.CommandType.VisitIndex:var R=this.VisitCountForContainer(this.state.currentContainer)-1;this.state.PushEvaluationStack(new l(R));break;case g.CommandType.SequenceShuffleIndex:var B=this.NextSequenceShuffleIndex();this.state.PushEvaluationStack(new l(B));break;case g.CommandType.StartThread:break;case g.CommandType.Done:this.state.callStack.canPopThread?this.state.callStack.PopThread():this.state.didSafeExit=!0;break;case g.CommandType.End:this.state.ForceEndFlow();break;default:this.Error("unhandled ControlCommand: "+u)}return!0}if(t instanceof O){var D=t,G=this.state.PopEvaluationStack();return this.state.variablesState.Assign(D,G),!0}if(t instanceof T){var J=t,L=null;if(null!=J.pathForCount){var A=J.containerForCount,R=this.VisitCountForContainer(A);L=new l(R)}else L=this.state.variablesState.GetVariableWithName(J.name),null==L&&(this.Error("Uninitialised variable: "+J.name),L=new l(0));return this.state.evaluationStack.push(L),!0}if(t instanceof E){var M=t,W=this.state.PopEvaluationStack(M.numberOfParameters),q=M.Call(W);return this.state.evaluationStack.push(q),!0}return!1}},{key:"ChoosePathString",value:function(t){this.ChoosePath(new n(t))}},{key:"ChoosePath",value:function(t){this.state.SetChosenPath(t),this.VisitChangedContainersDueToDivert()}},{key:"ChooseChoiceIndex",value:function(t){t=t;var e=this.currentChoices;(0>t||t>e.length)&&console.warn("choice out of range");var n=e[t];this.state.callStack.currentThread=n.threadAtGeneration,this.ChoosePath(n.choicePoint.choiceTarget.path)}},{key:"EvaluateExpression",value:function(t){var e=this.state.callStack.elements.length;this.state.callStack.push(m.Tunnel),this._temporaryEvaluationContainer=t,this.state.GoToStart();var n=this.state.evaluationStack.length;this.Continue(),this._temporaryEvaluationContainer=null,this.state.callStack.elements.length>e&&this.state.callStack.Pop();var i=this.state.evaluationStack.length;return i>n?this.state.PopEvaluationStack():null}},{key:"CallExternalFunction",value:function(t,e){var i=this._externals[t],a=null,r="undefined"!=typeof i;if(!r){if(this.allowExternalFunctionFallbacks)return a=this.ContentAtPath(new n(t)),a instanceof p||console.warn("Trying to call EXTERNAL function '"+t+"' which has not been bound, and fallback ink function could not be found."),this.state.callStack.push(m.Function),void(this.state.divertedTargetObject=a);console.warn("Trying to call EXTERNAL function '"+t+"' which has not been bound (and ink fallbacks disabled).")}for(var o=[],s=0;e>s;++s){var l=this.state.PopEvaluationStack(),h=l.valueObject;o.push(h)}o.reverse();var c=i(o),f=null;null!=c?(f=u.Create(c),
-null==f&&console.warn("Could not create ink value from returned object of type "+c.GetType())):f=new _,this.state.PushEvaluationStack(f)}},{key:"TryCoerce",value:function(t){return t}},{key:"BindExternalFunctionGeneral",value:function(t,e){this._externals[t]&&console.warn("Function '"+t+"' has already been bound."),this._externals[t]=e}},{key:"BindExternalFunction",value:function(t,e){var n=this;e||console.warn("Can't bind a null function"),this.BindExternalFunctionGeneral(t,function(t){t.length<e.length&&console.warn("External function expected "+e.length+" arguments");for(var i=[],a=0,r=t.length;r>a;a++)i[a]=n.TryCoerce(t[a]);return e.apply(null,i)})}},{key:"UnbindExternalFunction",value:function(t){"undefined"==typeof this._externals[t]&&console.warn("Function '"+t+"' has not been bound."),delete this._externals[t]}},{key:"ValidateExternalBindings",value:function(t){var e=this;if(t)if(t instanceof p){var n=t;n.content.forEach(function(t){e.ValidateExternalBindings(t)});for(var i in n.namedContent)this.ValidateExternalBindings(n.namedContent[i])}else{var a=t,r=a;if(r instanceof b&&r.isExternal){var o=r.targetPathString;if(!this._externals[o]){var s=this.mainContentContainer.namedContent[o],u="undefined"!=typeof s;this.allowExternalFunctionFallbacks?u||this.Error("Missing function binding for external '"+o+"', and no fallback ink function found."):this.Error("Missing function binding for external '"+o+"' (ink fallbacks disabled)")}}}else this.ValidateExternalBindings(this._mainContentContainer),this._hasValidatedExternals=!0}},{key:"ObserveVariable",value:function(t,e){null==this._variableObservers&&(this._variableObservers={}),this._variableObservers[t]?this._variableObservers[t].push(e):this._variableObservers[t]=[e]}},{key:"ObserveVariables",value:function(t,e){for(var n=0,i=t.length;i>n;n++)this.ObserveVariable(t[n],e[n])}},{key:"RemoveVariableObserver",value:function(t,e){if(null!=this._variableObservers)if("undefined"!=typeof e)this._variableObservers[e]&&this._variableObservers[e].splice(this._variableObservers[e].indexOf(t),1);else for(var n in this._variableObservers)this._variableObservers[n].splice(this._variableObservers[n].indexOf(t),1)}},{key:"VariableStateDidChangeEvent",value:function(t,e){if(null!=this._variableObservers){var n=this._variableObservers[t];if("undefined"!=typeof e){if(!(e instanceof u))throw"Tried to get the value of a variable that isn't a standard type";var i=e;n.forEach(function(e){e(t,i.valueObject)})}}}},{key:"BuildStringOfHierarchy",value:function(){var t="";return this.mainContentContainer.BuildStringOfHierarchy(t,0,this.state.currentContentObject),t.toString()}},{key:"NextContent",value:function(){if(this.state.previousContentObject=this.state.currentContentObject,null==this.state.divertedTargetObject||(this.state.currentContentObject=this.state.divertedTargetObject,this.state.divertedTargetObject=null,this.VisitChangedContainersDueToDivert(),null==this.state.currentContentObject)){var t=this.IncrementContentPointer();if(!t){var e=!1;this.state.callStack.CanPop(m.Function)?(this.state.callStack.Pop(m.Function),this.state.inExpressionEvaluation&&this.state.PushEvaluationStack(new _),e=!0):this.state.callStack.canPopThread&&(this.state.callStack.PopThread(),e=!0),e&&null!=this.state.currentContentObject&&this.NextContent()}}}},{key:"IncrementContentPointer",value:function(){var t=!0,e=this.state.callStack.currentElement;for(e.currentContentIndex++;e.currentContentIndex>=e.currentContainer.content.length;){t=!1;var n=e.currentContainer.parent;if(n instanceof p==!1)break;var i=n.content.indexOf(e.currentContainer);if(-1==i)break;e.currentContainer=n,e.currentContentIndex=i+1,t=!0}return t||(e.currentContainer=null),t}},{key:"TryFollowDefaultInvisibleChoice",value:function(){var t=this._state.currentChoices,e=t.filter(function(t){return t.choicePoint.isInvisibleDefault});if(0==e.length||t.length>e.length)return!1;var n=e[0];return this.ChoosePath(n.choicePoint.choiceTarget.path),!0}},{key:"VisitCountForContainer",value:function(t){if(!t.visitsShouldBeCounted)return console.warn("Read count for target ("+t.name+" - on "+t.debugMetadata+") unknown. The story may need to be compiled with countAllVisits flag (-c)."),0;var e=0,n=t.path.toString();return e=this.state.visitCounts[n]||e}},{key:"IncrementVisitCountForContainer",value:function(t){var e=0,n=t.path.toString();this.state.visitCounts[n]&&(e=this.state.visitCounts[n]),e++,this.state.visitCounts[n]=e}},{key:"RecordTurnIndexVisitToContainer",value:function(t){var e=t.path.toString();this.state.turnIndices[e]=this.state.currentTurnIndex}},{key:"TurnsSinceForContainer",value:function(t){t.turnIndexShouldBeCounted||this.Error("TURNS_SINCE() for target ("+t.name+" - on "+t.debugMetadata+") unknown. The story may need to be compiled with countAllVisits flag (-c).");var e=t.path.toString(),n=this.state.turnIndices[e];return"undefined"!=typeof n?this.state.currentTurnIndex-n:-1}},{key:"NextSequenceShuffleIndex",value:function(){var t=this.state.PopEvaluationStack();if(!(t instanceof l))return this.Error("expected number of elements in sequence for shuffle index"),0;for(var e=this.state.currentContainer,n=t.value,i=this.state.PopEvaluationStack(),a=i.value,r=a/n,o=a%n,s=e.path.toString(),u=0,h=0,c=s.length;c>h;h++)u+=parseInt(s[h])||0;for(var f=u+r+this.state.storySeed,v=new j(parseInt(f)),d=[],h=0;n>h;++h)d.push(h);for(var h=0;o>=h;++h){var p=v.next()%d.length,y=d[p];if(d.splice(p,1),h==o)return y}throw"Should never reach here"}},{key:"Error",value:function(t,e){var n=new d(t);throw n}},{key:"AddError",value:function(t,e){var n=null;if(null!=n){var i=e?n.endLineNumber:n.startLineNumber;t="RUNTIME ERROR: '"+n.fileName+"' line "+i+": "+t}else t="RUNTIME ERROR: "+t;this.state.AddError(t),this.state.ForceEndFlow()}},{key:"currentChoices",get:function(){var t=[];return this._state.currentChoices.forEach(function(e){e.choicePoint.isInvisibleDefault||(e.index=t.length,t.push(e))}),t}},{key:"currentText",get:function(){return this.state.currentText}},{key:"currentErrors",get:function(){return this.state.currentErrors}},{key:"hasError",get:function(){return this.state.hasError}},{key:"variablesState",get:function(){return this.state.variablesState}},{key:"state",get:function(){return this._state}},{key:"mainContentContainer",get:function(){return this._temporaryEvaluationContainer?this._temporaryEvaluationContainer:this._mainContentContainer}},{key:"canContinue",get:function(){return null!=this.state.currentContentObject&&!this.state.hasError}}]),i}(r);t.Story=B}(this.inkjs=this.inkjs||{});
+﻿// InkJs include
+
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define('inkjs', ['exports'], factory) :
+  (factory((global.inkjs = global.inkjs || {})));
+}(this, function (exports) { 'use strict';
+
+  var babelHelpers = {};
+  babelHelpers.typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+  };
+
+  babelHelpers.classCallCheck = function (instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  };
+
+  babelHelpers.createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  babelHelpers.extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  babelHelpers.inherits = function (subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  };
+
+  babelHelpers.possibleConstructorReturn = function (self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  };
+
+  babelHelpers;
+
+  var Path$1 = function () {
+  	function Path() /*polymorphic constructor*/{
+  		babelHelpers.classCallCheck(this, Path);
+
+  		this._isRelative;
+  		this._components = [];
+
+  		if (typeof arguments[0] == 'string') {
+  			this.componentsString = arguments[0];
+  		} else if (arguments[0] instanceof Component && arguments[1] instanceof Path) {
+  			this._components.push(arguments[0]);
+  			this._components = this._components.concat(arguments[1]);
+  		} else if (arguments[0] instanceof Array) {
+  			this._components = this._components.concat(arguments[0]);
+  			this._isRelative = !!arguments[1];
+  		}
+  	}
+
+  	babelHelpers.createClass(Path, [{
+  		key: "PathByAppendingPath",
+  		value: function PathByAppendingPath(pathToAppend) {
+  			var p = new Path();
+
+  			var upwardMoves = 0;
+  			for (var i = 0; i < pathToAppend.components.length; ++i) {
+  				if (pathToAppend.components[i].isParent) {
+  					upwardMoves++;
+  				} else {
+  					break;
+  				}
+  			}
+
+  			for (var i = 0; i < this.components.length - upwardMoves; ++i) {
+  				p.components.push(this.components[i]);
+  			}
+
+  			for (var i = upwardMoves; i < pathToAppend.components.length; ++i) {
+  				p.components.push(pathToAppend.components[i]);
+  			}
+
+  			return p;
+  		}
+  	}, {
+  		key: "toString",
+  		value: function toString() {
+  			return this.componentsString;
+  		}
+  	}, {
+  		key: "Equals",
+  		value: function Equals(otherPath) {
+  			if (otherPath == null) return false;
+
+  			if (otherPath.components.length != this.components.length) return false;
+
+  			if (otherPath.isRelative != this.isRelative) return false;
+
+  			//the original code uses SequenceEqual here, so we need to iterate over the components manually.
+  			for (var i = 0, l = otherPath.components.length; i < l; i++) {
+  				//it's not quite clear whether this test should use Equals or a simple == operator, see https://github.com/y-lohse/inkjs/issues/22
+  				if (!otherPath.components[i].Equals(this.components[i])) return false;
+  			}
+
+  			return true;
+  		}
+  	}, {
+  		key: "isRelative",
+  		get: function get() {
+  			return this._isRelative;
+  		}
+  	}, {
+  		key: "components",
+  		get: function get() {
+  			return this._components;
+  		}
+  	}, {
+  		key: "head",
+  		get: function get() {
+  			if (this.components.length > 0) {
+  				return this.components[0];
+  			} else {
+  				return null;
+  			}
+  		}
+  	}, {
+  		key: "tail",
+  		get: function get() {
+  			if (this.components.length >= 2) {
+  				var tailComps = this.components.slice(1, this.components.length); //careful, the original code uses length-1 here. This is because the second argument of List.GetRange is a number of elements to extract, wherease Array.slice uses an index
+  				return new Path(tailComps);
+  			} else {
+  				return Path.self;
+  			}
+  		}
+  	}, {
+  		key: "length",
+  		get: function get() {
+  			return this.components.length;
+  		}
+  	}, {
+  		key: "lastComponent",
+  		get: function get() {
+  			if (this.components.length > 0) {
+  				return this.components[this.components.length - 1];
+  			} else {
+  				return null;
+  			}
+  		}
+  	}, {
+  		key: "containsNamedComponent",
+  		get: function get() {
+  			for (var i = 0, l = this.components.length; i < l; i++) {
+  				if (!this.components[i].isIndex) {
+  					return true;
+  				}
+  			}
+  			return false;
+  		}
+  	}, {
+  		key: "componentsString",
+  		get: function get() {
+  			var compsStr = this.components.join(".");
+  			if (this.isRelative) return "." + compsStr;else return compsStr;
+  		},
+  		set: function set(value) {
+  			var _this = this;
+
+  			this.components.length = 0;
+
+  			var componentsStr = value;
+
+  			if (componentsStr == null || componentsStr == '') return;
+
+  			// When components start with ".", it indicates a relative path, e.g.
+  			//   .^.^.hello.5
+  			// is equivalent to file system style path:
+  			//  ../../hello/5
+  			if (componentsStr[0] == '.') {
+  				this._isRelative = true;
+  				componentsStr = componentsStr.substring(1);
+  			}
+
+  			var componentStrings = componentsStr.split('.');
+  			componentStrings.forEach(function (str) {
+  				if (!isNaN(parseInt(str))) {
+  					_this.components.push(new Component(parseInt(str)));
+  				} else {
+  					_this.components.push(new Component(str));
+  				}
+  			});
+  		}
+  	}], [{
+  		key: "self",
+  		get: function get() {
+  			var path = new Path();
+  			path._isRelative = true;
+  			return path;
+  		}
+  	}]);
+  	return Path;
+  }();
+
+  var Component = function () {
+  	function Component(indexOrName) {
+  		babelHelpers.classCallCheck(this, Component);
+
+  		if (typeof indexOrName == 'string') {
+  			this._index = -1;
+  			this._name = indexOrName;
+  		} else {
+  			this._index = parseInt(indexOrName);
+  			this._name = null;
+  		}
+  	}
+
+  	babelHelpers.createClass(Component, [{
+  		key: "toString",
+  		value: function toString() {
+  			if (this.isIndex) {
+  				return this.index.toString();
+  			} else {
+  				return this.name;
+  			}
+  		}
+  	}, {
+  		key: "Equals",
+  		value: function Equals(otherComp) {
+  			if (otherComp != null && otherComp.isIndex == this.isIndex) {
+  				if (this.isIndex) {
+  					return this.index == otherComp.index;
+  				} else {
+  					return this.name == otherComp.name;
+  				}
+  			}
+
+  			return false;
+  		}
+  	}, {
+  		key: "index",
+  		get: function get() {
+  			return this._index;
+  		}
+  	}, {
+  		key: "name",
+  		get: function get() {
+  			return this._name;
+  		}
+  	}, {
+  		key: "isIndex",
+  		get: function get() {
+  			return this.index >= 0;
+  		}
+  	}, {
+  		key: "isParent",
+  		get: function get() {
+  			return this.name == Path$1.parentId;
+  		}
+  	}], [{
+  		key: "ToParent",
+  		value: function ToParent() {
+  			return new Component(Path$1.parentId);
+  		}
+  	}]);
+  	return Component;
+  }();
+
+  Path$1.parentId = "^";
+  Path$1.Component = Component;
+
+  var InkObject = function () {
+  	function Object() {
+  		babelHelpers.classCallCheck(this, Object);
+
+  		this.parent = null;
+  		this._path = null;
+  	}
+
+  	babelHelpers.createClass(Object, [{
+  		key: 'ResolvePath',
+  		value: function ResolvePath(path) {
+  			if (path.isRelative) {
+  				var nearestContainer = this;
+
+  				if (nearestContainer instanceof Container === false) {
+  					if (this.parent == null) console.warn("Can't resolve relative path because we don't have a parent");
+
+  					nearestContainer = this.parent;
+  					if (nearestContainer.constructor.name !== 'Container') console.warn("Expected parent to be a container");
+
+  					//Debug.Assert (path.components [0].isParent);
+  					path = path.tail;
+  				}
+
+  				return nearestContainer.ContentAtPath(path);
+  			} else {
+  				return this.rootContentContainer.ContentAtPath(path);
+  			}
+  		}
+  	}, {
+  		key: 'ConvertPathToRelative',
+  		value: function ConvertPathToRelative(globalPath) {
+  			var ownPath = this.path;
+
+  			var minPathLength = Math.min(globalPath.components.length, ownPath.components.length);
+  			var lastSharedPathCompIndex = -1;
+
+  			for (var i = 0; i < minPathLength; ++i) {
+  				var ownComp = ownPath.components[i];
+  				var otherComp = globalPath.components[i];
+
+  				if (ownComp.Equals(otherComp)) {
+  					lastSharedPathCompIndex = i;
+  				} else {
+  					break;
+  				}
+  			}
+
+  			// No shared path components, so just use global path
+  			if (lastSharedPathCompIndex == -1) return globalPath;
+
+  			var numUpwardsMoves = ownPath.components.length - 1 - lastSharedPathCompIndex;
+
+  			var newPathComps = [];
+
+  			for (var up = 0; up < numUpwardsMoves; ++up) {
+  				newPathComps.push(Path$1.Component.ToParent());
+  			}for (var down = lastSharedPathCompIndex + 1; down < globalPath.components.length; ++down) {
+  				newPathComps.push(globalPath.components[down]);
+  			}var relativePath = new Path$1(newPathComps, true);
+  			return relativePath;
+  		}
+  	}, {
+  		key: 'CompactPathString',
+  		value: function CompactPathString(otherPath) {
+  			var globalPathStr = null;
+  			var relativePathStr = null;
+
+  			if (otherPath.isRelative) {
+  				relativePathStr = otherPath.componentsString;
+  				globalPathStr = this.path.PathByAppendingPath(otherPath).componentsString;
+  			} else {
+  				var relativePath = this.ConvertPathToRelative(otherPath);
+  				relativePathStr = relativePath.componentsString;
+  				globalPathStr = otherPath.componentsString;
+  			}
+
+  			if (relativePathStr.Length < globalPathStr.Length) return relativePathStr;else return globalPathStr;
+  		}
+  	}, {
+  		key: 'Copy',
+  		value: function Copy() {
+  			throw "Not Implemented";
+  		}
+  		//SetCHild works slightly diferently in the js implementation. SInce we can't pass an objets property by reference, we instead pass the object and the property string.
+
+  	}, {
+  		key: 'SetChild',
+  		value: function SetChild(obj, prop, value) {
+  			if (obj[prop]) obj[prop] = null;
+
+  			obj[prop] = value;
+
+  			if (obj[prop]) obj[prop].parent = this;
+  		}
+  	}, {
+  		key: 'path',
+  		get: function get() {
+  			if (this._path == null) {
+
+  				if (this.parent == null) {
+  					this._path = new Path$1();
+  				} else {
+  					// Maintain a Stack so that the order of the components
+  					// is reversed when they're added to the Path.
+  					// We're iterating up the hierarchy from the leaves/children to the root.
+  					var comps = [];
+
+  					var child = this;
+  					//				Container container = child.parent as Container;
+  					var container = child.parent;
+
+  					while (container instanceof Container) {
+
+  						var namedChild = child;
+  						if (namedChild.name && namedChild.hasValidName) {
+  							comps.unshift(new Path$1.Component(namedChild.name));
+  						} else {
+  							comps.unshift(new Path$1.Component(container.content.indexOf(child)));
+  						}
+
+  						child = container;
+  						//					container = container.parent as Container;
+  						container = container.parent;
+  					}
+
+  					this._path = new Path$1(comps);
+  				}
+  			}
+
+  			return this._path;
+  		}
+  	}, {
+  		key: 'rootContentContainer',
+  		get: function get() {
+  			var ancestor = this;
+  			while (ancestor.parent) {
+  				ancestor = ancestor.parent;
+  			}
+  			return ancestor;
+  		}
+  	}]);
+  	return Object;
+  }();
+
+  var ValueType = {
+  	// Used in coersion
+  	Int: 0,
+  	Float: 1,
+  	String: 2,
+
+  	// Not used for coersion described above
+  	DivertTarget: 3,
+  	VariablePointer: 4
+  };
+
+  var AbstractValue = function (_InkObject) {
+  	babelHelpers.inherits(AbstractValue, _InkObject);
+
+  	function AbstractValue(val) {
+  		babelHelpers.classCallCheck(this, AbstractValue);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(AbstractValue).call(this));
+
+  		_this._valueType;
+  		_this._isTruthy;
+  		_this._valueObject;
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(AbstractValue, [{
+  		key: 'Cast',
+  		value: function Cast(newType) {
+  			throw "Trying to casting an AbstractValue";
+  		}
+  	}, {
+  		key: 'Copy',
+  		value: function Copy(val) {
+  			return this.Create(val);
+  		}
+  	}, {
+  		key: 'valueType',
+  		get: function get() {
+  			return this._valueType;
+  		}
+  	}, {
+  		key: 'isTruthy',
+  		get: function get() {
+  			return this._isTruthy;
+  		}
+  	}, {
+  		key: 'valueObject',
+  		get: function get() {
+  			return this._valueObject;
+  		}
+  	}], [{
+  		key: 'Create',
+  		value: function Create(val) {
+  			// Implicitly convert bools into ints
+  			if (typeof val === 'boolean') {
+  				var b = !!val;
+  				val = b ? 1 : 0;
+  			}
+
+  			if (Number.isInteger(Number(val))) {
+  				return new IntValue(val);
+  			} else if (!isNaN(val)) {
+  				return new FloatValue(val);
+  			} else if (typeof val === 'string') {
+  				return new StringValue(val);
+  			} else if (val instanceof Path$1) {
+  				return new DivertTargetValue(val);
+  			}
+
+  			return null;
+  		}
+  	}]);
+  	return AbstractValue;
+  }(InkObject);
+
+  var Value = function (_AbstractValue) {
+  	babelHelpers.inherits(Value, _AbstractValue);
+
+  	function Value(val) {
+  		babelHelpers.classCallCheck(this, Value);
+
+  		var _this2 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Value).call(this));
+
+  		_this2.value = val;
+  		return _this2;
+  	}
+
+  	babelHelpers.createClass(Value, [{
+  		key: 'toString',
+  		value: function toString() {
+  			return this.value.toString();
+  		}
+  	}, {
+  		key: 'value',
+  		get: function get() {
+  			return this._value;
+  		},
+  		set: function set(value) {
+  			this._value = value;
+  		}
+  	}, {
+  		key: 'valueObject',
+  		get: function get() {
+  			return this.value;
+  		}
+  	}]);
+  	return Value;
+  }(AbstractValue);
+
+  var IntValue = function (_Value) {
+  	babelHelpers.inherits(IntValue, _Value);
+
+  	function IntValue(val) {
+  		babelHelpers.classCallCheck(this, IntValue);
+
+  		var _this3 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(IntValue).call(this, val || 0));
+
+  		_this3._valueType = ValueType.Int;
+  		return _this3;
+  	}
+
+  	babelHelpers.createClass(IntValue, [{
+  		key: 'Cast',
+  		value: function Cast(newType) {
+  			if (newType == this.valueType) {
+  				return this;
+  			}
+
+  			if (newType == ValueType.Float) {
+  				return new FloatValue(parseFloat(this.value));
+  			}
+
+  			if (newType == ValueType.String) {
+  				return new StringValue("" + this.value);
+  			}
+
+  			throw "Unexpected type cast of Value to new ValueType";
+  		}
+  	}, {
+  		key: 'isTruthy',
+  		get: function get() {
+  			return this.value != 0;
+  		}
+  	}, {
+  		key: 'valueType',
+  		get: function get() {
+  			return ValueType.Int;
+  		}
+  	}]);
+  	return IntValue;
+  }(Value);
+
+  var FloatValue = function (_Value2) {
+  	babelHelpers.inherits(FloatValue, _Value2);
+
+  	function FloatValue(val) {
+  		babelHelpers.classCallCheck(this, FloatValue);
+
+  		var _this4 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(FloatValue).call(this, val || 0.0));
+
+  		_this4._valueType = ValueType.Float;
+  		return _this4;
+  	}
+
+  	babelHelpers.createClass(FloatValue, [{
+  		key: 'Cast',
+  		value: function Cast(newType) {
+  			if (newType == this.valueType) {
+  				return this;
+  			}
+
+  			if (newType == ValueType.Int) {
+  				return new IntValue(parseInt(this.value));
+  			}
+
+  			if (newType == ValueType.String) {
+  				return new StringValue("" + this.value);
+  			}
+
+  			throw "Unexpected type cast of Value to new ValueType";
+  		}
+  	}, {
+  		key: 'isTruthy',
+  		get: function get() {
+  			return this._value != 0.0;
+  		}
+  	}, {
+  		key: 'valueType',
+  		get: function get() {
+  			return ValueType.Float;
+  		}
+  	}]);
+  	return FloatValue;
+  }(Value);
+
+  var StringValue = function (_Value3) {
+  	babelHelpers.inherits(StringValue, _Value3);
+
+  	function StringValue(val) {
+  		babelHelpers.classCallCheck(this, StringValue);
+
+  		var _this5 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(StringValue).call(this, val || ''));
+
+  		_this5._valueType = ValueType.String;
+
+  		_this5._isNewline = _this5.value == "\n";
+  		_this5._isInlineWhitespace = true;
+
+  		_this5.value.split().every(function (c) {
+  			if (c != ' ' && c != '\t') {
+  				_this5._isInlineWhitespace = false;
+  				return false;
+  			}
+
+  			return true;
+  		});
+  		return _this5;
+  	}
+
+  	babelHelpers.createClass(StringValue, [{
+  		key: 'Cast',
+  		value: function Cast(newType) {
+  			if (newType == this.valueType) {
+  				return this;
+  			}
+
+  			if (newType == ValueType.Int) {
+
+  				var parsedInt;
+  				if (parsedInt = parseInt(value)) {
+  					return new IntValue(parsedInt);
+  				} else {
+  					return null;
+  				}
+  			}
+
+  			if (newType == ValueType.Float) {
+  				var parsedFloat;
+  				if (parsedFloat = parsedFloat(value)) {
+  					return new FloatValue(parsedFloat);
+  				} else {
+  					return null;
+  				}
+  			}
+
+  			throw "Unexpected type cast of Value to new ValueType";
+  		}
+  	}, {
+  		key: 'valueType',
+  		get: function get() {
+  			return ValueType.String;
+  		}
+  	}, {
+  		key: 'isTruthy',
+  		get: function get() {
+  			return this.value.length > 0;
+  		}
+  	}, {
+  		key: 'isNewline',
+  		get: function get() {
+  			return this._isNewline;
+  		}
+  	}, {
+  		key: 'isInlineWhitespace',
+  		get: function get() {
+  			return this._isInlineWhitespace;
+  		}
+  	}, {
+  		key: 'isNonWhitespace',
+  		get: function get() {
+  			return !this.isNewline && !this.isInlineWhitespace;
+  		}
+  	}]);
+  	return StringValue;
+  }(Value);
+
+  var DivertTargetValue = function (_Value4) {
+  	babelHelpers.inherits(DivertTargetValue, _Value4);
+
+  	function DivertTargetValue(targetPath) {
+  		babelHelpers.classCallCheck(this, DivertTargetValue);
+
+  		var _this6 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(DivertTargetValue).call(this, targetPath));
+
+  		_this6._valueType = ValueType.DivertTarget;
+  		return _this6;
+  	}
+
+  	babelHelpers.createClass(DivertTargetValue, [{
+  		key: 'Cast',
+  		value: function Cast(newType) {
+  			if (newType == this.valueType) return this;
+
+  			throw "Unexpected type cast of Value to new ValueType";
+  		}
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			return "DivertTargetValue(" + this.targetPath + ")";
+  		}
+  	}, {
+  		key: 'targetPath',
+  		get: function get() {
+  			return this.value;
+  		},
+  		set: function set(value) {
+  			this.value = value;
+  		}
+  	}, {
+  		key: 'isTruthy',
+  		get: function get() {
+  			throw "Shouldn't be checking the truthiness of a divert target";
+  		}
+  	}]);
+  	return DivertTargetValue;
+  }(Value);
+
+  var VariablePointerValue = function (_Value5) {
+  	babelHelpers.inherits(VariablePointerValue, _Value5);
+
+  	function VariablePointerValue(variableName, contextIndex) {
+  		babelHelpers.classCallCheck(this, VariablePointerValue);
+
+  		var _this7 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(VariablePointerValue).call(this, variableName));
+
+  		_this7._valueType = ValueType.VariablePointer;
+  		_this7.contextIndex = typeof contextIndex !== 'undefined' ? contextIndex : -1;
+  		return _this7;
+  	}
+
+  	babelHelpers.createClass(VariablePointerValue, [{
+  		key: 'Cast',
+  		value: function Cast(newType) {
+  			if (newType == this.valueType) return this;
+
+  			throw "Unexpected type cast of Value to new ValueType";
+  		}
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			return "VariablePointerValue(" + this.variableName + ")";
+  		}
+  	}, {
+  		key: 'Copy',
+  		value: function Copy() {
+  			return new VariablePointerValue(this.variableName, this.contextIndex);
+  		}
+  	}, {
+  		key: 'variableName',
+  		get: function get() {
+  			return this.value;
+  		},
+  		set: function set(value) {
+  			this.value = value;
+  		}
+  	}, {
+  		key: 'isTruthy',
+  		get: function get() {
+  			throw "Shouldn't be checking the truthiness of a variable pointer";
+  		}
+  	}]);
+  	return VariablePointerValue;
+  }(Value);
+
+  var StoryException = function (_Error) {
+  	babelHelpers.inherits(StoryException, _Error);
+
+  	function StoryException(message) {
+  		babelHelpers.classCallCheck(this, StoryException);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(StoryException).call(this, message));
+
+  		_this.message = message;
+  		_this.name = 'StoryException';
+  		return _this;
+  	}
+
+  	return StoryException;
+  }(Error);
+
+  var StringBuilder = function () {
+  	function StringBuilder(str) {
+  		babelHelpers.classCallCheck(this, StringBuilder);
+
+  		str = typeof str !== 'undefined' ? str.toString() : '';
+  		this._string = str;
+  	}
+
+  	babelHelpers.createClass(StringBuilder, [{
+  		key: 'Append',
+  		value: function Append(str) {
+  			this._string += str;
+  		}
+  	}, {
+  		key: 'AppendLine',
+  		value: function AppendLine(str) {
+  			if (typeof str !== 'undefined') this.Append(str);
+  			this._string += "\n";
+  		}
+  	}, {
+  		key: 'AppendFormat',
+  		value: function AppendFormat(format) {
+  			//taken from http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
+  			var args = Array.prototype.slice.call(arguments, 1);
+  			return format.replace(/{(\d+)}/g, function (match, number) {
+  				return typeof args[number] != 'undefined' ? args[number] : match;
+  			});
+  		}
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			return this._string;
+  		}
+  	}, {
+  		key: 'Length',
+  		get: function get() {
+  			return this._string.length;
+  		}
+  	}]);
+  	return StringBuilder;
+  }();
+
+  var Container = function (_InkObject) {
+  	babelHelpers.inherits(Container, _InkObject);
+  	//also implements INamedContent. Not sure how to do it cleanly in JS.
+
+  	function Container() {
+  		babelHelpers.classCallCheck(this, Container);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Container).call(this));
+
+  		_this.name = '';
+
+  		_this._content = [];
+  		_this.namedContent = {};
+
+  		_this.visitsShouldBeCounted = false;
+  		_this.turnIndexShouldBeCounted = false;
+  		_this.countingAtStartOnly = false;
+
+  		_this.CountFlags = {
+  			Visits: 1,
+  			Turns: 2,
+  			CountStartOnly: 4
+  		};
+
+  		_this._pathToFirstLeafContent = null;
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(Container, [{
+  		key: 'AddContent',
+  		value: function AddContent(contentObj) {
+  			var _this2 = this;
+
+  			if (contentObj instanceof Array) {
+  				contentObj.forEach(function (c) {
+  					_this2.AddContent(c);
+  				});
+  			} else {
+  				this._content.push(contentObj);
+
+  				if (contentObj.parent) {
+  					throw "content is already in " + contentObj.parent;
+  				}
+
+  				contentObj.parent = this;
+
+  				this.TryAddNamedContent(contentObj);
+  			}
+  		}
+  	}, {
+  		key: 'TryAddNamedContent',
+  		value: function TryAddNamedContent(contentObj) {
+  			//so here, in the reference implementation, contentObj is casted to an INamedContent
+  			//but here we use js-style duck typing: if it implements the same props as the interface, we treat it as valid
+  			if (contentObj.hasValidName && contentObj.name) {
+  				this.AddToNamedContentOnly(contentObj);
+  			}
+  		}
+  	}, {
+  		key: 'AddToNamedContentOnly',
+  		value: function AddToNamedContentOnly(namedContentObj) {
+  			if (namedContentObj instanceof InkObject === false) console.warn("Can only add Runtime.Objects to a Runtime.Container");
+  			namedContentObj.parent = this;
+
+  			this.namedContent[namedContentObj.name] = namedContentObj;
+  		}
+  	}, {
+  		key: 'ContentAtPath',
+  		value: function ContentAtPath(path, partialPathLength) {
+  			partialPathLength = typeof partialPathLength !== 'undefined' ? partialPathLength : path.components.length;
+
+  			var currentContainer = this;
+  			var currentObj = this;
+
+  			for (var i = 0; i < partialPathLength; ++i) {
+  				var comp = path.components[i];
+  				if (!(currentContainer instanceof Container)) throw "Path continued, but previous object wasn't a container: " + currentObj;
+
+  				currentObj = currentContainer.ContentWithPathComponent(comp);
+  				//			currentContainer = currentObj as Container;
+  				currentContainer = currentObj;
+  			}
+
+  			return currentObj;
+  		}
+  	}, {
+  		key: 'InsertContent',
+  		value: function InsertContent(contentObj, index) {
+  			this.content[i] = contentObj;
+
+  			if (contentObj.parent) {
+  				throw "content is already in " + contentObj.parent;
+  			}
+
+  			contentObj.parent = this;
+
+  			this.TryAddNamedContent(contentObj);
+  		}
+  	}, {
+  		key: 'AddContentsOfContainer',
+  		value: function AddContentsOfContainer(otherContainer) {
+  			var _this3 = this;
+
+  			this.content = this.content.concat(otherContainer.content);
+
+  			otherContainer.content.forEach(function (obj) {
+  				obj.parent = _this3;
+  				_this3.TryAddNamedContent(obj);
+  			});
+  		}
+  	}, {
+  		key: 'ContentWithPathComponent',
+  		value: function ContentWithPathComponent(component) {
+  			if (component.isIndex) {
+
+  				if (component.index >= 0 && component.index < this.content.length) {
+  					return this.content[component.index];
+  				}
+
+  				// When path is out of range, quietly return nil
+  				// (useful as we step/increment forwards through content)
+  				else {
+  						return null;
+  					}
+  			} else if (component.isParent) {
+  				return this.parent;
+  			} else {
+  				var foundContent = null;
+  				if (foundContent = this.namedContent[component.name]) {
+  					return foundContent;
+  				} else {
+  					throw new StoryException("Content '" + component.name + "' not found at path: '" + this.path + "'");
+  				}
+  			}
+  		}
+  	}, {
+  		key: 'BuildStringOfHierarchy',
+  		value: function BuildStringOfHierarchy(sb, indentation, pointedObj) {
+  			if (arguments.length == 0) {
+  				var sb = new StringBuilder();
+  				this.BuildStringOfHierarchy(sb, 0, null);
+  				return sb.toString();
+  			}
+
+  			function appendIndentation() {
+  				var spacesPerIndent = 4;
+  				for (var i = 0; i < spacesPerIndent * indentation; ++i) {
+  					sb.Append(" ");
+  				}
+  			}
+
+  			appendIndentation();
+  			sb.Append("[");
+
+  			if (this.hasValidName) {
+  				sb.AppendFormat(" ({0})", this.name);
+  			}
+
+  			if (this == pointedObj) {
+  				sb.Append("  <---");
+  			}
+
+  			sb.AppendLine();
+
+  			indentation++;
+
+  			for (var i = 0; i < this.content.length; ++i) {
+
+  				var obj = this.content[i];
+
+  				if (obj instanceof Container) {
+
+  					var container = obj;
+
+  					container.BuildStringOfHierarchy(sb, indentation, pointedObj);
+  				} else {
+  					appendIndentation();
+  					if (obj instanceof StringValue) {
+  						sb.Append("\"");
+  						sb.Append(obj.toString().replace("\n", "\\n"));
+  						sb.Append("\"");
+  					} else {
+  						sb.Append(obj.toString());
+  					}
+  				}
+
+  				if (i != this.content.length - 1) {
+  					sb.Append(",");
+  				}
+
+  				if (!(obj instanceof Container) && obj == pointedObj) {
+  					sb.Append("  <---");
+  				}
+
+  				sb.AppendLine();
+  			}
+
+  			var onlyNamed = {};
+
+  			for (var key in this.namedContent) {
+  				if (this.content.indexOf(this.namedContent[key]) >= 0) {
+  					continue;
+  				} else {
+  					onlyNamed[key] = this.namedContent[key];
+  				}
+  			}
+
+  			if (Object.keys(onlyNamed).length > 0) {
+  				appendIndentation();
+  				sb.AppendLine("-- named: --");
+
+  				for (var key in onlyNamed) {
+  					if (!(onlyNamed[key] instanceof Container)) console.warn("Can only print out named Containers");
+
+  					var container = onlyNamed[key];
+  					container.BuildStringOfHierarchy(sb, indentation, pointedObj);
+  					sb.Append("\n");
+  				}
+  			}
+
+  			indentation--;
+
+  			appendIndentation();
+  			sb.Append("]");
+  		}
+  	}, {
+  		key: 'hasValidName',
+  		get: function get() {
+  			return this.name != null && this.name.length > 0;
+  		}
+  	}, {
+  		key: 'content',
+  		get: function get() {
+  			return this._content;
+  		},
+  		set: function set(value) {
+  			this.AddContent(value);
+  		}
+  	}, {
+  		key: 'namedOnlyContent',
+  		get: function get() {
+  			var namedOnlyContent = {};
+
+  			for (var key in this.namedContent) {
+  				namedOnlyContent[key] = this.namedContent[key];
+  			}
+
+  			this.content.forEach(function (c) {
+  				//			var named = c as INamedContent;
+  				var named = c;
+  				if (named.name && named.hasValidName) {
+  					delete namedOnlyContent[named.name];
+  				}
+  			});
+
+  			if (namedOnlyContent.length == 0) namedOnlyContent = null;
+
+  			return namedOnlyContent;
+  		},
+  		set: function set(value) {
+  			var existingNamedOnly = this.namedOnlyContent;
+  			if (existingNamedOnly != null) {
+  				for (var key in existingNamedOnly) {
+  					delete this.namedContent[key];
+  				}
+  			}
+
+  			if (value == null) return;
+
+  			for (var key in value) {
+  				//			var named = kvPair.Value as INamedContent;
+  				var named = value[key];
+  				if (named.name && typeof named.hasValidName !== 'undefined') this.AddToNamedContentOnly(named);
+  			}
+  		}
+  	}, {
+  		key: 'countFlags',
+  		get: function get() {
+  			var flags = 0;
+  			if (this.visitsShouldBeCounted) flags |= this.CountFlags.Visits;
+  			if (this.turnIndexShouldBeCounted) flags |= this.CountFlags.Turns;
+  			if (this.countingAtStartOnly) flags |= this.CountFlags.CountStartOnly;
+
+  			// If we're only storing CountStartOnly, it serves no purpose,
+  			// since it's dependent on the other two to be used at all.
+  			// (e.g. for setting the fact that *if* a gather or choice's
+  			// content is counted, then is should only be counter at the start)
+  			// So this is just an optimisation for storage.
+  			if (flags == this.CountFlags.CountStartOnly) {
+  				flags = 0;
+  			}
+
+  			return flags;
+  		},
+  		set: function set(value) {
+  			var flag = value;
+  			if ((flag & this.CountFlags.Visits) > 0) this.visitsShouldBeCounted = true;
+  			if ((flag & this.CountFlags.Turns) > 0) this.turnIndexShouldBeCounted = true;
+  			if ((flag & this.CountFlags.CountStartOnly) > 0) this.countingAtStartOnly = true;
+  		}
+  	}, {
+  		key: 'pathToFirstLeafContent',
+  		get: function get() {
+  			if (this._pathToFirstLeafContent == null) this._pathToFirstLeafContent = this.path.PathByAppendingPath(this.internalPathToFirstLeafContent);
+
+  			return this._pathToFirstLeafContent;
+  		}
+  	}, {
+  		key: 'internalPathToFirstLeafContent',
+  		get: function get() {
+  			var path = new Path();
+  			var container = this;
+  			while (container instanceof Container) {
+  				if (container.content.length > 0) {
+  					path.components.push(new Path.Component(0));
+  					//				container = container.content [0] as Container;
+  					container = container.content[0];
+  				}
+  			}
+  			return path;
+  		}
+  	}]);
+  	return Container;
+  }(InkObject);
+
+  var Glue = function (_InkObject) {
+  	babelHelpers.inherits(Glue, _InkObject);
+
+  	function Glue(type) {
+  		babelHelpers.classCallCheck(this, Glue);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Glue).call(this));
+
+  		_this.glueType = type;
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(Glue, [{
+  		key: "toString",
+  		value: function toString() {
+  			switch (this.glueType) {
+  				case GlueType.Bidirectional:
+  					return "BidirGlue";
+  				case GlueType.Left:
+  					return "LeftGlue";
+  				case GlueType.Right:
+  					return "RightGlue";
+  			}
+
+  			return "UnexpectedGlueType";
+  		}
+  	}, {
+  		key: "isLeft",
+  		get: function get() {
+  			return this.glueType == GlueType.Left;
+  		}
+  	}, {
+  		key: "isBi",
+  		get: function get() {
+  			return this.glueType == GlueType.Bidirectional;
+  		}
+  	}, {
+  		key: "isRight",
+  		get: function get() {
+  			return this.glueType == GlueType.Right;
+  		}
+  	}]);
+  	return Glue;
+  }(InkObject);
+
+  var GlueType = {
+  	Bidirectional: 0,
+  	Left: 1,
+  	Right: 2
+  };
+
+  var ControlCommand = function (_InkObject) {
+  	babelHelpers.inherits(ControlCommand, _InkObject);
+
+  	function ControlCommand(commandType) {
+  		babelHelpers.classCallCheck(this, ControlCommand);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ControlCommand).call(this));
+
+  		_this._commandType = typeof commandType != 'undefined' ? commandType : CommandType.NotSet;
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(ControlCommand, [{
+  		key: 'copy',
+  		value: function copy() {
+  			return new ControlCommand(this.commandType);
+  		}
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			return this.commandType.toString();
+  		}
+  	}, {
+  		key: 'commandType',
+  		get: function get() {
+  			return this._commandType;
+  		}
+  	}], [{
+  		key: 'EvalStart',
+  		value: function EvalStart() {
+  			return new ControlCommand(CommandType.EvalStart);
+  		}
+  	}, {
+  		key: 'EvalOutput',
+  		value: function EvalOutput() {
+  			return new ControlCommand(CommandType.EvalOutput);
+  		}
+  	}, {
+  		key: 'EvalEnd',
+  		value: function EvalEnd() {
+  			return new ControlCommand(CommandType.EvalEnd);
+  		}
+  	}, {
+  		key: 'Duplicate',
+  		value: function Duplicate() {
+  			return new ControlCommand(CommandType.Duplicate);
+  		}
+  	}, {
+  		key: 'PopEvaluatedValue',
+  		value: function PopEvaluatedValue() {
+  			return new ControlCommand(CommandType.PopEvaluatedValue);
+  		}
+  	}, {
+  		key: 'PopFunction',
+  		value: function PopFunction() {
+  			return new ControlCommand(CommandType.PopFunction);
+  		}
+  	}, {
+  		key: 'PopTunnel',
+  		value: function PopTunnel() {
+  			return new ControlCommand(CommandType.PopTunnel);
+  		}
+  	}, {
+  		key: 'BeginString',
+  		value: function BeginString() {
+  			return new ControlCommand(CommandType.BeginString);
+  		}
+  	}, {
+  		key: 'EndString',
+  		value: function EndString() {
+  			return new ControlCommand(CommandType.EndString);
+  		}
+  	}, {
+  		key: 'NoOp',
+  		value: function NoOp() {
+  			return new ControlCommand(CommandType.NoOp);
+  		}
+  	}, {
+  		key: 'ChoiceCount',
+  		value: function ChoiceCount() {
+  			return new ControlCommand(CommandType.ChoiceCount);
+  		}
+  	}, {
+  		key: 'TurnsSince',
+  		value: function TurnsSince() {
+  			return new ControlCommand(CommandType.TurnsSince);
+  		}
+  	}, {
+  		key: 'Random',
+  		value: function Random() {
+  			return new ControlCommand(CommandType.Random);
+  		}
+  	}, {
+  		key: 'SeedRandom',
+  		value: function SeedRandom() {
+  			return new ControlCommand(CommandType.SeedRandom);
+  		}
+  	}, {
+  		key: 'VisitIndex',
+  		value: function VisitIndex() {
+  			return new ControlCommand(CommandType.VisitIndex);
+  		}
+  	}, {
+  		key: 'SequenceShuffleIndex',
+  		value: function SequenceShuffleIndex() {
+  			return new ControlCommand(CommandType.SequenceShuffleIndex);
+  		}
+  	}, {
+  		key: 'StartThread',
+  		value: function StartThread() {
+  			return new ControlCommand(CommandType.StartThread);
+  		}
+  	}, {
+  		key: 'Done',
+  		value: function Done() {
+  			return new ControlCommand(CommandType.Done);
+  		}
+  	}, {
+  		key: 'End',
+  		value: function End() {
+  			return new ControlCommand(CommandType.End);
+  		}
+  	}]);
+  	return ControlCommand;
+  }(InkObject);
+
+  var CommandType = {
+  	NotSet: -1,
+  	EvalStart: 0,
+  	EvalOutput: 1,
+  	EvalEnd: 2,
+  	Duplicate: 3,
+  	PopEvaluatedValue: 4,
+  	PopFunction: 5,
+  	PopTunnel: 6,
+  	BeginString: 7,
+  	EndString: 8,
+  	NoOp: 9,
+  	ChoiceCount: 10,
+  	TurnsSince: 11,
+  	Random: 12,
+  	SeedRandom: 13,
+  	VisitIndex: 14,
+  	SequenceShuffleIndex: 15,
+  	StartThread: 16,
+  	Done: 17,
+  	End: 18
+  };
+  CommandType.TOTAL_VALUES = Object.keys(CommandType).length - 1; //-1 because NotSet shoudn't count
+  ControlCommand.CommandType = CommandType;
+
+  var PushPopType = {
+  	Tunnel: 0,
+  	Function: 1
+  };
+
+  var Divert = function (_InkObject) {
+  	babelHelpers.inherits(Divert, _InkObject);
+
+  	function Divert(stackPushType) {
+  		babelHelpers.classCallCheck(this, Divert);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Divert).call(this));
+
+  		_this._targetPath;
+  		_this._targetContent;
+
+  		_this.variableDivertName;
+  		_this.pushesToStack;
+  		_this.stackPushType;
+
+  		_this.isExternal;
+  		_this.isConditional;
+  		_this.externalArgs;
+
+  		//actual constructor
+  		_this.pushesToStack = false;
+  		if (stackPushType) {
+  			_this.pushesToStack = true;
+  			_this.stackPushType = stackPushType;
+  		}
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(Divert, [{
+  		key: 'Equals',
+  		value: function Equals(obj) {
+  			//		var otherDivert = obj as Divert;
+  			var otherDivert = obj;
+  			if (otherDivert instanceof Divert) {
+  				if (this.hasVariableTarget == otherDivert.hasVariableTarget) {
+  					if (this.hasVariableTarget) {
+  						return this.variableDivertName == otherDivert.variableDivertName;
+  					} else {
+  						return this.targetPath.Equals(otherDivert.targetPath);
+  					}
+  				}
+  			}
+  			return false;
+  		}
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			if (this.hasVariableTarget) {
+  				return "Divert(variable: " + this.variableDivertName + ")";
+  			} else if (this.targetPath == null) {
+  				return "Divert(null)";
+  			} else {
+
+  				var sb = new StringBuilder();
+
+  				var targetStr = this.targetPath.toString();
+  				//			int? targetLineNum = DebugLineNumberOfPath (targetPath);
+  				var targetLineNum = null;
+  				if (targetLineNum != null) {
+  					targetStr = "line " + targetLineNum;
+  				}
+
+  				sb.Append("Divert");
+  				if (this.pushesToStack) {
+  					if (this.stackPushType == PushPopType.Function) {
+  						sb.Append(" function");
+  					} else {
+  						sb.Append(" tunnel");
+  					}
+  				}
+
+  				sb.Append(" (");
+  				sb.Append(targetStr);
+  				sb.Append(")");
+
+  				return sb.toString();
+  			}
+  		}
+  	}, {
+  		key: 'targetPath',
+  		get: function get() {
+  			// Resolve any relative paths to global ones as we come across them
+  			if (this._targetPath != null && this._targetPath.isRelative) {
+  				var targetObj = this.targetContent;
+  				if (targetObj) {
+  					this._targetPath = targetObj.path;
+  				}
+  			}
+
+  			return this._targetPath;
+  		},
+  		set: function set(value) {
+  			this._targetPath = value;
+  			this._targetContent = null;
+  		}
+  	}, {
+  		key: 'targetContent',
+  		get: function get() {
+  			if (this._targetContent == null) {
+  				this._targetContent = this.ResolvePath(this._targetPath);
+  			}
+
+  			return this._targetContent;
+  		}
+  	}, {
+  		key: 'targetPathString',
+  		get: function get() {
+  			if (this.targetPath == null) return null;
+
+  			return this.CompactPathString(this.targetPath);
+  		},
+  		set: function set(value) {
+  			if (value == null) {
+  				this.targetPath = null;
+  			} else {
+  				this.targetPath = new Path$1(value);
+  			}
+  		}
+  	}, {
+  		key: 'hasVariableTarget',
+  		get: function get() {
+  			return this.variableDivertName != null;
+  		}
+  	}]);
+  	return Divert;
+  }(InkObject);
+
+  var ChoicePoint = function (_InkObject) {
+  	babelHelpers.inherits(ChoicePoint, _InkObject);
+
+  	function ChoicePoint(onceOnly) {
+  		babelHelpers.classCallCheck(this, ChoicePoint);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ChoicePoint).call(this));
+
+  		_this._pathOnChoice;
+  		_this.hasCondition;
+  		_this.hasStartContent;
+  		_this.hasChoiceOnlyContent;
+  		_this.onceOnly;
+  		_this.isInvisibleDefault;
+
+  		_this.onceOnly = !!onceOnly;
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(ChoicePoint, [{
+  		key: 'toString',
+  		value: function toString() {
+  			//		int? targetLineNum = DebugLineNumberOfPath (pathOnChoice);
+  			var targetLineNum = null;
+  			var targetString = this.pathOnChoice.toString();
+
+  			if (targetLineNum != null) {
+  				targetString = " line " + targetLineNum;
+  			}
+
+  			return "Choice: -> " + targetString;
+  		}
+  	}, {
+  		key: 'pathOnChoice',
+  		get: function get() {
+  			if (this._pathOnChoice != null && this._pathOnChoice.isRelative) {
+  				var choiceTargetObj = this.choiceTarget;
+  				if (choiceTargetObj) {
+  					this._pathOnChoice = choiceTargetObj.path;
+  				}
+  			}
+  			return this._pathOnChoice;
+  		},
+  		set: function set(value) {
+  			this._pathOnChoice = value;
+  		}
+  	}, {
+  		key: 'choiceTarget',
+  		get: function get() {
+  			//return this.ResolvePath (_pathOnChoice) as Container;
+  			return this.ResolvePath(this._pathOnChoice);
+  		}
+  	}, {
+  		key: 'pathStringOnChoice',
+  		get: function get() {
+  			return this.CompactPathString(this.pathOnChoice);
+  		},
+  		set: function set(value) {
+  			this.pathOnChoice = new Path$1(value);
+  		}
+  	}, {
+  		key: 'flags',
+  		get: function get() {
+  			var flags = 0;
+  			if (this.hasCondition) flags |= 1;
+  			if (this.hasStartContent) flags |= 2;
+  			if (this.hasChoiceOnlyContent) flags |= 4;
+  			if (this.isInvisibleDefault) flags |= 8;
+  			if (this.onceOnly) flags |= 16;
+  			return flags;
+  		},
+  		set: function set(value) {
+  			this.hasCondition = (value & 1) > 0;
+  			this.hasStartContent = (value & 2) > 0;
+  			this.hasChoiceOnlyContent = (value & 4) > 0;
+  			this.isInvisibleDefault = (value & 8) > 0;
+  			this.onceOnly = (value & 16) > 0;
+  		}
+  	}]);
+  	return ChoicePoint;
+  }(InkObject);
+
+  var VariableReference = function (_InkObject) {
+  	babelHelpers.inherits(VariableReference, _InkObject);
+
+  	function VariableReference(name) {
+  		babelHelpers.classCallCheck(this, VariableReference);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(VariableReference).call(this));
+
+  		_this.name = name;
+  		_this.pathForCount;
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(VariableReference, [{
+  		key: 'toString',
+  		value: function toString() {
+  			if (this.name != null) {
+  				return "var(" + this.name + ")";
+  			} else {
+  				var pathStr = this.pathStringForCount;
+  				return "read_count(" + pathStr + ")";
+  			}
+  		}
+  	}, {
+  		key: 'containerForCount',
+  		get: function get() {
+  			return this.ResolvePath(this.pathForCount);
+  		}
+  	}, {
+  		key: 'pathStringForCount',
+  		get: function get() {
+  			if (this.pathForCount == null) return null;
+
+  			return this.CompactPathString(this.pathForCount);
+  		},
+  		set: function set(value) {
+  			if (value == null) this.pathForCount = null;else this.pathForCount = new Path$1(value);
+  		}
+  	}]);
+  	return VariableReference;
+  }(InkObject);
+
+  var VariableAssignment = function (_InkObject) {
+  	babelHelpers.inherits(VariableAssignment, _InkObject);
+
+  	function VariableAssignment(variableName, isNewDeclaration) {
+  		babelHelpers.classCallCheck(this, VariableAssignment);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(VariableAssignment).call(this));
+
+  		_this._variableName = variableName || null;
+  		_this._isNewDeclaration = !!isNewDeclaration;
+  		_this.isGlobal;
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(VariableAssignment, [{
+  		key: "toString",
+  		value: function toString() {
+  			return "VarAssign to " + this.variableName;;
+  		}
+  	}, {
+  		key: "variableName",
+  		get: function get() {
+  			return this._variableName;
+  		}
+  	}, {
+  		key: "isNewDeclaration",
+  		get: function get() {
+  			return this._isNewDeclaration;
+  		}
+  	}]);
+  	return VariableAssignment;
+  }(InkObject);
+
+  var Void = function (_InkObject) {
+    babelHelpers.inherits(Void, _InkObject);
+
+    function Void() {
+      babelHelpers.classCallCheck(this, Void);
+      return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Void).apply(this, arguments));
+    }
+
+    return Void;
+  }(InkObject);
+
+  var NativeFunctionCall = function (_InkObject) {
+  	babelHelpers.inherits(NativeFunctionCall, _InkObject);
+
+  	function NativeFunctionCall(name) {
+  		babelHelpers.classCallCheck(this, NativeFunctionCall);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(NativeFunctionCall).call(this));
+
+  		_this.name = name;
+  		_this._numberOfParameters;
+
+  		_this._prototype;
+  		_this._isPrototype;
+  		_this._operationFuncs = null;
+
+  		NativeFunctionCall.GenerateNativeFunctionsIfNecessary();
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(NativeFunctionCall, [{
+  		key: 'Call',
+  		value: function Call(parameters) {
+  			if (this._prototype) {
+  				return this._prototype.Call(parameters);
+  			}
+
+  			if (this.numberOfParameters != parameters.length) {
+  				throw "Unexpected number of parameters";
+  			}
+
+  			parameters.forEach(function (p) {
+  				if (p instanceof Void) throw new StoryException("Attempting to perform operation on a void value. Did you forget to 'return' a value from a function you called here?");
+  			});
+
+  			var coercedParams = this.CoerceValuesToSingleType(parameters);
+  			var coercedType = coercedParams[0].valueType;
+
+  			//Originally CallType gets a type parameter taht is used to do some casting, but we can do without.
+  			if (coercedType == ValueType.Int) {
+  				return this.CallType(coercedParams);
+  			} else if (coercedType == ValueType.Float) {
+  				return this.CallType(coercedParams);
+  			} else if (coercedType == ValueType.String) {
+  				return this.CallType(coercedParams);
+  			} else if (coercedType == ValueType.DivertTarget) {
+  				return this.CallType(coercedParams);
+  			}
+
+  			return null;
+  		}
+  	}, {
+  		key: 'CallType',
+  		value: function CallType(parametersOfSingleType) {
+  			var param1 = parametersOfSingleType[0];
+  			var valType = param1.valueType;
+
+  			var val1 = param1;
+
+  			var paramCount = parametersOfSingleType.length;
+
+  			if (paramCount == 2 || paramCount == 1) {
+
+  				var opForTypeObj = this._operationFuncs[valType];
+  				if (!opForTypeObj) {
+  					throw new StoryException("Can not perform operation '" + this.name + "' on " + valType);
+  				}
+
+  				// Binary
+  				if (paramCount == 2) {
+  					var param2 = parametersOfSingleType[1];
+
+  					var val2 = param2;
+
+  					var opForType = opForTypeObj;
+
+  					// Return value unknown until it's evaluated
+  					var resultVal = opForType(val1.value, val2.value);
+
+  					return Value.Create(resultVal);
+  				}
+
+  				// Unary
+  				else {
+
+  						var opForType = opForTypeObj;
+
+  						var resultVal = opForType(val1.value);
+
+  						return Value.Create(resultVal);
+  					}
+  			} else {
+  				throw "Unexpected number of parameters to NativeFunctionCall: " + parametersOfSingleType.length;
+  			}
+  		}
+  	}, {
+  		key: 'CoerceValuesToSingleType',
+  		value: function CoerceValuesToSingleType(parametersIn) {
+  			var valType = ValueType.Int;
+
+  			// Find out what the output type is
+  			// "higher level" types infect both so that binary operations
+  			// use the same type on both sides. e.g. binary operation of
+  			// int and float causes the int to be casted to a float.
+  			parametersIn.forEach(function (obj) {
+  				var val = obj;
+  				if (val.valueType > valType) {
+  					valType = val.valueType;
+  				}
+  			});
+
+  			// Coerce to this chosen type
+  			var parametersOut = [];
+  			parametersIn.forEach(function (val) {
+  				var castedValue = val.Cast(valType);
+  				parametersOut.push(castedValue);
+  			});
+
+  			return parametersOut;
+  		}
+  	}, {
+  		key: 'AddOpFuncForType',
+  		value: function AddOpFuncForType(valType, op) {
+  			if (this._operationFuncs == null) {
+  				this._operationFuncs = {};
+  			}
+
+  			this._operationFuncs[valType] = op;
+  		}
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			return "Native '" + this.name + "'";
+  		}
+  	}, {
+  		key: 'name',
+  		get: function get() {
+  			return this._name;
+  		},
+  		set: function set(value) {
+  			this._name = value;
+  			if (!this._isPrototype) this._prototype = NativeFunctionCall._nativeFunctions[this._name];
+  		}
+  	}, {
+  		key: 'numberOfParameters',
+  		get: function get() {
+  			if (this._prototype) {
+  				return this._prototype.numberOfParameters;
+  			} else {
+  				return this._numberOfParameters;
+  			}
+  		},
+  		set: function set(value) {
+  			this._numberOfParameters = value;
+  		}
+  	}], [{
+  		key: 'internalConstructor',
+  		value: function internalConstructor(name, numberOfParamters) {
+  			var nativeFunc = new NativeFunctionCall(name);
+  			nativeFunc._isPrototype = true;
+  			nativeFunc.numberOfParameters = numberOfParamters;
+  			return nativeFunc;
+  		}
+  	}, {
+  		key: 'CallWithName',
+  		value: function CallWithName(functionName) {
+  			return new NativeFunctionCall(functionName);
+  		}
+  	}, {
+  		key: 'CallExistsWithName',
+  		value: function CallExistsWithName(functionName) {
+  			this.GenerateNativeFunctionsIfNecessary();
+  			return this._nativeFunctions[functionName];
+  		}
+  	}, {
+  		key: 'GenerateNativeFunctionsIfNecessary',
+  		value: function GenerateNativeFunctionsIfNecessary() {
+  			if (this._nativeFunctions == null) {
+  				this._nativeFunctions = {};
+
+  				// Int operations
+  				this.AddIntBinaryOp(this.Add, function (x, y) {
+  					return x + y;
+  				});
+  				this.AddIntBinaryOp(this.Subtract, function (x, y) {
+  					return x - y;
+  				});
+  				this.AddIntBinaryOp(this.Multiply, function (x, y) {
+  					return x * y;
+  				});
+  				this.AddIntBinaryOp(this.Divide, function (x, y) {
+  					return parseInt(x / y);
+  				});
+  				this.AddIntBinaryOp(this.Mod, function (x, y) {
+  					return x % y;
+  				});
+  				this.AddIntUnaryOp(this.Negate, function (x) {
+  					return -x;
+  				});
+
+  				this.AddIntBinaryOp(this.Equal, function (x, y) {
+  					return x == y ? 1 : 0;
+  				});
+  				this.AddIntBinaryOp(this.Greater, function (x, y) {
+  					return x > y ? 1 : 0;
+  				});
+  				this.AddIntBinaryOp(this.Less, function (x, y) {
+  					return x < y ? 1 : 0;
+  				});
+  				this.AddIntBinaryOp(this.GreaterThanOrEquals, function (x, y) {
+  					return x >= y ? 1 : 0;
+  				});
+  				this.AddIntBinaryOp(this.LessThanOrEquals, function (x, y) {
+  					return x <= y ? 1 : 0;
+  				});
+  				this.AddIntBinaryOp(this.NotEquals, function (x, y) {
+  					return x != y ? 1 : 0;
+  				});
+  				this.AddIntUnaryOp(this.Not, function (x) {
+  					return x == 0 ? 1 : 0;
+  				});
+
+  				this.AddIntBinaryOp(this.And, function (x, y) {
+  					return x != 0 && y != 0 ? 1 : 0;
+  				});
+  				this.AddIntBinaryOp(this.Or, function (x, y) {
+  					return x != 0 || y != 0 ? 1 : 0;
+  				});
+
+  				this.AddIntBinaryOp(this.Max, function (x, y) {
+  					return Math.max(x, y);
+  				});
+  				this.AddIntBinaryOp(this.Min, function (x, y) {
+  					return Math.min(x, y);
+  				});
+
+  				// Float operations
+  				this.AddFloatBinaryOp(this.Add, function (x, y) {
+  					return x + y;
+  				});
+  				this.AddFloatBinaryOp(this.Subtract, function (x, y) {
+  					return x - y;
+  				});
+  				this.AddFloatBinaryOp(this.Multiply, function (x, y) {
+  					return x * y;
+  				});
+  				this.AddFloatBinaryOp(this.Divide, function (x, y) {
+  					return x / y;
+  				});
+  				this.AddFloatBinaryOp(this.Mod, function (x, y) {
+  					return x % y;
+  				}); // TODO: Is this the operation we want for floats?
+  				this.AddFloatUnaryOp(this.Negate, function (x) {
+  					return -x;
+  				});
+
+  				this.AddFloatBinaryOp(this.Equal, function (x, y) {
+  					return x == y ? 1 : 0;
+  				});
+  				this.AddFloatBinaryOp(this.Greater, function (x, y) {
+  					return x > y ? 1 : 0;
+  				});
+  				this.AddFloatBinaryOp(this.Less, function (x, y) {
+  					return x < y ? 1 : 0;
+  				});
+  				this.AddFloatBinaryOp(this.GreaterThanOrEquals, function (x, y) {
+  					return x >= y ? 1 : 0;
+  				});
+  				this.AddFloatBinaryOp(this.LessThanOrEquals, function (x, y) {
+  					return x <= y ? 1 : 0;
+  				});
+  				this.AddFloatBinaryOp(this.NotEquals, function (x, y) {
+  					return x != y ? 1 : 0;
+  				});
+  				this.AddFloatUnaryOp(this.Not, function (x) {
+  					return x == 0.0 ? 1 : 0;
+  				});
+
+  				this.AddFloatBinaryOp(this.And, function (x, y) {
+  					return x != 0.0 && y != 0.0 ? 1 : 0;
+  				});
+  				this.AddFloatBinaryOp(this.Or, function (x, y) {
+  					return x != 0.0 || y != 0.0 ? 1 : 0;
+  				});
+
+  				this.AddFloatBinaryOp(this.Max, function (x, y) {
+  					return Math.max(x, y);
+  				});
+  				this.AddFloatBinaryOp(this.Min, function (x, y) {
+  					return Math.min(x, y);
+  				});
+
+  				// String operations
+  				this.AddStringBinaryOp(this.Add, function (x, y) {
+  					return x + y;
+  				}); // concat
+  				this.AddStringBinaryOp(this.Equal, function (x, y) {
+  					return x === y ? 1 : 0;
+  				});
+
+  				// Special case: The only operation you can do on divert target values
+  				var divertTargetsEqual = function divertTargetsEqual(d1, d2) {
+  					return d1.Equals(d2) ? 1 : 0;
+  				};
+  				this.AddOpToNativeFunc(this.Equal, 2, ValueType.DivertTarget, divertTargetsEqual);
+  			}
+  		}
+  	}, {
+  		key: 'AddOpToNativeFunc',
+  		value: function AddOpToNativeFunc(name, args, valType, op) {
+  			var nativeFunc = this._nativeFunctions[name];
+  			if (!nativeFunc) {
+  				nativeFunc = NativeFunctionCall.internalConstructor(name, args);
+  				this._nativeFunctions[name] = nativeFunc;
+  			}
+
+  			nativeFunc.AddOpFuncForType(valType, op);
+  		}
+  	}, {
+  		key: 'AddIntBinaryOp',
+  		value: function AddIntBinaryOp(name, op) {
+  			this.AddOpToNativeFunc(name, 2, ValueType.Int, op);
+  		}
+  	}, {
+  		key: 'AddIntUnaryOp',
+  		value: function AddIntUnaryOp(name, op) {
+  			this.AddOpToNativeFunc(name, 1, ValueType.Int, op);
+  		}
+  	}, {
+  		key: 'AddFloatBinaryOp',
+  		value: function AddFloatBinaryOp(name, op) {
+  			this.AddOpToNativeFunc(name, 2, ValueType.Float, op);
+  		}
+  	}, {
+  		key: 'AddFloatUnaryOp',
+  		value: function AddFloatUnaryOp(name, op) {
+  			this.AddOpToNativeFunc(name, 1, ValueType.Float, op);
+  		}
+  	}, {
+  		key: 'AddStringBinaryOp',
+  		value: function AddStringBinaryOp(name, op) {
+  			this.AddOpToNativeFunc(name, 2, ValueType.String, op);
+  		}
+  	}]);
+  	return NativeFunctionCall;
+  }(InkObject);
+
+  NativeFunctionCall.Add = "+";
+  NativeFunctionCall.Subtract = "-";
+  NativeFunctionCall.Divide = "/";
+  NativeFunctionCall.Multiply = "*";
+  NativeFunctionCall.Mod = "%";
+  NativeFunctionCall.Negate = "~";
+
+  NativeFunctionCall.Equal = "==";
+  NativeFunctionCall.Greater = ">";
+  NativeFunctionCall.Less = "<";
+  NativeFunctionCall.GreaterThanOrEquals = ">=";
+  NativeFunctionCall.LessThanOrEquals = "<=";
+  NativeFunctionCall.NotEquals = "!=";
+  NativeFunctionCall.Not = "!";
+
+  NativeFunctionCall.And = "&&";
+  NativeFunctionCall.Or = "||";
+
+  NativeFunctionCall.Min = "MIN";
+  NativeFunctionCall.Max = "MAX";
+
+  NativeFunctionCall._nativeFunctions = null;
+
+  var Tag = function (_InkObject) {
+  	babelHelpers.inherits(Tag, _InkObject);
+
+  	function Tag(tagText) {
+  		babelHelpers.classCallCheck(this, Tag);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Tag).call(this));
+
+  		_this._text = tagText.toString() || '';
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(Tag, [{
+  		key: 'toString',
+  		value: function toString() {
+  			return "# " + this._text;
+  		}
+  	}, {
+  		key: 'text',
+  		get: function get() {
+  			return this._text;
+  		}
+  	}]);
+  	return Tag;
+  }(InkObject);
+
+  var Choice = function () {
+  	function Choice(choice) {
+  		babelHelpers.classCallCheck(this, Choice);
+
+  		this.text;
+  		this.index;
+  		this.choicePoint;
+  		this.threadAtGeneration;
+
+  		this._originalThreadIndex;
+  		this._originalChoicePath;
+
+  		if (choice) this.choicePoint = choice;
+  	}
+
+  	babelHelpers.createClass(Choice, [{
+  		key: "pathStringOnChoice",
+  		get: function get() {
+  			return this.choicePoint.pathStringOnChoice;
+  		}
+  	}, {
+  		key: "sourcePath",
+  		get: function get() {
+  			return this.choicePoint.path.componentsString;
+  		}
+  	}]);
+  	return Choice;
+  }();
+
+  var JsonSerialisation = function () {
+  	function JsonSerialisation() {
+  		babelHelpers.classCallCheck(this, JsonSerialisation);
+  	}
+
+  	babelHelpers.createClass(JsonSerialisation, null, [{
+  		key: 'ListToJArray',
+  		value: function ListToJArray(serialisables) {
+  			var _this = this;
+
+  			var jArray = [];
+  			serialisables.forEach(function (s) {
+  				jArray.push(_this.RuntimeObjectToJToken(s));
+  			});
+  			return jArray;
+  		}
+  	}, {
+  		key: 'JArrayToRuntimeObjList',
+  		value: function JArrayToRuntimeObjList(jArray, skipLast) {
+  			var count = jArray.length;
+  			if (skipLast) count--;
+
+  			var list = [];
+
+  			for (var i = 0; i < count; i++) {
+  				var jTok = jArray[i];
+  				var runtimeObj = this.JTokenToRuntimeObject(jTok);
+  				list.push(runtimeObj);
+  			}
+
+  			return list;
+  		}
+  	}, {
+  		key: 'JObjectToDictionaryRuntimeObjs',
+  		value: function JObjectToDictionaryRuntimeObjs(jObject) {
+  			var dict = {};
+
+  			for (var key in jObject) {
+  				dict[key] = this.JTokenToRuntimeObject(jObject[key]);
+  			}
+
+  			return dict;
+  		}
+  	}, {
+  		key: 'DictionaryRuntimeObjsToJObject',
+  		value: function DictionaryRuntimeObjsToJObject(dictionary) {
+  			var jsonObj = {};
+
+  			for (var key in dictionary) {
+  				//			var runtimeObj = keyVal.Value as Runtime.Object;
+  				var runtimeObj = dictionary[key];
+  				if (runtimeObj instanceof InkObject) jsonObj[key] = this.RuntimeObjectToJToken(runtimeObj);
+  			}
+
+  			return jsonObj;
+  		}
+  	}, {
+  		key: 'JObjectToIntDictionary',
+  		value: function JObjectToIntDictionary(jObject) {
+  			var dict = {};
+  			for (var key in jObject) {
+  				dict[key] = parseInt(jObject[key]);
+  			}
+  			return dict;
+  		}
+  	}, {
+  		key: 'IntDictionaryToJObject',
+  		value: function IntDictionaryToJObject(dict) {
+  			var jObj = {};
+  			for (var key in dict) {
+  				jObj[key] = dict[key];
+  			}
+  			return jObj;
+  		}
+  	}, {
+  		key: 'JTokenToRuntimeObject',
+  		value: function JTokenToRuntimeObject(token) {
+  			//@TODO probably find a more robust way to detect numbers, isNaN seems happy to accept things that really aren't numberish.
+  			if (!isNaN(token) && token !== "\n") {
+  				//JS thinks "\n" is a number
+  				return Value.Create(token);
+  			}
+
+  			if (typeof token === 'string') {
+  				var str = token.toString();
+
+  				// String value
+  				var firstChar = str[0];
+  				if (firstChar == '^') return new StringValue(str.substring(1));else if (firstChar == "\n" && str.length == 1) return new StringValue("\n");
+
+  				// Glue
+  				if (str == "<>") return new Glue(GlueType.Bidirectional);else if (str == "G<") return new Glue(GlueType.Left);else if (str == "G>") return new Glue(GlueType.Right);
+
+  				// Control commands (would looking up in a hash set be faster?)
+  				for (var i = 0; i < _controlCommandNames.length; ++i) {
+  					var cmdName = _controlCommandNames[i];
+  					if (str == cmdName) {
+  						return new ControlCommand(i);
+  					}
+  				}
+
+  				// Native functions
+  				if (NativeFunctionCall.CallExistsWithName(str)) return NativeFunctionCall.CallWithName(str);
+
+  				// Pop
+  				if (str == "->->") return ControlCommand.PopTunnel();else if (str == "~ret") return ControlCommand.PopFunction();
+
+  				// Void
+  				if (str == "void") return new Void();
+  			}
+
+  			if ((typeof token === 'undefined' ? 'undefined' : babelHelpers.typeof(token)) === 'object' && token instanceof Array === false) {
+  				var obj = token;
+  				var propValue;
+
+  				// Divert target value to path
+  				if (obj["^->"]) {
+  					propValue = obj["^->"];
+  					return new DivertTargetValue(new Path$1(propValue.toString()));
+  				}
+
+  				// VariablePointerValue
+  				if (obj["^var"]) {
+  					propValue = obj["^var"];
+  					var varPtr = new VariablePointerValue(propValue.toString());
+  					if (obj["ci"]) {
+  						propValue = obj["ci"];
+  						varPtr.contextIndex = parseInt(propValue);
+  					}
+  					return varPtr;
+  				}
+
+  				// Divert
+  				var isDivert = false;
+  				var pushesToStack = false;
+  				var divPushType = PushPopType.Function;
+  				var external = false;
+  				if (propValue = obj["->"]) {
+  					isDivert = true;
+  				} else if (propValue = obj["f()"]) {
+  					isDivert = true;
+  					pushesToStack = true;
+  					divPushType = PushPopType.Function;
+  				} else if (propValue = obj["->t->"]) {
+  					isDivert = true;
+  					pushesToStack = true;
+  					divPushType = PushPopType.Tunnel;
+  				} else if (propValue = obj["x()"]) {
+  					isDivert = true;
+  					external = true;
+  					pushesToStack = false;
+  					divPushType = PushPopType.Function;
+  				}
+
+  				if (isDivert) {
+  					var divert = new Divert();
+  					divert.pushesToStack = pushesToStack;
+  					divert.stackPushType = divPushType;
+  					divert.isExternal = external;
+
+  					var target = propValue.toString();
+
+  					if (propValue = obj["var"]) divert.variableDivertName = target;else divert.targetPathString = target;
+
+  					divert.isConditional = !!obj["c"];
+
+  					if (external) {
+  						if (propValue = obj["exArgs"]) divert.externalArgs = parseInt(propValue);
+  					}
+
+  					return divert;
+  				}
+
+  				// Choice
+  				if (propValue = obj["*"]) {
+  					var choice = new ChoicePoint();
+  					choice.pathStringOnChoice = propValue.toString();
+
+  					if (propValue = obj["flg"]) choice.flags = parseInt(propValue);
+
+  					return choice;
+  				}
+
+  				// Variable reference
+  				if (propValue = obj["VAR?"]) {
+  					return new VariableReference(propValue.toString());
+  				} else if (propValue = obj["CNT?"]) {
+  					var readCountVarRef = new VariableReference();
+  					readCountVarRef.pathStringForCount = propValue.toString();
+  					return readCountVarRef;
+  				}
+
+  				// Variable assignment
+  				var isVarAss = false;
+  				var isGlobalVar = false;
+  				if (propValue = obj["VAR="]) {
+  					isVarAss = true;
+  					isGlobalVar = true;
+  				} else if (propValue = obj["temp="]) {
+  					isVarAss = true;
+  					isGlobalVar = false;
+  				}
+  				if (isVarAss) {
+  					var varName = propValue.toString();
+  					var isNewDecl = !obj["re"];
+  					var varAss = new VariableAssignment(varName, isNewDecl);
+  					varAss.isGlobal = isGlobalVar;
+  					return varAss;
+  				}
+  				if (propValue = obj["#"]) {
+  					return new Tag(propValue.toString());
+  				}
+
+  				if (obj["originalChoicePath"] != null) return this.JObjectToChoice(obj);
+  			}
+
+  			// Array is always a Runtime.Container
+  			if (token instanceof Array) {
+  				return this.JArrayToContainer(token);
+  			}
+
+  			if (token == null) return null;
+
+  			throw "Failed to convert token to runtime object: " + JSON.stringify(token);
+  		}
+  	}, {
+  		key: 'RuntimeObjectToJToken',
+  		value: function RuntimeObjectToJToken(obj) {
+  			//		var container = obj as Container;
+  			var container = obj;
+  			if (container instanceof Container) {
+  				return this.ContainerToJArray(container);
+  			}
+
+  			//		var divert = obj as Divert;
+  			var divert = obj;
+  			if (divert instanceof Divert) {
+  				var divTypeKey = "->";
+  				if (divert.isExternal) divTypeKey = "x()";else if (divert.pushesToStack) {
+  					if (divert.stackPushType == PushPopType.Function) divTypeKey = "f()";else if (divert.stackPushType == PushPopType.Tunnel) divTypeKey = "->t->";
+  				}
+
+  				var targetStr;
+  				if (divert.hasVariableTarget) targetStr = divert.variableDivertName;else targetStr = divert.targetPathString;
+
+  				var jObj = {};
+  				jObj[divTypeKey] = targetStr;
+
+  				if (divert.hasVariableTarget) jObj["var"] = true;
+
+  				if (divert.isConditional) jObj["c"] = true;
+
+  				if (divert.externalArgs > 0) jObj["exArgs"] = divert.externalArgs;
+
+  				return jObj;
+  			}
+
+  			//		var choicePoint = obj as ChoicePoint;
+  			var choicePoint = obj;
+  			if (choicePoint instanceof ChoicePoint) {
+  				var jObj = {};
+  				jObj["*"] = choicePoint.pathStringOnChoice;
+  				jObj["flg"] = choicePoint.flags;
+  				return jObj;
+  			}
+
+  			//		var intVal = obj as IntValue;
+  			var intVal = obj;
+  			if (intVal instanceof IntValue) return intVal.value;
+
+  			//		var floatVal = obj as FloatValue;
+  			var floatVal = obj;
+  			if (floatVal instanceof FloatValue) return floatVal.value;
+
+  			//		var strVal = obj as StringValue;
+  			var strVal = obj;
+  			if (strVal instanceof StringValue) {
+  				if (strVal.isNewline) return "\n";else return "^" + strVal.value;
+  			}
+
+  			//		var divTargetVal = obj as DivertTargetValue;
+  			var divTargetVal = obj;
+  			if (divTargetVal instanceof DivertTargetValue) return {
+  				"^->": divTargetVal.value.componentsString
+  			};
+
+  			//		var varPtrVal = obj as VariablePointerValue;
+  			var varPtrVal = obj;
+  			if (varPtrVal instanceof VariablePointerValue) return {
+  				"^var": varPtrVal.value,
+  				"ci": varPtrVal.contextIndex
+  			};
+
+  			//		var glue = obj as Runtime.Glue;
+  			var glue = obj;
+  			if (glue instanceof Glue) {
+  				if (glue.isBi) return "<>";else if (glue.isLeft) return "G<";else return "G>";
+  			}
+
+  			//		var controlCmd = obj as ControlCommand;
+  			var controlCmd = obj;
+  			if (controlCmd instanceof ControlCommand) {
+  				return _controlCommandNames[parseInt(controlCmd.commandType)];
+  			}
+
+  			//		var nativeFunc = obj as Runtime.NativeFunctionCall;
+  			var nativeFunc = obj;
+  			if (nativeFunc instanceof NativeFunctionCall) return nativeFunc.name;
+
+  			// Variable reference
+  			//		var varRef = obj as VariableReference;
+  			var varRef = obj;
+  			if (varRef instanceof VariableReference) {
+  				var jObj = {};
+  				var readCountPath = varRef.pathStringForCount;
+  				if (readCountPath != null) {
+  					jObj["CNT?"] = readCountPath;
+  				} else {
+  					jObj["VAR?"] = varRef.name;
+  				}
+
+  				return jObj;
+  			}
+
+  			// Variable assignment
+  			//		var varAss = obj as VariableAssignment;
+  			var varAss = obj;
+  			if (varAss instanceof VariableAssignment) {
+  				var key = varAss.isGlobal ? "VAR=" : "temp=";
+  				var jObj = {};
+  				jObj[key] = varAss.variableName;
+
+  				// Reassignment?
+  				if (!varAss.isNewDeclaration) jObj["re"] = true;
+
+  				return jObj;
+  			}
+
+  			//		var voidObj = obj as Void;
+  			var voidObj = obj;
+  			if (voidObj instanceof Void) return "void";
+
+  			//		var tag = obj as Tag;
+  			var tag = obj;
+  			if (tag instanceof Tag) {
+  				var jObj = {};
+  				jObj["#"] = tag.text;
+  				return jObj;
+  			}
+
+  			// Used when serialising save state only
+  			//		var choice = obj as Choice;
+  			var choice = obj;
+  			if (choice instanceof Choice) return this.ChoiceToJObject(choice);
+
+  			throw "Failed to convert runtime object to Json token: " + obj;
+  		}
+  	}, {
+  		key: 'ContainerToJArray',
+  		value: function ContainerToJArray(container) {
+  			var jArray = this.ListToJArray(container.content);
+
+  			// Container is always an array [...]
+  			// But the final element is always either:
+  			//  - a dictionary containing the named content, as well as possibly
+  			//    the key "#" with the count flags
+  			//  - null, if neither of the above
+  			var namedOnlyContent = container.namedOnlyContent;
+  			var countFlags = container.countFlags;
+  			if (namedOnlyContent != null && namedOnlyContent.length > 0 || countFlags > 0 || container.name != null) {
+
+  				var terminatingObj;
+  				if (namedOnlyContent != null) {
+  					terminatingObj = this.DictionaryRuntimeObjsToJObject(namedOnlyContent);
+
+  					// Strip redundant names from containers if necessary
+  					for (var key in terminatingObj) {
+  						//					var subContainerJArray = namedContentObj.Value as JArray;
+  						var subContainerJArray = terminatingObj[key];
+  						if (subContainerJArray != null) {
+  							//						var attrJObj = subContainerJArray [subContainerJArray.Count - 1] as JObject;
+  							var attrJObj = subContainerJArray[subContainerJArray.length - 1];
+  							if (attrJObj != null) {
+  								delete attrJObj["#n"];
+  								if (Object.keys(attrJObj).length == 0) subContainerJArray[subContainerJArray.length - 1] = null;
+  							}
+  						}
+  					}
+  				} else terminatingObj = {};
+
+  				if (countFlags > 0) terminatingObj["#f"] = countFlags;
+
+  				if (container.name != null) terminatingObj["#n"] = container.name;
+
+  				jArray.push(terminatingObj);
+  			}
+
+  			// Add null terminator to indicate that there's no dictionary
+  			else {
+  					jArray.push(null);
+  				}
+
+  			return jArray;
+  		}
+  	}, {
+  		key: 'JArrayToContainer',
+  		value: function JArrayToContainer(jArray) {
+  			var container = new Container();
+  			container.content = this.JArrayToRuntimeObjList(jArray, true);
+
+  			// Final object in the array is always a combination of
+  			//  - named content
+  			//  - a "#" key with the countFlags
+  			// (if either exists at all, otherwise null)
+  			//		var terminatingObj = jArray [jArray.Count - 1] as JObject;
+  			var terminatingObj = jArray[jArray.length - 1];
+  			if (terminatingObj != null) {
+
+  				var namedOnlyContent = {};
+
+  				for (var key in terminatingObj) {
+  					if (key == "#f") {
+  						container.countFlags = parseInt(terminatingObj[key]);
+  					} else if (key == "#n") {
+  						container.name = terminatingObj[key].toString();
+  					} else {
+  						var namedContentItem = this.JTokenToRuntimeObject(terminatingObj[key]);
+  						//					var namedSubContainer = namedContentItem as Container;
+  						var namedSubContainer = namedContentItem;
+  						if (namedSubContainer instanceof Container) namedSubContainer.name = key;
+  						namedOnlyContent[key] = namedContentItem;
+  					}
+  				}
+
+  				container.namedOnlyContent = namedOnlyContent;
+  			}
+
+  			return container;
+  		}
+  	}, {
+  		key: 'JObjectToChoice',
+  		value: function JObjectToChoice(jObj) {
+  			var choice = new Choice();
+  			choice.text = jObj["text"].toString();
+  			choice.index = parseInt(jObj["index"]);
+  			choice.originalChoicePath = jObj["originalChoicePath"].toString();
+  			choice.originalThreadIndex = parseInt(jObj["originalThreadIndex"]);
+  			return choice;
+  		}
+  	}, {
+  		key: 'ChoiceToJObject',
+  		value: function ChoiceToJObject(choice) {
+  			var jObj = {};
+  			jObj["text"] = choice.text;
+  			jObj["index"] = choice.index;
+  			jObj["originalChoicePath"] = choice.originalChoicePath;
+  			jObj["originalThreadIndex"] = choice.originalThreadIndex;
+  			return jObj;
+  		}
+  	}]);
+  	return JsonSerialisation;
+  }();
+
+  var _controlCommandNames = [];
+
+  _controlCommandNames[ControlCommand.CommandType.EvalStart] = "ev";
+  _controlCommandNames[ControlCommand.CommandType.EvalOutput] = "out";
+  _controlCommandNames[ControlCommand.CommandType.EvalEnd] = "/ev";
+  _controlCommandNames[ControlCommand.CommandType.Duplicate] = "du";
+  _controlCommandNames[ControlCommand.CommandType.PopEvaluatedValue] = "pop";
+  _controlCommandNames[ControlCommand.CommandType.PopFunction] = "~ret";
+  _controlCommandNames[ControlCommand.CommandType.PopTunnel] = "->->";
+  _controlCommandNames[ControlCommand.CommandType.BeginString] = "str";
+  _controlCommandNames[ControlCommand.CommandType.EndString] = "/str";
+  _controlCommandNames[ControlCommand.CommandType.NoOp] = "nop";
+  _controlCommandNames[ControlCommand.CommandType.ChoiceCount] = "choiceCnt";
+  _controlCommandNames[ControlCommand.CommandType.TurnsSince] = "turns";
+  _controlCommandNames[ControlCommand.CommandType.Random] = "rnd";
+  _controlCommandNames[ControlCommand.CommandType.SeedRandom] = "srnd";
+  _controlCommandNames[ControlCommand.CommandType.VisitIndex] = "visit";
+  _controlCommandNames[ControlCommand.CommandType.SequenceShuffleIndex] = "seq";
+  _controlCommandNames[ControlCommand.CommandType.StartThread] = "thread";
+  _controlCommandNames[ControlCommand.CommandType.Done] = "done";
+  _controlCommandNames[ControlCommand.CommandType.End] = "end";
+
+  for (var i$1 = 0; i$1 < ControlCommand.CommandType.TOTAL_VALUES; ++i$1) {
+  	if (_controlCommandNames[i$1] == null) throw "Control command not accounted for in serialisation";
+  }
+
+  var Element = function () {
+  	function Element(type, container, contentIndex, inExpressionEvaluation) {
+  		babelHelpers.classCallCheck(this, Element);
+
+  		this.currentContainer = container;
+  		this.currentContentIndex = contentIndex;
+  		this.inExpressionEvaluation = inExpressionEvaluation || false;
+  		this.temporaryVariables = {};
+  		this.type = type;
+  	}
+
+  	babelHelpers.createClass(Element, [{
+  		key: 'Copy',
+  		value: function Copy() {
+  			var copy = new Element(this.type, this.currentContainer, this.currentContentIndex, this.inExpressionEvaluation);
+  			babelHelpers.extends(copy.temporaryVariables, this.temporaryVariables);
+  			return copy;
+  		}
+  	}, {
+  		key: 'currentObject',
+  		get: function get() {
+  			if (this.currentContainer && this.currentContentIndex < this.currentContainer.content.length) {
+  				return this.currentContainer.content[this.currentContentIndex];
+  			}
+
+  			return null;
+  		},
+  		set: function set(value) {
+  			var currentObj = value;
+  			if (currentObj == null) {
+  				this.currentContainer = null;
+  				this.currentContentIndex = 0;
+  				return;
+  			}
+
+  			//		currentContainer = currentObj.parent as Container;
+  			this.currentContainer = currentObj.parent;
+  			if (this.currentContainer instanceof Container) this.currentContentIndex = this.currentContainer.content.indexOf(currentObj);
+
+  			// Two reasons why the above operation might not work:
+  			//  - currentObj is already the root container
+  			//  - currentObj is a named container rather than being an object at an index
+  			if (this.currentContainer instanceof Container === false || this.currentContentIndex == -1) {
+  				//			currentContainer = currentObj as Container;
+  				this.currentContainer = currentObj;
+  				this.currentContentIndex = 0;
+  			}
+  		}
+  	}]);
+  	return Element;
+  }();
+
+  var Thread = function () {
+  	function Thread(jsonToken, storyContext) {
+  		var _this = this;
+
+  		babelHelpers.classCallCheck(this, Thread);
+
+  		this.callstack = [];
+  		this.threadIndex = 0;
+  		this.previousContentObject = null;
+
+  		if (jsonToken && storyContext) {
+  			var jThreadObj = jsonToken;
+  			this.threadIndex = parseInt(jThreadObj["threadIndex"]);
+
+  			var jThreadCallstack = jThreadObj["callstack"];
+
+  			jThreadCallstack.forEach(function (jElTok) {
+  				var jElementObj = jElTok;
+
+  				var pushPopType = parseInt(jElementObj["type"]);
+
+  				var currentContainer = null;
+  				var contentIndex = 0;
+
+  				var currentContainerPathStr = null;
+  				var currentContainerPathStrToken = jElementObj["cPath"];
+  				if (typeof currentContainerPathStrToken !== 'undefined') {
+  					currentContainerPathStr = currentContainerPathStrToken.toString();
+  					//					currentContainer = storyContext.ContentAtPath (new Path(currentContainerPathStr)) as Container;
+  					currentContainer = storyContext.ContentAtPath(new Path$1(currentContainerPathStr));
+  					contentIndex = parseInt(jElementObj["idx"]);
+  				}
+
+  				var inExpressionEvaluation = !!jElementObj["exp"];
+
+  				var el = new Element(pushPopType, currentContainer, contentIndex, inExpressionEvaluation);
+
+  				var jObjTemps = jElementObj["temp"];
+  				el.temporaryVariables = JsonSerialisation.JObjectToDictionaryRuntimeObjs(jObjTemps);
+
+  				_this.callstack.push(el);
+  			});
+
+  			var prevContentObjPath = jThreadObj["previousContentObject"];
+  			if (typeof prevContentObjPath !== 'undefined') {
+  				var prevPath = new Path$1(prevContentObjPath.toString());
+  				this.previousContentObject = storyContext.ContentAtPath(prevPath);
+  			}
+  		}
+  	}
+
+  	babelHelpers.createClass(Thread, [{
+  		key: 'Copy',
+  		value: function Copy() {
+  			var copy = new Thread();
+  			copy.threadIndex = this.threadIndex;
+  			this.callstack.forEach(function (e) {
+  				copy.callstack.push(e.Copy());
+  			});
+  			copy.previousContentObject = this.previousContentObject;
+  			return copy;
+  		}
+  	}, {
+  		key: 'jsonToken',
+  		get: function get() {
+  			var threadJObj = {};
+
+  			var jThreadCallstack = [];
+  			this.callstack.forEach(function (el) {
+  				var jObj = {};
+  				if (el.currentContainer) {
+  					jObj["cPath"] = el.currentContainer.path.componentsString;
+  					jObj["idx"] = el.currentContentIndex;
+  				}
+  				jObj["exp"] = el.inExpressionEvaluation;
+  				jObj["type"] = parseInt(el.type);
+  				jObj["temp"] = JsonSerialisation.DictionaryRuntimeObjsToJObject(el.temporaryVariables);
+  				jThreadCallstack.push(jObj);
+  			});
+
+  			threadJObj["callstack"] = jThreadCallstack;
+  			threadJObj["threadIndex"] = this.threadIndex;
+
+  			if (this.previousContentObject != null) threadJObj["previousContentObject"] = this.previousContentObject.path.toString();
+
+  			return threadJObj;
+  		}
+  	}]);
+  	return Thread;
+  }();
+
+  var CallStack = function () {
+  	function CallStack(copyOrrootContentContainer) {
+  		var _this2 = this;
+
+  		babelHelpers.classCallCheck(this, CallStack);
+
+  		this._threads = [];
+  		this._threadCounter = 0;
+  		this._threads.push(new Thread());
+
+  		if (copyOrrootContentContainer instanceof CallStack) {
+  			this._threads = [];
+
+  			copyOrrootContentContainer._threads.forEach(function (otherThread) {
+  				_this2._threads.push(otherThread.Copy());
+  			});
+  		} else {
+  			this._threads[0].callstack.push(new Element(PushPopType.Tunnel, copyOrrootContentContainer, 0));
+  		}
+  	}
+
+  	babelHelpers.createClass(CallStack, [{
+  		key: 'CanPop',
+  		value: function CanPop(type) {
+  			if (!this.canPop) return false;
+
+  			if (type == null) return true;
+
+  			return this.currentElement.type == type;
+  		}
+  	}, {
+  		key: 'Pop',
+  		value: function Pop(type) {
+  			if (this.CanPop(type)) {
+  				this.callStack.pop();
+  				return;
+  			} else {
+  				throw "Mismatched push/pop in Callstack";
+  			}
+  		}
+  	}, {
+  		key: 'Push',
+  		value: function Push(type) {
+  			// When pushing to callstack, maintain the current content path, but jump out of expressions by default
+  			this.callStack.push(new Element(type, this.currentElement.currentContainer, this.currentElement.currentContentIndex, false));
+  		}
+  	}, {
+  		key: 'PushThread',
+  		value: function PushThread() {
+  			var newThread = this.currentThread.Copy();
+  			newThread.threadIndex = this._threadCounter;
+  			this._threadCounter++;
+  			this._threads.push(newThread);
+  		}
+  	}, {
+  		key: 'PopThread',
+  		value: function PopThread() {
+  			if (this.canPopThread) {
+  				this._threads.splice(this._threads.indexOf(this.currentThread), 1); //should be equivalent to a pop()
+  			} else {
+  					throw "Can't pop thread";
+  				}
+  		}
+  	}, {
+  		key: 'SetJsonToken',
+  		value: function SetJsonToken(token, storyContext) {
+  			var _this3 = this;
+
+  			this._threads.length = 0;
+
+  			var jObject = token;
+
+  			var jThreads = jObject["threads"];
+
+  			jThreads.forEach(function (jThreadTok) {
+  				var thread = new Thread(jThreadTok, storyContext);
+  				_this3._threads.push(thread);
+  			});
+
+  			this._threadCounter = parseInt(jObject["threadCounter"]);
+  		}
+  	}, {
+  		key: 'GetJsonToken',
+  		value: function GetJsonToken() {
+  			var jObject = {};
+
+  			var jThreads = [];
+  			this._threads.forEach(function (thread) {
+  				jThreads.push(thread.jsonToken);
+  			});
+
+  			jObject["threads"] = jThreads;
+  			jObject["threadCounter"] = this._threadCounter;
+
+  			return jObject;
+  		}
+  	}, {
+  		key: 'GetTemporaryVariableWithName',
+  		value: function GetTemporaryVariableWithName(name, contextIndex) {
+  			contextIndex = typeof contextIndex === 'undefined' ? -1 : contextIndex;
+
+  			if (contextIndex == -1) contextIndex = this.currentElementIndex + 1;
+
+  			var varValue = null;
+
+  			var contextElement = this.callStack[contextIndex - 1];
+
+  			if (varValue = contextElement.temporaryVariables[name]) {
+  				return varValue;
+  			} else {
+  				return null;
+  			}
+  		}
+  	}, {
+  		key: 'SetTemporaryVariable',
+  		value: function SetTemporaryVariable(name, value, declareNew, contextIndex) {
+  			contextIndex = typeof contextIndex === 'undefined' ? -1 : contextIndex;
+
+  			if (contextIndex == -1) contextIndex = this.currentElementIndex + 1;
+
+  			var contextElement = this.callStack[contextIndex - 1];
+
+  			if (!declareNew && !contextElement.temporaryVariables[name]) {
+  				throw new StoryException("Could not find temporary variable to set: " + name);
+  			}
+
+  			contextElement.temporaryVariables[name] = value;
+  		}
+  	}, {
+  		key: 'ContextForVariableNamed',
+  		value: function ContextForVariableNamed(name) {
+  			// Current temporary context?
+  			// (Shouldn't attempt to access contexts higher in the callstack.)
+  			if (this.currentElement.temporaryVariables[name]) {
+  				return this.currentElementIndex + 1;
+  			}
+
+  			// Global
+  			else {
+  					return 0;
+  				}
+  		}
+  	}, {
+  		key: 'ThreadWithIndex',
+  		value: function ThreadWithIndex(index) {
+  			var filtered = this._threads.filter(function (t) {
+  				if (t.threadIndex == index) return t;
+  			});
+
+  			return filtered[0];
+  		}
+  	}, {
+  		key: 'currentThread',
+  		get: function get() {
+  			return this._threads[this._threads.length - 1];
+  		},
+  		set: function set(value) {
+  			if (this._threads.length != 1) console.warn("Shouldn't be directly setting the current thread when we have a stack of them");
+
+  			this._threads.length = 0;
+  			this._threads.push(value);
+  		}
+  	}, {
+  		key: 'callStack',
+  		get: function get() {
+  			return this.currentThread.callstack;
+  		}
+  	}, {
+  		key: 'elements',
+  		get: function get() {
+  			return this.callStack;
+  		}
+  	}, {
+  		key: 'currentElement',
+  		get: function get() {
+  			return this.callStack[this.callStack.length - 1];
+  		}
+  	}, {
+  		key: 'currentElementIndex',
+  		get: function get() {
+  			return this.callStack.length - 1;
+  		}
+  	}, {
+  		key: 'canPop',
+  		get: function get() {
+  			return this.callStack.length > 1;
+  		}
+  	}, {
+  		key: 'canPopThread',
+  		get: function get() {
+  			return this._threads.length > 1;
+  		}
+  	}]);
+  	return CallStack;
+  }();
+
+  var VariablesState = function () {
+  	function VariablesState(callStack) {
+  		babelHelpers.classCallCheck(this, VariablesState);
+
+  		this._globalVariables = {};
+  		this._callStack = callStack;
+
+  		this._batchObservingVariableChanges = null;
+  		this._changedVariables = null;
+
+  		//the way variableChangedEvent is a bit different than the reference implementation. Originally it uses the C# += operator to add delegates, but in js we need to maintain an actual collection of delegates (ie. callbacks)
+  		//to register a new one, there is a special ObserveVariableChange method below.
+  		this.variableChangedEvent = null;
+  		this.variableChangedEventCallbacks = [];
+
+  		//if es6 proxies are available, use them.
+  		try {
+  			//the proxy is used to allow direct manipulation of global variables. It first tries to access the objetcs own property, and if none is found it delegates the call to the $ method, defined below
+  			var p = new Proxy(this, {
+  				get: function get(target, name) {
+  					return name in target ? target[name] : target.$(name);
+  				},
+  				set: function set(target, name, value) {
+  					if (name in target) target[name] = value;else target.$(name, value);
+  					return true; //returning a fasly value make sthe trap fail
+  				}
+  			});
+
+  			return p;
+  		} catch (e) {
+  			//thr proxy object is not available in this context. we should warn the dev but writting to the console feels a bit intrusive.
+  			//			console.log("ES6 Proxy not available - direct manipulation of global variables can't work, use $() instead.");
+  		}
+  	}
+
+  	babelHelpers.createClass(VariablesState, [{
+  		key: 'ObserveVariableChange',
+
+
+  		/**
+     * This function is specific to the js version of ink. It allows to register a callback that will be called when a variable changes. The original code uses `state.variableChangedEvent += callback` instead.
+     * @param {function} callback 
+     */
+  		value: function ObserveVariableChange(callback) {
+  			var _this = this;
+
+  			if (this.variableChangedEvent == null) {
+  				this.variableChangedEvent = function (variableName, newValue) {
+  					_this.variableChangedEventCallbacks.forEach(function (cb) {
+  						cb(variableName, newValue);
+  					});
+  				};
+  			}
+
+  			this.variableChangedEventCallbacks.push(callback);
+  		}
+  	}, {
+  		key: 'CopyFrom',
+  		value: function CopyFrom(varState) {
+  			this._globalVariables = varState._globalVariables;
+  			this.variableChangedEvent = varState.variableChangedEvent;
+
+  			if (varState.batchObservingVariableChanges != this.batchObservingVariableChanges) {
+
+  				if (varState.batchObservingVariableChanges) {
+  					this._batchObservingVariableChanges = true;
+  					this._changedVariables = varState._changedVariables;
+  				} else {
+  					this._batchObservingVariableChanges = false;
+  					this._changedVariables = null;
+  				}
+  			}
+  		}
+  	}, {
+  		key: 'GetVariableWithName',
+  		value: function GetVariableWithName(name, contextIndex) {
+  			if (typeof contextIndex === 'undefined') contextIndex = -1;
+
+  			var varValue = this.GetRawVariableWithName(name, contextIndex);
+
+  			// Get value from pointer?
+  			//		var varPointer = varValue as VariablePointerValue;
+  			var varPointer = varValue;
+  			if (varPointer instanceof VariablePointerValue) {
+  				varValue = this.ValueAtVariablePointer(varPointer);
+  			}
+
+  			return varValue;
+  		}
+  	}, {
+  		key: 'GetRawVariableWithName',
+  		value: function GetRawVariableWithName(name, contextIndex) {
+  			var varValue = null;
+
+  			// 0 context = global
+  			if (contextIndex == 0 || contextIndex == -1) {
+  				if (varValue = this._globalVariables[name]) return varValue;
+  			}
+
+  			// Temporary
+  			varValue = this._callStack.GetTemporaryVariableWithName(name, contextIndex);
+
+  			if (varValue == null) throw "RUNTIME ERROR: Variable '" + name + "' could not be found in context '" + contextIndex + "'. This shouldn't be possible so is a bug in the ink engine. Please try to construct a minimal story that reproduces the problem and report to inkle, thank you!";
+
+  			return varValue;
+  		}
+  	}, {
+  		key: 'ValueAtVariablePointer',
+  		value: function ValueAtVariablePointer(pointer) {
+  			return this.GetVariableWithName(pointer.variableName, pointer.contextIndex);
+  		}
+  	}, {
+  		key: 'Assign',
+  		value: function Assign(varAss, value) {
+  			var name = varAss.variableName;
+  			var contextIndex = -1;
+
+  			// Are we assigning to a global variable?
+  			var setGlobal = false;
+  			if (varAss.isNewDeclaration) {
+  				setGlobal = varAss.isGlobal;
+  			} else {
+  				setGlobal = !!this._globalVariables[name];
+  			}
+
+  			// Constructing new variable pointer reference
+  			if (varAss.isNewDeclaration) {
+  				//			var varPointer = value as VariablePointerValue;
+  				var varPointer = value;
+  				if (varPointer instanceof VariablePointerValue) {
+  					var fullyResolvedVariablePointer = this.ResolveVariablePointer(varPointer);
+  					value = fullyResolvedVariablePointer;
+  				}
+  			}
+
+  			// Assign to existing variable pointer?
+  			// Then assign to the variable that the pointer is pointing to by name.
+  			else {
+
+  					// De-reference variable reference to point to
+  					var existingPointer = null;
+  					do {
+  						//				existingPointer = GetRawVariableWithName (name, contextIndex) as VariablePointerValue;
+  						existingPointer = this.GetRawVariableWithName(name, contextIndex);
+  						if (existingPointer instanceof VariablePointerValue) {
+  							name = existingPointer.variableName;
+  							contextIndex = existingPointer.contextIndex;
+  							setGlobal = contextIndex == 0;
+  						}
+  					} while (existingPointer instanceof VariablePointerValue);
+  				}
+
+  			if (setGlobal) {
+  				this.SetGlobal(name, value);
+  			} else {
+  				this._callStack.SetTemporaryVariable(name, value, varAss.isNewDeclaration, contextIndex);
+  			}
+  		}
+  	}, {
+  		key: 'SetGlobal',
+  		value: function SetGlobal(variableName, value) {
+  			var oldValue = null;
+  			oldValue = this._globalVariables[variableName];
+
+  			this._globalVariables[variableName] = value;
+
+  			if (this.variableChangedEvent != null && value !== oldValue) {
+
+  				if (this.batchObservingVariableChanges) {
+  					this._changedVariables.push(variableName);
+  				} else {
+  					this.variableChangedEvent(variableName, value);
+  				}
+  			}
+  		}
+  	}, {
+  		key: 'ResolveVariablePointer',
+  		value: function ResolveVariablePointer(varPointer) {
+  			var contextIndex = varPointer.contextIndex;
+
+  			if (contextIndex == -1) contextIndex = this.GetContextIndexOfVariableNamed(varPointer.variableName);
+
+  			var valueOfVariablePointedTo = this.GetRawVariableWithName(varPointer.variableName, contextIndex);
+
+  			// Extra layer of indirection:
+  			// When accessing a pointer to a pointer (e.g. when calling nested or
+  			// recursive functions that take a variable references, ensure we don't create
+  			// a chain of indirection by just returning the final target.
+  			//		var doubleRedirectionPointer = valueOfVariablePointedTo as VariablePointerValue;
+  			var doubleRedirectionPointer = valueOfVariablePointedTo;
+  			if (doubleRedirectionPointer instanceof VariablePointerValue) {
+  				return doubleRedirectionPointer;
+  			}
+
+  			// Make copy of the variable pointer so we're not using the value direct from
+  			// the runtime. Temporary must be local to the current scope.
+  			else {
+  					return new VariablePointerValue(varPointer.variableName, contextIndex);
+  				}
+  		}
+  	}, {
+  		key: 'GetContextIndexOfVariableNamed',
+  		value: function GetContextIndexOfVariableNamed(varName) {
+  			if (this._globalVariables[varName]) return 0;
+
+  			return this._callStack.currentElementIndex;
+  		}
+  		//the original code uses a magic getter and setter for global variables, allowing things like variableState['varname]. This is not quite possible in js without a Proxy, so it is replaced with this $ function.
+
+  	}, {
+  		key: '$',
+  		value: function $(variableName, value) {
+  			if (typeof value === 'undefined') {
+  				var varContents = this._globalVariables[variableName];
+  				if (typeof varContents !== 'undefined')
+  					//			return (varContents as Runtime.Value).valueObject;
+  					return varContents.valueObject;else return null;
+  			} else {
+  				if (typeof this._globalVariables[variableName] === 'undefined') {
+  					throw new StoryException("Variable '" + variableName + "' doesn't exist, so can't be set.");
+  				}
+
+  				var val = Value.Create(value);
+  				if (val == null) {
+  					if (value == null) {
+  						throw new StoryException("Cannot pass null to VariableState");
+  					} else {
+  						throw new StoryException("Invalid value passed to VariableState: " + value.toString());
+  					}
+  				}
+
+  				this.SetGlobal(variableName, val);
+  			}
+  		}
+  	}, {
+  		key: 'batchObservingVariableChanges',
+  		get: function get() {
+  			return this._batchObservingVariableChanges;
+  		},
+  		set: function set(value) {
+  			var _this2 = this;
+
+  			value = !!value;
+  			this._batchObservingVariableChanges = value;
+  			if (value) {
+  				this._changedVariables = [];
+  			}
+
+  			// Finished observing variables in a batch - now send
+  			// notifications for changed variables all in one go.
+  			else {
+  					if (this._changedVariables != null) {
+  						this._changedVariables.forEach(function (variableName) {
+  							var currentValue = _this2._globalVariables[variableName];
+  							_this2.variableChangedEvent(variableName, currentValue);
+  						});
+  					}
+
+  					this._changedVariables = null;
+  				}
+  		}
+  	}, {
+  		key: 'jsonToken',
+  		get: function get() {
+  			return JsonSerialisation.DictionaryRuntimeObjsToJObject(this._globalVariables);
+  		},
+  		set: function set(value) {
+  			this._globalVariables = JsonSerialisation.JObjectToDictionaryRuntimeObjs(value);
+  		}
+  	}]);
+  	return VariablesState;
+  }();
+
+  //Taken from https://gist.github.com/blixt/f17b47c62508be59987b
+  //Ink uses a seedable PRNG of which there is none in native javascript.
+  var PRNG = function () {
+  	function PRNG(seed) {
+  		babelHelpers.classCallCheck(this, PRNG);
+
+  		this._seed = seed % 2147483647;
+  		if (this._seed <= 0) this._seed += 2147483646;
+  	}
+
+  	babelHelpers.createClass(PRNG, [{
+  		key: "next",
+  		value: function next() {
+  			return this._seed = this._seed * 16807 % 2147483647;
+  		}
+  	}, {
+  		key: "nextFloat",
+  		value: function nextFloat() {
+  			return (this.next() - 1) / 2147483646;
+  		}
+  	}]);
+  	return PRNG;
+  }();
+
+  var StoryState = function () {
+  	function StoryState(story) {
+  		babelHelpers.classCallCheck(this, StoryState);
+
+  		//actual constructor
+  		this.story = story;
+
+  		this._outputStream = [];
+
+  		this._evaluationStack = [];
+
+  		this.callStack = new CallStack(story.rootContentContainer);
+  		this._variablesState = new VariablesState(this.callStack);
+
+  		this._visitCounts = {};
+  		this._turnIndices = {};
+  		this._currentTurnIndex = -1;
+
+  		this.divertedTargetObject = null;
+
+  		var timeSeed = new Date().getTime();
+  		this.storySeed = new PRNG(timeSeed).next() % 100;
+  		this.previousRandom = 0;
+
+  		this._currentChoices = [];
+  		this._currentErrors = null;
+
+  		this.didSafeExit = false;
+
+  		this._isExternalFunctionEvaluation = false;
+  		this._originalCallstack = null;
+  		this._originalEvaluationStackHeight = 0;
+
+  		this.GoToStart();
+  	}
+
+  	babelHelpers.createClass(StoryState, [{
+  		key: 'MatchRightGlueForLeftGlue',
+  		value: function MatchRightGlueForLeftGlue(leftGlue) {
+  			if (!leftGlue.isLeft) return null;
+
+  			for (var i = this._outputStream.length - 1; i >= 0; i--) {
+  				var c = this._outputStream[i];
+  				//			var g = c as Glue;
+  				var g = c;
+  				if (g instanceof Glue && g.isRight && g.parent == leftGlue.parent) {
+  					return g;
+  				} else if (c instanceof ControlCommand) // e.g. BeginString
+  					break;
+  			}
+
+  			return null;
+  		}
+  	}, {
+  		key: 'GoToStart',
+  		value: function GoToStart() {
+  			this.callStack.currentElement.currentContainer = this.story.mainContentContainer;
+  			this.callStack.currentElement.currentContentIndex = 0;
+  		}
+  	}, {
+  		key: 'ResetErrors',
+  		value: function ResetErrors() {
+  			this._currentErrors = null;
+  		}
+  	}, {
+  		key: 'ResetOutput',
+  		value: function ResetOutput() {
+  			this._outputStream.length = 0;
+  		}
+  	}, {
+  		key: 'PushEvaluationStack',
+  		value: function PushEvaluationStack(obj) {
+  			this.evaluationStack.push(obj);
+  		}
+  	}, {
+  		key: 'PopEvaluationStack',
+  		value: function PopEvaluationStack(numberOfObjects) {
+  			if (!numberOfObjects) {
+  				var obj = this.evaluationStack.pop();
+  				return obj;
+  			} else {
+  				if (numberOfObjects > this.evaluationStack.length) {
+  					throw "trying to pop too many objects";
+  				}
+
+  				var popped = this.evaluationStack.splice(this.evaluationStack.length - numberOfObjects, numberOfObjects);
+  				return popped;
+  			}
+  		}
+  	}, {
+  		key: 'PeekEvaluationStack',
+  		value: function PeekEvaluationStack() {
+  			return this.evaluationStack[this.evaluationStack.length - 1];
+  		}
+  	}, {
+  		key: 'PushToOutputStream',
+  		value: function PushToOutputStream(obj) {
+  			var _this = this;
+
+  			//		var text = obj as StringValue;
+  			var text = obj;
+  			if (text instanceof StringValue) {
+  				var listText = this.TrySplittingHeadTailWhitespace(text);
+  				if (listText != null) {
+  					listText.forEach(function (textObj) {
+  						_this.PushToOutputStreamIndividual(textObj);
+  					});
+  					return;
+  				}
+  			}
+
+  			this.PushToOutputStreamIndividual(obj);
+  		}
+  	}, {
+  		key: 'TrySplittingHeadTailWhitespace',
+  		value: function TrySplittingHeadTailWhitespace(single) {
+  			var str = single.value;
+
+  			var headFirstNewlineIdx = -1;
+  			var headLastNewlineIdx = -1;
+  			for (var i = 0; i < str.length; ++i) {
+  				var c = str[i];
+  				if (c == '\n') {
+  					if (headFirstNewlineIdx == -1) headFirstNewlineIdx = i;
+  					headLastNewlineIdx = i;
+  				} else if (c == ' ' || c == '\t') continue;else break;
+  			}
+
+  			var tailLastNewlineIdx = -1;
+  			var tailFirstNewlineIdx = -1;
+  			for (var i = 0; i < str.length; ++i) {
+  				var c = str[i];
+  				if (c == '\n') {
+  					if (tailLastNewlineIdx == -1) tailLastNewlineIdx = i;
+  					tailFirstNewlineIdx = i;
+  				} else if (c == ' ' || c == '\t') continue;else break;
+  			}
+
+  			// No splitting to be done?
+  			if (headFirstNewlineIdx == -1 && tailLastNewlineIdx == -1) return null;
+
+  			var listTexts = [];
+  			var innerStrStart = 0;
+  			var innerStrEnd = str.length;
+
+  			if (headFirstNewlineIdx != -1) {
+  				if (headFirstNewlineIdx > 0) {
+  					var leadingSpaces = str.substring(0, headFirstNewlineIdx);
+  					listTexts.push(leadingSpaces);
+  				}
+  				listTexts.push(new StringValue("\n"));
+  				innerStrStart = headLastNewlineIdx + 1;
+  			}
+
+  			if (tailLastNewlineIdx != -1) {
+  				innerStrEnd = tailFirstNewlineIdx;
+  			}
+
+  			if (innerStrEnd > innerStrStart) {
+  				var innerStrText = str.substring(innerStrStart, innerStrEnd - innerStrStart);
+  				listTexts.push(new StringValue(innerStrText));
+  			}
+
+  			if (tailLastNewlineIdx != -1 && tailFirstNewlineIdx > headLastNewlineIdx) {
+  				listTexts.push(new StringValue("\n"));
+  				if (tailLastNewlineIdx < str.length - 1) {
+  					var numSpaces = str.Length - tailLastNewlineIdx - 1;
+  					var trailingSpaces = new StringValue(str.substring(tailLastNewlineIdx + 1, numSpaces));
+  					listTexts.push(trailingSpaces);
+  				}
+  			}
+
+  			return listTexts;
+  		}
+  	}, {
+  		key: 'PushToOutputStreamIndividual',
+  		value: function PushToOutputStreamIndividual(obj) {
+  			var glue = obj;
+  			var text = obj;
+
+  			var includeInOutput = true;
+
+  			if (glue instanceof Glue) {
+  				// Found matching left-glue for right-glue? Close it.
+  				var existingRightGlue = this.currentRightGlue;
+  				var foundMatchingLeftGlue = !!(glue.isLeft && existingRightGlue && glue.parent == existingRightGlue.parent);
+  				var matchingRightGlue = null;
+
+  				if (glue.isLeft) matchingRightGlue = this.MatchRightGlueForLeftGlue(glue);
+
+  				// Left/Right glue is auto-generated for inline expressions
+  				// where we want to absorb newlines but only in a certain direction.
+  				// "Bi" glue is written by the user in their ink with <>
+  				if (glue.isLeft || glue.isBi) {
+  					this.TrimNewlinesFromOutputStream(matchingRightGlue);
+  				}
+
+  				includeInOutput = glue.isBi || glue.isRight;
+  			} else if (text instanceof StringValue) {
+
+  				if (this.currentGlueIndex != -1) {
+
+  					// Absorb any new newlines if there's existing glue
+  					// in the output stream.
+  					// Also trim any extra whitespace (spaces/tabs) if so.
+  					if (text.isNewline) {
+  						this.TrimFromExistingGlue();
+  						includeInOutput = false;
+  					}
+
+  					// Able to completely reset when
+  					else if (text.isNonWhitespace) {
+  							this.RemoveExistingGlue();
+  						}
+  				} else if (text.isNewline) {
+  					if (this.outputStreamEndsInNewline || !this.outputStreamContainsContent) includeInOutput = false;
+  				}
+  			}
+
+  			if (includeInOutput) {
+  				this._outputStream.push(obj);
+  			}
+  		}
+  	}, {
+  		key: 'TrimNewlinesFromOutputStream',
+  		value: function TrimNewlinesFromOutputStream(rightGlueToStopAt) {
+  			var removeWhitespaceFrom = -1;
+  			var rightGluePos = -1;
+  			var foundNonWhitespace = false;
+
+  			// Work back from the end, and try to find the point where
+  			// we need to start removing content. There are two ways:
+  			//  - Start from the matching right-glue (because we just saw a left-glue)
+  			//  - Simply work backwards to find the first newline in a string of whitespace
+  			var i = this._outputStream.length - 1;
+  			while (i >= 0) {
+  				var obj = this._outputStream[i];
+  				//			var cmd = obj as ControlCommand;
+  				var cmd = obj;
+  				//			var txt = obj as StringValue;
+  				var txt = obj;
+  				//			var glue = obj as Glue;
+  				var glue = obj;
+
+  				if (cmd instanceof ControlCommand || txt instanceof StringValue && txt.isNonWhitespace) {
+  					foundNonWhitespace = true;
+  					if (rightGlueToStopAt == null) break;
+  				} else if (rightGlueToStopAt && glue instanceof Glue && glue == rightGlueToStopAt) {
+  					rightGluePos = i;
+  					break;
+  				} else if (txt instanceof StringValue && txt.isNewline && !foundNonWhitespace) {
+  					removeWhitespaceFrom = i;
+  				}
+  				i--;
+  			}
+
+  			// Remove the whitespace
+  			if (removeWhitespaceFrom >= 0) {
+  				i = removeWhitespaceFrom;
+  				while (i < this._outputStream.length) {
+  					//				var text = _outputStream [i] as StringValue;
+  					var text = this._outputStream[i];
+  					if (text instanceof StringValue) {
+  						this._outputStream.splice(i, 1);
+  					} else {
+  						i++;
+  					}
+  				}
+  			}
+
+  			if (rightGlueToStopAt && rightGluePos > -1) {
+  				i = rightGluePos;
+  				while (i < this._outputStream.length) {
+  					if (this._outputStream[i] instanceof Glue && this._outputStream[i].isRight) {
+  						this.outputStream.splice(i, 1);
+  					} else {
+  						i++;
+  					}
+  				}
+  			}
+  		}
+  	}, {
+  		key: 'TrimFromExistingGlue',
+  		value: function TrimFromExistingGlue() {
+  			var i = this.currentGlueIndex;
+  			while (i < this._outputStream.length) {
+  				//			var txt = _outputStream [i] as StringValue;
+  				var txt = this._outputStream[i];
+  				if (txt instanceof StringValue && !txt.isNonWhitespace) this._outputStream.splice(i, 1);else i++;
+  			}
+  		}
+  	}, {
+  		key: 'RemoveExistingGlue',
+  		value: function RemoveExistingGlue() {
+  			for (var i = this._outputStream.length - 1; i >= 0; i--) {
+  				var c = this._outputStream[i];
+  				if (c instanceof Glue) {
+  					this._outputStream.splice(i, 1);
+  				} else if (c instanceof ControlCommand) {
+  					// e.g. BeginString
+  					break;
+  				}
+  			}
+  		}
+  	}, {
+  		key: 'ForceEnd',
+  		value: function ForceEnd() {
+  			while (this.callStack.canPopThread) {
+  				this.callStack.PopThread();
+  			}while (this.callStack.canPop) {
+  				this.callStack.Pop();
+  			}this.currentChoices.length = 0;
+
+  			this.currentContentObject = null;
+  			this.previousContentObject = null;
+
+  			this.didSafeExit = true;
+  		}
+  	}, {
+  		key: 'SetChosenPath',
+  		value: function SetChosenPath(path) {
+  			// Changing direction, assume we need to clear current set of choices
+  			this.currentChoices.length = 0;
+
+  			this.currentPath = path;
+
+  			this._currentTurnIndex++;
+  		}
+  	}, {
+  		key: 'StartExternalFunctionEvaluation',
+  		value: function StartExternalFunctionEvaluation(funcContainer, args) {
+  			// We'll start a new callstack, so keep hold of the original,
+  			// as well as the evaluation stack so we know if the function
+  			// returned something
+  			this._originalCallstack = this.callStack;
+  			this._originalEvaluationStackHeight = this.evaluationStack.length;
+
+  			// Create a new base call stack element.
+  			this.callStack = new CallStack(funcContainer);
+  			this.callStack.currentElement.type = PushPopType.Function;
+
+  			// By setting ourselves in external function evaluation mode,
+  			// we're saying it's okay to end the flow without a Done or End,
+  			// but with a ~ return instead.
+  			this._isExternalFunctionEvaluation = true;
+
+  			// Pass arguments onto the evaluation stack
+  			if (args != null) {
+  				for (var i = 0; i < args.length; i++) {
+  					if (!(typeof args[i] === 'number' || typeof args[i] === 'string')) {
+  						throw "ink arguments when calling EvaluateFunction must be int, float or string";
+  					}
+
+  					this.evaluationStack.push(Value.Create(args[i]));
+  				}
+  			}
+  		}
+  	}, {
+  		key: 'TryExitExternalFunctionEvaluation',
+  		value: function TryExitExternalFunctionEvaluation() {
+  			if (this._isExternalFunctionEvaluation && this.callStack.elements.length == 1 && this.callStack.currentElement.type == PushPopType.Function) {
+  				this.currentContentObject = null;
+  				this.didSafeExit = true;
+  				return true;
+  			}
+
+  			return false;
+  		}
+  	}, {
+  		key: 'CompleteExternalFunctionEvaluation',
+  		value: function CompleteExternalFunctionEvaluation() {
+  			// Do we have a returned value?
+  			// Potentially pop multiple values off the stack, in case we need
+  			// to clean up after ourselves (e.g. caller of EvaluateFunction may
+  			// have passed too many arguments, and we currently have no way to check for that)
+  			var returnedObj = null;
+  			while (this.evaluationStack.length > this._originalEvaluationStackHeight) {
+  				var poppedObj = this.PopEvaluationStack();
+  				if (returnedObj == null) returnedObj = poppedObj;
+  			}
+
+  			// Restore our own state
+  			this.callStack = this._originalCallstack;
+  			this._originalCallstack = null;
+  			this._originalEvaluationStackHeight = 0;
+
+  			if (returnedObj) {
+  				if (returnedObj instanceof Void) return null;
+
+  				// Some kind of value, if not void
+  				//			var returnVal = returnedObj as Runtime.Value;
+  				var returnVal = returnedObj;
+
+  				// DivertTargets get returned as the string of components
+  				// (rather than a Path, which isn't public)
+  				if (returnVal.valueType == ValueType.DivertTarget) {
+  					return returnVal.valueObject.toString();
+  				}
+
+  				// Other types can just have their exact object type:
+  				// int, float, string. VariablePointers get returned as strings.
+  				return returnVal.valueObject;
+  			}
+
+  			return null;
+  		}
+  	}, {
+  		key: 'AddError',
+  		value: function AddError(message) {
+  			if (this._currentErrors == null) {
+  				this._currentErrors = [];
+  			}
+
+  			this._currentErrors.push(message);
+  		}
+  	}, {
+  		key: 'VisitCountAtPathString',
+  		value: function VisitCountAtPathString(pathString) {
+  			var visitCountOut;
+  			if (visitCountOut = this.visitCounts[pathString]) return visitCountOut;
+
+  			return 0;
+  		}
+  	}, {
+  		key: 'Copy',
+  		value: function Copy() {
+  			var copy = new StoryState(this.story);
+
+  			copy.outputStream.push.apply(copy.outputStream, this._outputStream);
+  			copy.currentChoices.push.apply(copy.currentChoices, this.currentChoices);
+
+  			if (this.hasError) {
+  				copy.currentErrors = [];
+  				copy.currentErrors.push.apply(copy.currentErrors, this.currentErrors);
+  			}
+
+  			copy.callStack = new CallStack(this.callStack);
+
+  			copy._variablesState = new VariablesState(copy.callStack);
+  			copy.variablesState.CopyFrom(this.variablesState);
+
+  			copy.evaluationStack.push.apply(copy.evaluationStack, this.evaluationStack);
+
+  			if (this.divertedTargetObject != null) copy.divertedTargetObject = this.divertedTargetObject;
+
+  			copy.previousContentObject = this.previousContentObject;
+
+  			copy._visitCounts = this._visitCounts;
+  			copy._turnIndices = this._turnIndices;
+  			copy._currentTurnIndex = this.currentTurnIndex;
+  			copy.storySeed = this.storySeed;
+  			copy.previousRandom = this.previousRandom;
+
+  			copy.didSafeExit = this.didSafeExit;
+
+  			return copy;
+  		}
+  	}, {
+  		key: 'toJson',
+  		value: function toJson(indented) {
+  			return JSON.stringify(this.jsonToken, null, indented ? 2 : 0);
+  		}
+  	}, {
+  		key: 'LoadJson',
+  		value: function LoadJson(jsonString) {
+  			this.jsonToken = JSON.parse(jsonString);
+  		}
+  	}, {
+  		key: 'currentChoices',
+  		get: function get() {
+  			return this._currentChoices;
+  		}
+  	}, {
+  		key: 'currentErrors',
+  		get: function get() {
+  			return this._currentErrors;
+  		}
+  	}, {
+  		key: 'visitCounts',
+  		get: function get() {
+  			return this._visitCounts;
+  		}
+  	}, {
+  		key: 'turnIndices',
+  		get: function get() {
+  			return this._turnIndices;
+  		}
+  	}, {
+  		key: 'currentTurnIndex',
+  		get: function get() {
+  			return this._currentTurnIndex;
+  		}
+  	}, {
+  		key: 'variablesState',
+  		get: function get() {
+  			return this._variablesState;
+  		}
+  	}, {
+  		key: 'currentContentObject',
+  		get: function get() {
+  			return this.callStack.currentElement.currentObject;
+  		},
+  		set: function set(value) {
+  			this.callStack.currentElement.currentObject = value;
+  		}
+  	}, {
+  		key: 'hasError',
+  		get: function get() {
+  			return this.currentErrors != null && this.currentErrors.length > 0;
+  		}
+  	}, {
+  		key: 'inExpressionEvaluation',
+  		get: function get() {
+  			return this.callStack.currentElement.inExpressionEvaluation;
+  		},
+  		set: function set(value) {
+  			this.callStack.currentElement.inExpressionEvaluation = value;
+  		}
+  	}, {
+  		key: 'evaluationStack',
+  		get: function get() {
+  			return this._evaluationStack;
+  		}
+  	}, {
+  		key: 'outputStreamEndsInNewline',
+  		get: function get() {
+  			if (this._outputStream.length > 0) {
+
+  				for (var i = this._outputStream.length - 1; i >= 0; i--) {
+  					var obj = this._outputStream[i];
+  					if (obj instanceof ControlCommand) // e.g. BeginString
+  						break;
+  					var text = this._outputStream[i];
+  					if (text instanceof StringValue) {
+  						if (text.isNewline) return true;else if (text.isNonWhitespace) break;
+  					}
+  				}
+  			}
+
+  			return false;
+  		}
+  	}, {
+  		key: 'outputStreamContainsContent',
+  		get: function get() {
+  			for (var i = 0; i < this._outputStream.length; i++) {
+  				if (this._outputStream[i] instanceof StringValue) return true;
+  			}
+  			return false;
+  		}
+  	}, {
+  		key: 'currentGlueIndex',
+  		get: function get() {
+  			for (var i = this._outputStream.length - 1; i >= 0; i--) {
+  				var c = this._outputStream[i];
+  				//			var glue = c as Glue;
+  				var glue = c;
+  				if (glue instanceof Glue) return i;else if (c instanceof ControlCommand) // e.g. BeginString
+  					break;
+  			}
+  			return -1;
+  		}
+  	}, {
+  		key: 'currentRightGlue',
+  		get: function get() {
+  			for (var i = this._outputStream.length - 1; i >= 0; i--) {
+  				var c = this._outputStream[i];
+  				//			var glue = c as Glue;
+  				var glue = c;
+  				if (glue instanceof Glue && glue.isRight) return glue;else if (c instanceof ControlCommand) // e.g. BeginString
+  					break;
+  			}
+  			return null;
+  		}
+  	}, {
+  		key: 'inStringEvaluation',
+  		get: function get() {
+  			for (var i = this._outputStream.length - 1; i >= 0; i--) {
+  				//			var cmd = this._outputStream[i] as ControlCommand;
+  				var cmd = this._outputStream[i];
+  				if (cmd instanceof ControlCommand && cmd.commandType == ControlCommand.CommandType.BeginString) {
+  					return true;
+  				}
+  			}
+
+  			return false;
+  		}
+  	}, {
+  		key: 'currentText',
+  		get: function get() {
+  			var sb = new StringBuilder();
+
+  			this._outputStream.forEach(function (outputObj) {
+  				//			var textContent = outputObj as StringValue;
+  				var textContent = outputObj;
+  				if (textContent instanceof StringValue) {
+  					sb.Append(textContent.value);
+  				}
+  			});
+
+  			return sb.toString();
+  		}
+  	}, {
+  		key: 'currentTags',
+  		get: function get() {
+  			var tags = [];
+
+  			this._outputStream.forEach(function (outputObj) {
+  				//			var tag = outputObj as Tag;
+  				var tag = outputObj;
+  				if (tag instanceof Tag) {
+  					tags.push(tag.text);
+  				}
+  			});
+
+  			return tags;
+  		}
+  	}, {
+  		key: 'outputStream',
+  		get: function get() {
+  			return this._outputStream;
+  		}
+  	}, {
+  		key: 'currentPath',
+  		get: function get() {
+  			if (this.currentContentObject == null) return null;
+
+  			return this.currentContentObject.path;
+  		},
+  		set: function set(value) {
+  			if (value != null) this.currentContentObject = this.story.ContentAtPath(value);else this.currentContentObject = null;
+  		}
+  	}, {
+  		key: 'currentContainer',
+  		get: function get() {
+  			return this.callStack.currentElement.currentContainer;
+  		}
+  	}, {
+  		key: 'previousContentObject',
+  		get: function get() {
+  			return this.callStack.currentThread.previousContentObject;
+  		},
+  		set: function set(value) {
+  			this.callStack.currentThread.previousContentObject = value;
+  		}
+  	}, {
+  		key: 'jsonToken',
+  		get: function get() {
+  			var _this2 = this;
+
+  			var obj = {};
+
+  			var choiceThreads = null;
+  			this.currentChoices.forEach(function (c) {
+  				c.originalChoicePath = c.choicePoint.path.componentsString;
+  				c.originalThreadIndex = c.threadAtGeneration.threadIndex;
+
+  				if (_this2.callStack.ThreadWithIndex(c.originalThreadIndex) == null) {
+  					if (choiceThreads == null) choiceThreads = {};
+
+  					choiceThreads[c.originalThreadIndex.toString()] = c.threadAtGeneration.jsonToken;
+  				}
+  			});
+
+  			if (this.choiceThreads != null) obj["choiceThreads"] = this.choiceThreads;
+
+  			obj["callstackThreads"] = this.callStack.GetJsonToken();
+  			obj["variablesState"] = this.variablesState.jsonToken;
+
+  			obj["evalStack"] = JsonSerialisation.ListToJArray(this.evaluationStack);
+
+  			obj["outputStream"] = JsonSerialisation.ListToJArray(this._outputStream);
+
+  			obj["currentChoices"] = JsonSerialisation.ListToJArray(this.currentChoices);
+
+  			if (this.divertedTargetObject != null) obj["currentDivertTarget"] = this.divertedTargetObject.path.componentsString;
+
+  			obj["visitCounts"] = JsonSerialisation.IntDictionaryToJObject(this.visitCounts);
+  			obj["turnIndices"] = JsonSerialisation.IntDictionaryToJObject(this.turnIndices);
+  			obj["turnIdx"] = this.currentTurnIndex;
+  			obj["storySeed"] = this.storySeed;
+
+  			obj["inkSaveVersion"] = StoryState.kInkSaveStateVersion;
+
+  			// Not using this right now, but could do in future.
+  			obj["inkFormatVersion"] = this.story.inkVersionCurrent;
+
+  			return obj;
+  		},
+  		set: function set(value) {
+  			var _this3 = this;
+
+  			var jObject = value;
+
+  			var jSaveVersion = jObject["inkSaveVersion"];
+  			if (jSaveVersion == null) {
+  				throw new StoryException("ink save format incorrect, can't load.");
+  			} else if (parseInt(jSaveVersion) < StoryState.kMinCompatibleLoadVersion) {
+  				throw new StoryException("Ink save format isn't compatible with the current version (saw '" + jSaveVersion + "', but minimum is " + StoryState.kMinCompatibleLoadVersion + "), so can't load.");
+  			}
+
+  			this.callStack.SetJsonToken(jObject["callstackThreads"], this.story);
+  			this.variablesState.jsonToken = jObject["variablesState"];
+
+  			this._evaluationStack = JsonSerialisation.JArrayToRuntimeObjList(jObject["evalStack"]);
+
+  			this._outputStream = JsonSerialisation.JArrayToRuntimeObjList(jObject["outputStream"]);
+
+  			//		currentChoices = Json.JArrayToRuntimeObjList<Choice>((JArray)jObject ["currentChoices"]);
+  			this._currentChoices = JsonSerialisation.JArrayToRuntimeObjList(jObject["currentChoices"]);
+
+  			var currentDivertTargetPath = jObject["currentDivertTarget"];
+  			if (currentDivertTargetPath != null) {
+  				var divertPath = new Path$1(currentDivertTargetPath.toString());
+  				this.divertedTargetObject = this.story.ContentAtPath(divertPath);
+  			}
+
+  			this._visitCounts = JsonSerialisation.JObjectToIntDictionary(jObject["visitCounts"]);
+  			this._turnIndices = JsonSerialisation.JObjectToIntDictionary(jObject["turnIndices"]);
+  			this._currentTurnIndex = parseInt(jObject["turnIdx"]);
+  			this.storySeed = parseInt(jObject["storySeed"]);
+
+  			//		var jChoiceThreads = jObject["choiceThreads"] as JObject;
+  			var jChoiceThreads = jObject["choiceThreads"];
+
+  			this.currentChoices.forEach(function (c) {
+  				c.choicePoint = _this3.story.ContentAtPath(new Path$1(c.originalChoicePath));
+
+  				var foundActiveThread = _this3.callStack.ThreadWithIndex(c.originalThreadIndex);
+  				if (foundActiveThread != null) {
+  					c.threadAtGeneration = foundActiveThread;
+  				} else {
+  					var jSavedChoiceThread = jChoiceThreads[c.originalThreadIndex.toString()];
+  					c.threadAtGeneration = new CallStack.Thread(jSavedChoiceThread, _this3.story);
+  				}
+  			});
+  		}
+  	}]);
+  	return StoryState;
+  }();
+
+  StoryState.kInkSaveStateVersion = 5;
+  StoryState.kMinCompatibleLoadVersion = 4;
+
+  if (!Number.isInteger) {
+  	Number.isInteger = function isInteger(nVal) {
+  		return typeof nVal === "number" && isFinite(nVal) && nVal > -9007199254740992 && nVal < 9007199254740992 && Math.floor(nVal) === nVal;
+  	};
+  }
+
+  var Story = function (_InkObject) {
+  	babelHelpers.inherits(Story, _InkObject);
+
+  	function Story(jsonString) {
+  		babelHelpers.classCallCheck(this, Story);
+
+  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Story).call(this));
+
+  		_this.inkVersionCurrent = 15;
+  		_this.inkVersionMinimumCompatible = 15;
+
+  		_this._variableObservers = null;
+  		_this._externals = {};
+
+  		if (jsonString instanceof Container) {
+  			_this._mainContentContainer = jsonString;
+  		} else {
+  			//the original version only accepts a string as a constructor, but this is javascript and it's almost easier to get a JSON value than a string, so we're silently accepting btoh
+  			var rootObject = typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
+
+  			var versionObj = rootObject["inkVersion"];
+  			if (versionObj == null) throw "ink version number not found. Are you sure it's a valid .ink.json file?";
+
+  			var formatFromFile = parseInt(versionObj);
+  			if (formatFromFile > _this.inkVersionCurrent) {
+  				throw "Version of ink used to build story was newer than the current verison of the engine";
+  			} else if (formatFromFile < _this.inkVersionMinimumCompatible) {
+  				throw "Version of ink used to build story is too old to be loaded by this verison of the engine";
+  			} else if (formatFromFile != _this.inkVersionCurrent) {
+  				console.warn("WARNING: Version of ink used to build story doesn't match current version of engine. Non-critical, but recommend synchronising.");
+  			}
+
+  			var rootToken = rootObject["root"];
+  			if (rootToken == null) throw "Root node for ink not found. Are you sure it's a valid .ink.json file?";
+
+  			_this._mainContentContainer = JsonSerialisation.JTokenToRuntimeObject(rootToken);
+
+  			_this._hasValidatedExternals = null;
+  			_this.allowExternalFunctionFallbacks = false;
+
+  			_this.ResetState();
+  		}
+  		return _this;
+  	}
+
+  	babelHelpers.createClass(Story, [{
+  		key: 'ToJsonString',
+  		value: function ToJsonString() {
+  			var rootContainerJsonList = JsonSerialisation.RuntimeObjectToJToken(this._mainContentContainer);
+
+  			var rootObject = {};
+  			rootObject["inkVersion"] = this.inkVersionCurrent;
+  			rootObject["root"] = rootContainerJsonList;
+
+  			return JSON.stringify(rootObject);
+  		}
+  	}, {
+  		key: 'ResetState',
+  		value: function ResetState() {
+  			this._state = new StoryState(this);
+  			this._state.variablesState.ObserveVariableChange(this.VariableStateDidChangeEvent.bind(this));
+
+  			this.ResetGlobals();
+  		}
+  	}, {
+  		key: 'ResetErrors',
+  		value: function ResetErrors() {
+  			this._state.ResetErrors();
+  		}
+  	}, {
+  		key: 'ResetCallstack',
+  		value: function ResetCallstack() {
+  			this._state.ForceEnd();
+  		}
+  	}, {
+  		key: 'ResetGlobals',
+  		value: function ResetGlobals() {
+  			if (this._mainContentContainer.namedContent["global decl"]) {
+  				var originalPath = this.state.currentPath;
+
+  				this.ChoosePathString("global decl");
+
+  				// Continue, but without validating external bindings,
+  				// since we may be doing this reset at initialisation time.
+  				this.ContinueInternal();
+
+  				this.state.currentPath = originalPath;
+  			}
+  		}
+  	}, {
+  		key: 'Continue',
+  		value: function Continue() {
+  			if (!this._hasValidatedExternals) this.ValidateExternalBindings();
+
+  			return this.ContinueInternal();
+  		}
+  	}, {
+  		key: 'ContinueInternal',
+  		value: function ContinueInternal() {
+  			if (!this.canContinue) {
+  				throw new StoryException("Can't continue - should check canContinue before calling Continue");
+  			}
+
+  			this._state.ResetOutput();
+
+  			this._state.didSafeExit = false;
+
+  			this._state.variablesState.batchObservingVariableChanges = true;
+
+  			try {
+
+  				var stateAtLastNewline = null;
+
+  				// The basic algorithm here is:
+  				//
+  				//     do { Step() } while( canContinue && !outputStreamEndsInNewline );
+  				//
+  				// But the complexity comes from:
+  				//  - Stepping beyond the newline in case it'll be absorbed by glue later
+  				//  - Ensuring that non-text content beyond newlines are generated - i.e. choices,
+  				//    which are actually built out of text content.
+  				// So we have to take a snapshot of the state, continue prospectively,
+  				// and rewind if necessary.
+  				// This code is slightly fragile :-/
+  				//
+
+  				do {
+
+  					// Run main step function (walks through content)
+  					this.Step();
+
+  					// Run out of content and we have a default invisible choice that we can follow?
+  					if (!this.canContinue) {
+  						this.TryFollowDefaultInvisibleChoice();
+  					}
+
+  					// Don't save/rewind during string evaluation, which is e.g. used for choices
+  					if (!this.state.inStringEvaluation) {
+
+  						// We previously found a newline, but were we just double checking that
+  						// it wouldn't immediately be removed by glue?
+  						if (stateAtLastNewline != null) {
+
+  							// Cover cases that non-text generated content was evaluated last step
+  							var currText = this.currentText;
+  							var prevTextLength = stateAtLastNewline.currentText.length;
+  							var prevTagCount = stateAtLastNewline.currentTags.length;
+
+  							// Output has been extended?
+  							if (currText !== stateAtLastNewline.currentText || prevTagCount != this.currentTags.length) {
+
+  								// Original newline still exists?
+  								if (currText.length >= prevTextLength && currText[prevTextLength - 1] == '\n') {
+
+  									this.RestoreStateSnapshot(stateAtLastNewline);
+  									break;
+  								}
+
+  								// Newline that previously existed is no longer valid - e.g.
+  								// glue was encounted that caused it to be removed.
+  								else {
+  										stateAtLastNewline = null;
+  									}
+  							}
+  						}
+
+  						// Current content ends in a newline - approaching end of our evaluation
+  						if (this.state.outputStreamEndsInNewline) {
+
+  							// If we can continue evaluation for a bit:
+  							// Create a snapshot in case we need to rewind.
+  							// We're going to continue stepping in case we see glue or some
+  							// non-text content such as choices.
+  							if (this.canContinue) {
+  								stateAtLastNewline = this.StateSnapshot();
+  							}
+
+  							// Can't continue, so we're about to exit - make sure we
+  							// don't have an old state hanging around.
+  							else {
+  									stateAtLastNewline = null;
+  								}
+  						}
+  					}
+  				} while (this.canContinue);
+
+  				// Need to rewind, due to evaluating further than we should?
+  				if (stateAtLastNewline != null) {
+  					this.RestoreStateSnapshot(stateAtLastNewline);
+  				}
+
+  				// Finished a section of content / reached a choice point?
+  				if (!this.canContinue) {
+
+  					if (this.state.callStack.canPopThread) {
+  						this.Error("Thread available to pop, threads should always be flat by the end of evaluation?");
+  					}
+
+  					if (this.currentChoices.length == 0 && !this.state.didSafeExit && this._temporaryEvaluationContainer == null) {
+  						if (this.state.callStack.CanPop(PushPopType.Tunnel)) {
+  							this.Error("unexpectedly reached end of content. Do you need a '->->' to return from a tunnel?");
+  						} else if (this.state.callStack.CanPop(PushPopType.Function)) {
+  							this.Error("unexpectedly reached end of content. Do you need a '~ return'?");
+  						} else if (!this.state.callStack.canPop) {
+  							this.Error("ran out of content. Do you need a '-> DONE' or '-> END'?");
+  						} else {
+  							this.Error("unexpectedly reached end of content for unknown reason. Please debug compiler!");
+  						}
+  					}
+  				}
+  			} catch (e) {
+  				throw e;
+  				this.AddError(e.Message, e.useEndLineNumber);
+  			} finally {
+  				this.state.didSafeExit = false;
+
+  				this._state.variablesState.batchObservingVariableChanges = false;
+  			}
+
+  			return this.currentText;
+  		}
+  	}, {
+  		key: 'ContinueMaximally',
+  		value: function ContinueMaximally() {
+  			var sb = new StringBuilder();
+
+  			while (this.canContinue) {
+  				sb.Append(this.Continue());
+  			}
+
+  			return sb.toString();
+  		}
+  	}, {
+  		key: 'ContentAtPath',
+  		value: function ContentAtPath(path) {
+  			return this.mainContentContainer.ContentAtPath(path);
+  		}
+  	}, {
+  		key: 'StateSnapshot',
+  		value: function StateSnapshot() {
+  			return this.state.Copy();
+  		}
+  	}, {
+  		key: 'RestoreStateSnapshot',
+  		value: function RestoreStateSnapshot(state) {
+  			this._state = state;
+  		}
+  	}, {
+  		key: 'Step',
+  		value: function Step() {
+  			var shouldAddToStream = true;
+
+  			// Get current content
+  			var currentContentObj = this.state.currentContentObject;
+  			if (currentContentObj == null) {
+  				return;
+  			}
+  			// Step directly to the first element of content in a container (if necessary)
+  			//		Container currentContainer = currentContentObj as Container;
+  			var currentContainer = currentContentObj;
+  			while (currentContainer instanceof Container) {
+
+  				// Mark container as being entered
+  				this.VisitContainer(currentContainer, true);
+
+  				// No content? the most we can do is step past it
+  				if (currentContainer.content.length == 0) break;
+
+  				currentContentObj = currentContainer.content[0];
+  				this.state.callStack.currentElement.currentContentIndex = 0;
+  				this.state.callStack.currentElement.currentContainer = currentContainer;
+
+  				//			currentContainer = currentContentObj as Container;
+  				currentContainer = currentContentObj;
+  			}
+  			currentContainer = this.state.callStack.currentElement.currentContainer;
+
+  			// Is the current content object:
+  			//  - Normal content
+  			//  - Or a logic/flow statement - if so, do it
+  			// Stop flow if we hit a stack pop when we're unable to pop (e.g. return/done statement in knot
+  			// that was diverted to rather than called as a function)
+  			var isLogicOrFlowControl = this.PerformLogicAndFlowControl(currentContentObj);
+
+  			// Has flow been forced to end by flow control above?
+  			if (this.state.currentContentObject == null) {
+  				return;
+  			}
+
+  			if (isLogicOrFlowControl) {
+  				shouldAddToStream = false;
+  			}
+
+  			// Choice with condition?
+  			//		var choicePoint = currentContentObj as ChoicePoint;
+  			var choicePoint = currentContentObj;
+  			if (choicePoint instanceof ChoicePoint) {
+  				var choice = this.ProcessChoice(choicePoint);
+  				if (choice) {
+  					this.state.currentChoices.push(choice);
+  				}
+
+  				currentContentObj = null;
+  				shouldAddToStream = false;
+  			}
+
+  			// If the container has no content, then it will be
+  			// the "content" itself, but we skip over it.
+  			if (currentContentObj instanceof Container) {
+  				shouldAddToStream = false;
+  			}
+
+  			// Content to add to evaluation stack or the output stream
+  			if (shouldAddToStream) {
+
+  				// If we're pushing a variable pointer onto the evaluation stack, ensure that it's specific
+  				// to our current (possibly temporary) context index. And make a copy of the pointer
+  				// so that we're not editing the original runtime object.
+  				//			var varPointer = currentContentObj as VariablePointerValue;
+  				var varPointer = currentContentObj;
+  				if (varPointer instanceof VariablePointerValue && varPointer.contextIndex == -1) {
+
+  					// Create new object so we're not overwriting the story's own data
+  					var contextIdx = this.state.callStack.ContextForVariableNamed(varPointer.variableName);
+  					currentContentObj = new VariablePointerValue(varPointer.variableName, contextIdx);
+  				}
+
+  				// Expression evaluation content
+  				if (this.state.inExpressionEvaluation) {
+  					this.state.PushEvaluationStack(currentContentObj);
+  				}
+  				// Output stream content (i.e. not expression evaluation)
+  				else {
+  						this.state.PushToOutputStream(currentContentObj);
+  					}
+  			}
+
+  			// Increment the content pointer, following diverts if necessary
+  			this.NextContent();
+
+  			// Starting a thread should be done after the increment to the content pointer,
+  			// so that when returning from the thread, it returns to the content after this instruction.
+  			//		var controlCmd = currentContentObj as ControlCommand;
+  			var controlCmd = currentContentObj;
+  			if (controlCmd instanceof ControlCommand && controlCmd.commandType == ControlCommand.CommandType.StartThread) {
+  				this.state.callStack.PushThread();
+  			}
+  		}
+  	}, {
+  		key: 'VisitContainer',
+  		value: function VisitContainer(container, atStart) {
+  			if (!container.countingAtStartOnly || atStart) {
+  				if (container.visitsShouldBeCounted) this.IncrementVisitCountForContainer(container);
+
+  				if (container.turnIndexShouldBeCounted) this.RecordTurnIndexVisitToContainer(container);
+  			}
+  		}
+  	}, {
+  		key: 'VisitChangedContainersDueToDivert',
+  		value: function VisitChangedContainersDueToDivert() {
+  			var previousContentObject = this.state.previousContentObject;
+  			var newContentObject = this.state.currentContentObject;
+
+  			if (!newContentObject) return;
+
+  			// First, find the previously open set of containers
+  			var prevContainerSet = [];
+  			if (previousContentObject) {
+  				//			Container prevAncestor = previousContentObject as Container ?? previousContentObject.parent as Container;
+  				var prevAncestor = previousContentObject instanceof Container ? previousContentObject : previousContentObject.parent;
+  				while (prevAncestor instanceof Container) {
+  					prevContainerSet.push(prevAncestor);
+  					//				prevAncestor = prevAncestor.parent as Container;
+  					prevAncestor = prevAncestor.parent;
+  				}
+  			}
+
+  			// If the new object is a container itself, it will be visited automatically at the next actual
+  			// content step. However, we need to walk up the new ancestry to see if there are more new containers
+  			var currentChildOfContainer = newContentObject;
+  			//		Container currentContainerAncestor = currentChildOfContainer.parent as Container;
+  			var currentContainerAncestor = currentChildOfContainer.parent;
+  			while (currentContainerAncestor instanceof Container && prevContainerSet.indexOf(currentContainerAncestor) < 0) {
+
+  				// Check whether this ancestor container is being entered at the start,
+  				// by checking whether the child object is the first.
+  				var enteringAtStart = currentContainerAncestor.content.length > 0 && currentChildOfContainer == currentContainerAncestor.content[0];
+
+  				// Mark a visit to this container
+  				this.VisitContainer(currentContainerAncestor, enteringAtStart);
+
+  				currentChildOfContainer = currentContainerAncestor;
+  				//			currentContainerAncestor = currentContainerAncestor.parent as Container;
+  				currentContainerAncestor = currentContainerAncestor.parent;
+  			}
+  		}
+  	}, {
+  		key: 'ProcessChoice',
+  		value: function ProcessChoice(choicePoint) {
+  			var showChoice = true;
+
+  			// Don't create choice if choice point doesn't pass conditional
+  			if (choicePoint.hasCondition) {
+  				var conditionValue = this.state.PopEvaluationStack();
+  				if (!this.IsTruthy(conditionValue)) {
+  					showChoice = false;
+  				}
+  			}
+
+  			var startText = "";
+  			var choiceOnlyText = "";
+
+  			if (choicePoint.hasChoiceOnlyContent) {
+  				//			var choiceOnlyStrVal = state.PopEvaluationStack () as StringValue;
+  				var choiceOnlyStrVal = this.state.PopEvaluationStack();
+  				choiceOnlyText = choiceOnlyStrVal.value;
+  			}
+
+  			if (choicePoint.hasStartContent) {
+  				//			var startStrVal = state.PopEvaluationStack () as StringValue;
+  				var startStrVal = this.state.PopEvaluationStack();
+  				startText = startStrVal.value;
+  			}
+
+  			// Don't create choice if player has already read this content
+  			if (choicePoint.onceOnly) {
+  				var visitCount = this.VisitCountForContainer(choicePoint.choiceTarget);
+  				if (visitCount > 0) {
+  					showChoice = false;
+  				}
+  			}
+
+  			var choice = new Choice(choicePoint);
+  			choice.threadAtGeneration = this.state.callStack.currentThread.Copy();
+
+  			// We go through the full process of creating the choice above so
+  			// that we consume the content for it, since otherwise it'll
+  			// be shown on the output stream.
+  			if (!showChoice) {
+  				return null;
+  			}
+
+  			// Set final text for the choice
+  			choice.text = startText + choiceOnlyText;
+
+  			return choice;
+  		}
+  	}, {
+  		key: 'IsTruthy',
+  		value: function IsTruthy(obj) {
+  			var truthy = false;
+  			if (obj instanceof Value) {
+  				var val = obj;
+
+  				if (val instanceof DivertTargetValue) {
+  					var divTarget = val;
+  					this.Error("Shouldn't use a divert target (to " + divTarget.targetPath + ") as a conditional value. Did you intend a function call 'likeThis()' or a read count check 'likeThis'? (no arrows)");
+  					return false;
+  				}
+
+  				return val.isTruthy;
+  			}
+  			return truthy;
+  		}
+  	}, {
+  		key: 'PerformLogicAndFlowControl',
+  		value: function PerformLogicAndFlowControl(contentObj) {
+  			if (contentObj == null) {
+  				return false;
+  			}
+
+  			// Divert
+  			if (contentObj instanceof Divert) {
+  				var currentDivert = contentObj;
+
+  				if (currentDivert.isConditional) {
+  					var conditionValue = this.state.PopEvaluationStack();
+
+  					// False conditional? Cancel divert
+  					if (!this.IsTruthy(conditionValue)) return true;
+  				}
+
+  				if (currentDivert.hasVariableTarget) {
+  					var varName = currentDivert.variableDivertName;
+
+  					var varContents = this.state.variablesState.GetVariableWithName(varName);
+
+  					if (!(varContents instanceof DivertTargetValue)) {
+
+  						//					var intContent = varContents as IntValue;
+  						var intContent = varContents;
+
+  						var errorMessage = "Tried to divert to a target from a variable, but the variable (" + varName + ") didn't contain a divert target, it ";
+  						if (intContent instanceof IntValue && intContent.value == 0) {
+  							errorMessage += "was empty/null (the value 0).";
+  						} else {
+  							errorMessage += "contained '" + varContents + "'.";
+  						}
+
+  						this.Error(errorMessage);
+  					}
+
+  					var target = varContents;
+  					this.state.divertedTargetObject = this.ContentAtPath(target.targetPath);
+  				} else if (currentDivert.isExternal) {
+  					this.CallExternalFunction(currentDivert.targetPathString, currentDivert.externalArgs);
+  					return true;
+  				} else {
+  					this.state.divertedTargetObject = currentDivert.targetContent;
+  				}
+
+  				if (currentDivert.pushesToStack) {
+  					this.state.callStack.Push(currentDivert.stackPushType);
+  				}
+
+  				if (this.state.divertedTargetObject == null && !currentDivert.isExternal) {
+
+  					// Human readable name available - runtime divert is part of a hard-written divert that to missing content
+  					if (currentDivert && currentDivert.debugMetadata.sourceName != null) {
+  						this.Error("Divert target doesn't exist: " + currentDivert.debugMetadata.sourceName);
+  					} else {
+  						this.Error("Divert resolution failed: " + currentDivert);
+  					}
+  				}
+
+  				return true;
+  			}
+
+  			// Start/end an expression evaluation? Or print out the result?
+  			else if (contentObj instanceof ControlCommand) {
+  					var evalCommand = contentObj;
+
+  					switch (evalCommand.commandType) {
+
+  						case ControlCommand.CommandType.EvalStart:
+  							if (this.state.inExpressionEvaluation) console.warn("Already in expression evaluation?");
+  							this.state.inExpressionEvaluation = true;
+  							break;
+
+  						case ControlCommand.CommandType.EvalEnd:
+  							if (!this.state.inExpressionEvaluation) console.warn("Not in expression evaluation mode");
+  							this.state.inExpressionEvaluation = false;
+  							break;
+
+  						case ControlCommand.CommandType.EvalOutput:
+
+  							// If the expression turned out to be empty, there may not be anything on the stack
+  							if (this.state.evaluationStack.length > 0) {
+
+  								var output = this.state.PopEvaluationStack();
+
+  								// Functions may evaluate to Void, in which case we skip output
+  								if (!(output instanceof Void)) {
+  									// TODO: Should we really always blanket convert to string?
+  									// It would be okay to have numbers in the output stream the
+  									// only problem is when exporting text for viewing, it skips over numbers etc.
+  									var text = new StringValue(output.toString());
+
+  									this.state.PushToOutputStream(text);
+  								}
+  							}
+  							break;
+
+  						case ControlCommand.CommandType.NoOp:
+  							break;
+
+  						case ControlCommand.CommandType.Duplicate:
+  							this.state.PushEvaluationStack(this.state.PeekEvaluationStack());
+  							break;
+
+  						case ControlCommand.CommandType.PopEvaluatedValue:
+  							this.state.PopEvaluationStack();
+  							break;
+
+  						case ControlCommand.CommandType.PopFunction:
+  						case ControlCommand.CommandType.PopTunnel:
+
+  							var popType = evalCommand.commandType == ControlCommand.CommandType.PopFunction ? PushPopType.Function : PushPopType.Tunnel;
+
+  							var overrideTunnelReturnTarget = null;
+  							if (popType == PushPopType.Tunnel) {
+  								var popped = this.state.PopEvaluationStack();
+  								//					overrideTunnelReturnTarget = popped as DivertTargetValue;
+  								overrideTunnelReturnTarget = popped;
+  								if (overrideTunnelReturnTarget instanceof DivertTargetValue === false) {
+  									if (popped instanceof Void === false) {
+  										throw "Expected void if ->-> doesn't override target";
+  									} else {
+  										overrideTunnelReturnTarget = null;
+  									}
+  								}
+  							}
+
+  							if (this.state.TryExitExternalFunctionEvaluation()) {
+  								break;
+  							} else if (this.state.callStack.currentElement.type != popType || !this.state.callStack.canPop) {
+
+  								var names = {};
+  								names[PushPopType.Function] = "function return statement (~ return)";
+  								names[PushPopType.Tunnel] = "tunnel onwards statement (->->)";
+
+  								var expected = names[this.state.callStack.currentElement.type];
+  								if (!this.state.callStack.canPop) expected = "end of flow (-> END or choice)";
+
+  								var errorMsg = "Found " + names[popType] + ", when expected " + expected;
+
+  								this.Error(errorMsg);
+  							} else {
+  								this.state.callStack.Pop();
+
+  								if (overrideTunnelReturnTarget) this.state.divertedTargetObject = this.ContentAtPath(overrideTunnelReturnTarget.targetPath);
+  							}
+  							break;
+
+  						case ControlCommand.CommandType.BeginString:
+  							this.state.PushToOutputStream(evalCommand);
+
+  							if (!this.state.inExpressionEvaluation) console.warn("Expected to be in an expression when evaluating a string");
+  							this.state.inExpressionEvaluation = false;
+  							break;
+
+  						case ControlCommand.CommandType.EndString:
+
+  							var contentStackForString = [];
+
+  							var outputCountConsumed = 0;
+  							for (var i = this.state.outputStream.length - 1; i >= 0; --i) {
+  								var obj = this.state.outputStream[i];
+
+  								outputCountConsumed++;
+
+  								//					var command = obj as ControlCommand;
+  								var command = obj;
+  								if (command instanceof ControlCommand && command.commandType == ControlCommand.CommandType.BeginString) {
+  									break;
+  								}
+
+  								if (obj instanceof StringValue) contentStackForString.push(obj);
+  							}
+
+  							// Consume the content that was produced for this string
+  							this.state.outputStream.splice(this.state.outputStream.length - outputCountConsumed, outputCountConsumed);
+
+  							//the C# version uses a Stack for contentStackForString, but we're using a simple array, so we need to reverse it before using it
+  							contentStackForString = contentStackForString.reverse();
+
+  							// Build string out of the content we collected
+  							var sb = new StringBuilder();
+  							contentStackForString.forEach(function (c) {
+  								sb.Append(c.toString());
+  							});
+
+  							// Return to expression evaluation (from content mode)
+  							this.state.inExpressionEvaluation = true;
+  							this.state.PushEvaluationStack(new StringValue(sb.toString()));
+  							break;
+
+  						case ControlCommand.CommandType.ChoiceCount:
+  							var choiceCount = this.currentChoices.length;
+  							this.state.PushEvaluationStack(new IntValue(choiceCount));
+  							break;
+
+  						case ControlCommand.CommandType.TurnsSince:
+  							var target = this.state.PopEvaluationStack();
+  							if (!(target instanceof DivertTargetValue)) {
+  								var extraNote = "";
+  								if (target instanceof IntValue) extraNote = ". Did you accidentally pass a read count ('knot_name') instead of a target ('-> knot_name')?";
+  								this.Error("TURNS_SINCE expected a divert target (knot, stitch, label name), but saw " + target + extraNote);
+  								break;
+  							}
+
+  							//				var divertTarget = target as DivertTargetValue;
+  							var divertTarget = target;
+  							//				var container = ContentAtPath (divertTarget.targetPath) as Container;
+  							var container = this.ContentAtPath(divertTarget.targetPath);
+  							var turnCount = this.TurnsSinceForContainer(container);
+  							this.state.PushEvaluationStack(new IntValue(turnCount));
+  							break;
+
+  						case ControlCommand.CommandType.Random:
+  							var maxInt = this.state.PopEvaluationStack();
+  							var minInt = this.state.PopEvaluationStack();
+
+  							if (minInt == null || minInt instanceof IntValue === false) this.Error("Invalid value for minimum parameter of RANDOM(min, max)");
+
+  							if (maxInt == null || minInt instanceof IntValue === false) this.Error("Invalid value for maximum parameter of RANDOM(min, max)");
+
+  							// +1 because it's inclusive of min and max, for e.g. RANDOM(1,6) for a dice roll.
+  							var randomRange = maxInt.value - minInt.value + 1;
+  							if (randomRange <= 0) this.Error("RANDOM was called with minimum as " + minInt.value + " and maximum as " + maxInt.value + ". The maximum must be larger");
+
+  							var resultSeed = this.state.storySeed + this.state.previousRandom;
+  							var random = new PRNG(resultSeed);
+
+  							var nextRandom = random.next();
+  							var chosenValue = nextRandom % randomRange + minInt.value;
+  							this.state.PushEvaluationStack(new IntValue(chosenValue));
+
+  							// Next random number (rather than keeping the Random object around)
+  							this.state.previousRandom = nextRandom;
+  							break;
+
+  						case ControlCommand.CommandType.SeedRandom:
+  							var seed = this.state.PopEvaluationStack();
+  							if (seed == null || seed instanceof IntValue === false) this.Error("Invalid value passed to SEED_RANDOM");
+
+  							// Story seed affects both RANDOM and shuffle behaviour
+  							this.state.storySeed = seed.value;
+  							this.state.previousRandom = 0;
+
+  							// SEED_RANDOM returns nothing.
+  							this.state.PushEvaluationStack(new Void());
+  							break;
+
+  						case ControlCommand.CommandType.VisitIndex:
+  							var count = this.VisitCountForContainer(this.state.currentContainer) - 1; // index not count
+  							this.state.PushEvaluationStack(new IntValue(count));
+  							break;
+
+  						case ControlCommand.CommandType.SequenceShuffleIndex:
+  							var shuffleIndex = this.NextSequenceShuffleIndex();
+  							this.state.PushEvaluationStack(new IntValue(shuffleIndex));
+  							break;
+
+  						case ControlCommand.CommandType.StartThread:
+  							// Handled in main step function
+  							break;
+
+  						case ControlCommand.CommandType.Done:
+
+  							// We may exist in the context of the initial
+  							// act of creating the thread, or in the context of
+  							// evaluating the content.
+  							if (this.state.callStack.canPopThread) {
+  								this.state.callStack.PopThread();
+  							}
+
+  							// In normal flow - allow safe exit without warning
+  							else {
+  									this.state.didSafeExit = true;
+
+  									// Stop flow in current thread
+  									this.state.currentContentObject = null;
+  								}
+
+  							break;
+
+  						// Force flow to end completely
+  						case ControlCommand.CommandType.End:
+  							this.state.ForceEnd();
+  							break;
+
+  						default:
+  							this.Error("unhandled ControlCommand: " + evalCommand);
+  							break;
+  					}
+
+  					return true;
+  				}
+
+  				// Variable assignment
+  				else if (contentObj instanceof VariableAssignment) {
+  						var varAss = contentObj;
+  						var assignedVal = this.state.PopEvaluationStack();
+
+  						// When in temporary evaluation, don't create new variables purely within
+  						// the temporary context, but attempt to create them globally
+  						//var prioritiseHigherInCallStack = _temporaryEvaluationContainer != null;
+
+  						this.state.variablesState.Assign(varAss, assignedVal);
+
+  						return true;
+  					}
+
+  					// Variable reference
+  					else if (contentObj instanceof VariableReference) {
+  							var varRef = contentObj;
+  							var foundValue = null;
+
+  							// Explicit read count value
+  							if (varRef.pathForCount != null) {
+
+  								var container = varRef.containerForCount;
+  								var count = this.VisitCountForContainer(container);
+  								foundValue = new IntValue(count);
+  							}
+
+  							// Normal variable reference
+  							else {
+
+  									foundValue = this.state.variablesState.GetVariableWithName(varRef.name);
+
+  									if (foundValue == null) {
+  										this.Error("Uninitialised variable: " + varRef.name);
+  										foundValue = new IntValue(0);
+  									}
+  								}
+
+  							this.state.evaluationStack.push(foundValue);
+
+  							return true;
+  						}
+
+  						// Native function call
+  						else if (contentObj instanceof NativeFunctionCall) {
+  								var func = contentObj;
+  								var funcParams = this.state.PopEvaluationStack(func.numberOfParameters);
+  								var result = func.Call(funcParams);
+  								this.state.evaluationStack.push(result);
+  								return true;
+  							}
+
+  			// No control content, must be ordinary content
+  			return false;
+  		}
+  	}, {
+  		key: 'ChoosePathString',
+  		value: function ChoosePathString(path) {
+  			this.ChoosePath(new Path$1(path));
+  		}
+  	}, {
+  		key: 'ChoosePath',
+  		value: function ChoosePath(path) {
+  			this.state.SetChosenPath(path);
+
+  			// Take a note of newly visited containers for read counts etc
+  			this.VisitChangedContainersDueToDivert();
+  		}
+  	}, {
+  		key: 'ChooseChoiceIndex',
+  		value: function ChooseChoiceIndex(choiceIdx) {
+  			choiceIdx = choiceIdx;
+  			var choices = this.currentChoices;
+  			if (choiceIdx < 0 || choiceIdx > choices.length) console.warn("choice out of range");
+
+  			// Replace callstack with the one from the thread at the choosing point,
+  			// so that we can jump into the right place in the flow.
+  			// This is important in case the flow was forked by a new thread, which
+  			// can create multiple leading edges for the story, each of
+  			// which has its own context.
+  			var choiceToChoose = choices[choiceIdx];
+  			this.state.callStack.currentThread = choiceToChoose.threadAtGeneration;
+
+  			this.ChoosePath(choiceToChoose.choicePoint.choiceTarget.path);
+  		}
+  	}, {
+  		key: 'HasFunction',
+  		value: function HasFunction(functionName) {
+  			try {
+  				return this.ContentAtPath(new Path$1(functionName)) instanceof Container;
+  			} catch (e) {
+  				return false;
+  			}
+  		}
+  	}, {
+  		key: 'EvaluateFunction',
+  		value: function EvaluateFunction(functionName, args, returnTextOutput) {
+  			//EvaluateFunction behaves slightly differently than the C# version. In C#, you can pass a (second) parameter `out textOutput` to get the text outputted by the function. This is not possible in js. Instead, we maintain the regular signature (functionName, args), plus an optional third parameter returnTextOutput. If set to true, we will return both the textOutput and the returned value, as an object.
+  			returnTextOutput = !!returnTextOutput;
+
+  			if (functionName == null) {
+  				throw "Function is null";
+  			} else if (functionName == '' || functionName.trim() == '') {
+  				throw "Function is empty or white space.";
+  			}
+
+  			var funcContainer = null;
+  			try {
+  				funcContainer = this.ContentAtPath(new Path$1(functionName));
+  			} catch (e) {
+  				if (e.message.indexOf("not found") >= 0) throw "Function doesn't exist: '" + functionName + "'";else throw e;
+  			}
+
+  			this.state.StartExternalFunctionEvaluation(funcContainer, args);
+
+  			// Evaluate the function, and collect the string output
+  			var stringOutput = new StringBuilder();
+  			while (this.canContinue) {
+  				stringOutput.Append(this.Continue());
+  			}
+  			var textOutput = stringOutput.toString();
+
+  			var result = this.state.CompleteExternalFunctionEvaluation();
+
+  			return returnTextOutput ? { 'returned': result, 'output': textOutput } : result;
+  		}
+  	}, {
+  		key: 'EvaluateExpression',
+  		value: function EvaluateExpression(exprContainer) {
+  			var startCallStackHeight = this.state.callStack.elements.length;
+
+  			this.state.callStack.Push(PushPopType.Tunnel);
+
+  			this._temporaryEvaluationContainer = exprContainer;
+
+  			this.state.GoToStart();
+
+  			var evalStackHeight = this.state.evaluationStack.length;
+
+  			this.Continue();
+
+  			this._temporaryEvaluationContainer = null;
+
+  			// Should have fallen off the end of the Container, which should
+  			// have auto-popped, but just in case we didn't for some reason,
+  			// manually pop to restore the state (including currentPath).
+  			if (this.state.callStack.elements.length > startCallStackHeight) {
+  				this.state.callStack.Pop();
+  			}
+
+  			var endStackHeight = this.state.evaluationStack.length;
+  			if (endStackHeight > evalStackHeight) {
+  				return this.state.PopEvaluationStack();
+  			} else {
+  				return null;
+  			}
+  		}
+  	}, {
+  		key: 'CallExternalFunction',
+  		value: function CallExternalFunction(funcName, numberOfArguments) {
+  			var func = this._externals[funcName];
+  			var fallbackFunctionContainer = null;
+
+  			var foundExternal = typeof func !== 'undefined';
+
+  			// Try to use fallback function?
+  			if (!foundExternal) {
+  				if (this.allowExternalFunctionFallbacks) {
+  					//				fallbackFunctionContainer = ContentAtPath (new Path (funcName)) as Container;
+  					fallbackFunctionContainer = this.ContentAtPath(new Path$1(funcName));
+  					if (!(fallbackFunctionContainer instanceof Container)) console.warn("Trying to call EXTERNAL function '" + funcName + "' which has not been bound, and fallback ink function could not be found.");
+
+  					// Divert direct into fallback function and we're done
+  					this.state.callStack.Push(PushPopType.Function);
+  					this.state.divertedTargetObject = fallbackFunctionContainer;
+  					return;
+  				} else {
+  					console.warn("Trying to call EXTERNAL function '" + funcName + "' which has not been bound (and ink fallbacks disabled).");
+  				}
+  			}
+
+  			// Pop arguments
+  			var args = [];
+  			for (var i = 0; i < numberOfArguments; ++i) {
+  				//			var poppedObj = state.PopEvaluationStack () as Value;
+  				var poppedObj = this.state.PopEvaluationStack();
+  				var valueObj = poppedObj.valueObject;
+  				args.push(valueObj);
+  			}
+
+  			// Reverse arguments from the order they were popped,
+  			// so they're the right way round again.
+  			args.reverse();
+
+  			// Run the function!
+  			var funcResult = func(args);
+
+  			// Convert return value (if any) to the a type that the ink engine can use
+  			var returnObj = null;
+  			if (funcResult != null) {
+  				returnObj = Value.Create(funcResult);
+  				if (returnObj == null) console.warn("Could not create ink value from returned object of type " + (typeof funcResult === 'undefined' ? 'undefined' : babelHelpers.typeof(funcResult)));
+  			} else {
+  				returnObj = new Void();
+  			}
+
+  			this.state.PushEvaluationStack(returnObj);
+  		}
+  	}, {
+  		key: 'TryCoerce',
+  		value: function TryCoerce(value) {
+  			//we're skipping type coercition in this implementation. First of, js is loosely typed, so it's not that important. Secondly, there is no clean way (AFAIK) for the user to describe what type of parameters he/she expects.
+  			return value;
+  		}
+  	}, {
+  		key: 'BindExternalFunctionGeneral',
+  		value: function BindExternalFunctionGeneral(funcName, func) {
+  			if (this._externals[funcName]) console.warn("Function '" + funcName + "' has already been bound.");
+  			this._externals[funcName] = func;
+  		}
+  	}, {
+  		key: 'BindExternalFunction',
+  		value: function BindExternalFunction(funcName, func) {
+  			var _this2 = this;
+
+  			if (!func) console.warn("Can't bind a null function");
+
+  			this.BindExternalFunctionGeneral(funcName, function (args) {
+  				if (args.length < func.length) console.warn("External function expected " + func.length + " arguments");
+
+  				var coercedArgs = [];
+  				for (var i = 0, l = args.length; i < l; i++) {
+  					coercedArgs[i] = _this2.TryCoerce(args[i]);
+  				}
+  				return func.apply(null, coercedArgs);
+  			});
+  		}
+  	}, {
+  		key: 'UnbindExternalFunction',
+  		value: function UnbindExternalFunction(funcName) {
+  			if (typeof this._externals[funcName] === 'undefined') console.warn("Function '" + funcName + "' has not been bound.");
+  			delete this._externals[funcName];
+  		}
+  	}, {
+  		key: 'ValidateExternalBindings',
+  		value: function ValidateExternalBindings(containerOrObject, missingExternals) {
+  			var _this3 = this;
+
+  			if (!containerOrObject) {
+  				var missingExternals = [];
+  				this.ValidateExternalBindings(this._mainContentContainer, missingExternals);
+  				this._hasValidatedExternals = true;
+
+  				// No problem! Validation complete
+  				if (missingExternals.length == 0) {
+  					this._hasValidatedExternals = true;
+  				}
+
+  				// Error for all missing externals
+  				else {
+  						var message = "Error: Missing function binding for external";
+  						message += missingExternals.length > 1 ? "s" : "";
+  						message += ": '";
+  						message += missingExternals.join("', '");
+  						message += "' ";
+  						message += this.allowExternalFunctionFallbacks ? ", and no fallback ink function found." : " (ink fallbacks disabled)";
+
+  						this.Error(message);
+  					}
+  			} else if (containerOrObject instanceof Container) {
+  				var c = containerOrObject;
+
+  				c.content.forEach(function (innerContent) {
+  					_this3.ValidateExternalBindings(innerContent, missingExternals);
+  				});
+  				for (var key in c.namedContent) {
+  					this.ValidateExternalBindings(c.namedContent[key], missingExternals);
+  				}
+  			} else {
+  				var o = containerOrObject;
+  				//the following code is already taken care of above in this implementation
+  				//			var container = o as Container;
+  				//            if (container) {
+  				//                ValidateExternalBindings (container, missingExternals);
+  				//                return;
+  				//            }
+
+  				//            var divert = o as Divert;
+  				var divert = o;
+  				if (divert instanceof Divert && divert.isExternal) {
+  					var name = divert.targetPathString;
+
+  					if (!this._externals[name]) {
+  						if (this.allowExternalFunctionFallbacks) {
+  							var fallbackFound = !!this.mainContentContainer.namedContent[name];
+  							if (!fallbackFound) {
+  								missingExternals.push(name);
+  							}
+  						} else {
+  							missingExternals.push(name);
+  						}
+  					}
+  				}
+  			}
+  		}
+  	}, {
+  		key: 'ObserveVariable',
+  		value: function ObserveVariable(variableName, observer) {
+  			if (this._variableObservers == null) this._variableObservers = {};
+
+  			if (this._variableObservers[variableName]) {
+  				this._variableObservers[variableName].push(observer);
+  			} else {
+  				this._variableObservers[variableName] = [observer];
+  			}
+  		}
+  	}, {
+  		key: 'ObserveVariables',
+  		value: function ObserveVariables(variableNames, observers) {
+  			for (var i = 0, l = variableNames.length; i < l; i++) {
+  				this.ObserveVariable(variableNames[i], observers[i]);
+  			}
+  		}
+  	}, {
+  		key: 'RemoveVariableObserver',
+  		value: function RemoveVariableObserver(observer, specificVariableName) {
+  			if (this._variableObservers == null) return;
+
+  			// Remove observer for this specific variable
+  			if (typeof specificVariableName !== 'undefined') {
+  				if (this._variableObservers[specificVariableName]) {
+  					this._variableObservers[specificVariableName].splice(this._variableObservers[specificVariableName].indexOf(observer), 1);
+  				}
+  			}
+
+  			// Remove observer for all variables
+  			else {
+  					for (var varName in this._variableObservers) {
+  						this._variableObservers[varName].splice(this._variableObservers[varName].indexOf(observer), 1);
+  					}
+  				}
+  		}
+  	}, {
+  		key: 'VariableStateDidChangeEvent',
+  		value: function VariableStateDidChangeEvent(variableName, newValueObj) {
+  			if (this._variableObservers == null) return;
+
+  			var observers = this._variableObservers[variableName];
+  			if (typeof observers !== 'undefined') {
+
+  				if (!(newValueObj instanceof Value)) {
+  					throw "Tried to get the value of a variable that isn't a standard type";
+  				}
+  				//			var val = newValueObj as Value;
+  				var val = newValueObj;
+
+  				observers.forEach(function (observer) {
+  					observer(variableName, val.valueObject);
+  				});
+  			}
+  		}
+  	}, {
+  		key: 'TagsForContentAtPath',
+  		value: function TagsForContentAtPath(path) {
+  			return this.TagsAtStartOfFlowContainerWithPathString(path);
+  		}
+  	}, {
+  		key: 'TagsAtStartOfFlowContainerWithPathString',
+  		value: function TagsAtStartOfFlowContainerWithPathString(pathString) {
+  			var path = new Path$1(pathString);
+
+  			// Expected to be global story, knot or stitch
+  			//		var flowContainer = ContentAtPath (path) as Container;
+  			var flowContainer = this.ContentAtPath(path);
+  			while (true) {
+  				var firstContent = flowContainer.content[0];
+  				if (firstContent instanceof Container) flowContainer = firstContent;else break;
+  			}
+
+  			// Any initial tag objects count as the "main tags" associated with that story/knot/stitch
+  			var tags = null;
+
+  			flowContainer.content.every(function (c) {
+  				//			var tag = c as Runtime.Tag;
+  				var tag = c;
+  				if (tag instanceof Tag) {
+  					if (tags == null) tags = [];
+  					tags.push(tag.text);
+  					return true;
+  				} else return false;
+  			});
+
+  			return tags;
+  		}
+  	}, {
+  		key: 'BuildStringOfHierarchy',
+  		value: function BuildStringOfHierarchy() {
+  			var sb = new StringBuilder();
+
+  			this.mainContentContainer.BuildStringOfHierarchy(sb, 0, this.state.currentContentObject);
+
+  			return sb.toString();
+  		}
+  	}, {
+  		key: 'NextContent',
+  		value: function NextContent() {
+  			// Setting previousContentObject is critical for VisitChangedContainersDueToDivert
+  			this.state.previousContentObject = this.state.currentContentObject;
+
+  			// Divert step?
+  			if (this.state.divertedTargetObject != null) {
+
+  				this.state.currentContentObject = this.state.divertedTargetObject;
+  				this.state.divertedTargetObject = null;
+
+  				// Internally uses state.previousContentObject and state.currentContentObject
+  				this.VisitChangedContainersDueToDivert();
+
+  				// Diverted location has valid content?
+  				if (this.state.currentContentObject != null) {
+  					return;
+  				}
+
+  				// Otherwise, if diverted location doesn't have valid content,
+  				// drop down and attempt to increment.
+  				// This can happen if the diverted path is intentionally jumping
+  				// to the end of a container - e.g. a Conditional that's re-joining
+  			}
+
+  			var successfulPointerIncrement = this.IncrementContentPointer();
+
+  			// Ran out of content? Try to auto-exit from a function,
+  			// or finish evaluating the content of a thread
+  			if (!successfulPointerIncrement) {
+
+  				var didPop = false;
+
+  				if (this.state.callStack.CanPop(PushPopType.Function)) {
+
+  					// Pop from the call stack
+  					this.state.callStack.Pop(PushPopType.Function);
+
+  					// This pop was due to dropping off the end of a function that didn't return anything,
+  					// so in this case, we make sure that the evaluator has something to chomp on if it needs it
+  					if (this.state.inExpressionEvaluation) {
+  						this.state.PushEvaluationStack(new Void());
+  					}
+
+  					didPop = true;
+  				} else if (this.state.callStack.canPopThread) {
+  					this.state.callStack.PopThread();
+
+  					didPop = true;
+  				} else {
+  					this.state.TryExitExternalFunctionEvaluation();
+  				}
+
+  				// Step past the point where we last called out
+  				if (didPop && this.state.currentContentObject != null) {
+  					this.NextContent();
+  				}
+  			}
+  		}
+  	}, {
+  		key: 'IncrementContentPointer',
+  		value: function IncrementContentPointer() {
+  			var successfulIncrement = true;
+
+  			var currEl = this.state.callStack.currentElement;
+  			currEl.currentContentIndex++;
+
+  			// Each time we step off the end, we fall out to the next container, all the
+  			// while we're in indexed rather than named content
+  			while (currEl.currentContentIndex >= currEl.currentContainer.content.length) {
+
+  				successfulIncrement = false;
+
+  				//			Container nextAncestor = currEl.currentContainer.parent as Container;
+  				var nextAncestor = currEl.currentContainer.parent;
+  				if (nextAncestor instanceof Container === false) {
+  					break;
+  				}
+
+  				var indexInAncestor = nextAncestor.content.indexOf(currEl.currentContainer);
+  				if (indexInAncestor == -1) {
+  					break;
+  				}
+
+  				currEl.currentContainer = nextAncestor;
+  				currEl.currentContentIndex = indexInAncestor + 1;
+
+  				successfulIncrement = true;
+  			}
+
+  			if (!successfulIncrement) currEl.currentContainer = null;
+
+  			return successfulIncrement;
+  		}
+  	}, {
+  		key: 'TryFollowDefaultInvisibleChoice',
+  		value: function TryFollowDefaultInvisibleChoice() {
+  			var allChoices = this._state.currentChoices;
+
+  			// Is a default invisible choice the ONLY choice?
+  			var invisibleChoices = allChoices.filter(function (c) {
+  				return c.choicePoint.isInvisibleDefault;
+  			});
+  			if (invisibleChoices.length == 0 || allChoices.length > invisibleChoices.length) return false;
+
+  			var choice = invisibleChoices[0];
+
+  			this.ChoosePath(choice.choicePoint.choiceTarget.path);
+
+  			return true;
+  		}
+  	}, {
+  		key: 'VisitCountForContainer',
+  		value: function VisitCountForContainer(container) {
+  			if (!container.visitsShouldBeCounted) {
+  				console.warn("Read count for target (" + container.name + " - on " + container.debugMetadata + ") unknown. The story may need to be compiled with countAllVisits flag (-c).");
+  				return 0;
+  			}
+
+  			var count = 0;
+  			var containerPathStr = container.path.toString();
+  			count = this.state.visitCounts[containerPathStr] || count;
+  			return count;
+  		}
+  	}, {
+  		key: 'IncrementVisitCountForContainer',
+  		value: function IncrementVisitCountForContainer(container) {
+  			var count = 0;
+  			var containerPathStr = container.path.toString();
+  			if (this.state.visitCounts[containerPathStr]) count = this.state.visitCounts[containerPathStr];
+  			count++;
+  			this.state.visitCounts[containerPathStr] = count;
+  		}
+  	}, {
+  		key: 'RecordTurnIndexVisitToContainer',
+  		value: function RecordTurnIndexVisitToContainer(container) {
+  			var containerPathStr = container.path.toString();
+  			this.state.turnIndices[containerPathStr] = this.state.currentTurnIndex;
+  		}
+  	}, {
+  		key: 'TurnsSinceForContainer',
+  		value: function TurnsSinceForContainer(container) {
+  			if (!container.turnIndexShouldBeCounted) {
+  				this.Error("TURNS_SINCE() for target (" + container.name + " - on " + container.debugMetadata + ") unknown. The story may need to be compiled with countAllVisits flag (-c).");
+  			}
+
+  			var containerPathStr = container.path.toString();
+  			var index = this.state.turnIndices[containerPathStr];
+  			if (typeof index !== 'undefined') {
+  				return this.state.currentTurnIndex - index;
+  			} else {
+  				return -1;
+  			}
+  		}
+  	}, {
+  		key: 'NextSequenceShuffleIndex',
+  		value: function NextSequenceShuffleIndex() {
+  			//		var numElementsIntVal = state.PopEvaluationStack () as IntValue;
+  			var numElementsIntVal = this.state.PopEvaluationStack();
+  			if (!(numElementsIntVal instanceof IntValue)) {
+  				this.Error("expected number of elements in sequence for shuffle index");
+  				return 0;
+  			}
+
+  			var seqContainer = this.state.currentContainer;
+
+  			var numElements = numElementsIntVal.value;
+
+  			//		var seqCountVal = state.PopEvaluationStack () as IntValue;
+  			var seqCountVal = this.state.PopEvaluationStack();
+  			var seqCount = seqCountVal.value;
+  			var loopIndex = seqCount / numElements;
+  			var iterationIndex = seqCount % numElements;
+
+  			// Generate the same shuffle based on:
+  			//  - The hash of this container, to make sure it's consistent
+  			//    each time the runtime returns to the sequence
+  			//  - How many times the runtime has looped around this full shuffle
+  			var seqPathStr = seqContainer.path.toString();
+  			var sequenceHash = 0;
+  			for (var i = 0, l = seqPathStr.length; i < l; i++) {
+  				sequenceHash += seqPathStr.charCodeAt[i] || 0;
+  			}
+  			var randomSeed = sequenceHash + loopIndex + this.state.storySeed;
+  			var random = new PRNG(parseInt(randomSeed));
+
+  			var unpickedIndices = [];
+  			for (var i = 0; i < numElements; ++i) {
+  				unpickedIndices.push(i);
+  			}
+
+  			for (var i = 0; i <= iterationIndex; ++i) {
+  				var chosen = random.next() % unpickedIndices.length;
+  				var chosenIndex = unpickedIndices[chosen];
+  				unpickedIndices.splice(chosen, 1);
+
+  				if (i == iterationIndex) {
+  					return chosenIndex;
+  				}
+  			}
+
+  			throw "Should never reach here";
+  		}
+  	}, {
+  		key: 'Error',
+  		value: function Error(message, useEndLineNumber) {
+  			var e = new StoryException(message);
+  			//		e.useEndLineNumber = useEndLineNumber;
+  			throw e;
+  		}
+  	}, {
+  		key: 'AddError',
+  		value: function AddError(message, useEndLineNumber) {
+  			//		var dm = this.currentDebugMetadata;
+  			var dm = null;
+
+  			if (dm != null) {
+  				var lineNum = useEndLineNumber ? dm.endLineNumber : dm.startLineNumber;
+  				message = "RUNTIME ERROR: '" + dm.fileName + "' line " + lineNum + ": " + message;
+  			} else {
+  				message = "RUNTIME ERROR: " + message;
+  			}
+
+  			this.state.AddError(message);
+
+  			// In a broken state don't need to know about any other errors.
+  			this.state.ForceEnd();
+  		}
+  	}, {
+  		key: 'currentChoices',
+  		get: function get() {
+  			// Don't include invisible choices for external usage.
+  			var choices = [];
+
+  			this._state.currentChoices.forEach(function (c) {
+  				if (!c.choicePoint.isInvisibleDefault) {
+  					c.index = choices.length;
+  					choices.push(c);
+  				}
+  			});
+
+  			return choices;
+  		}
+  	}, {
+  		key: 'currentText',
+  		get: function get() {
+  			return this.state.currentText;
+  		}
+  	}, {
+  		key: 'currentTags',
+  		get: function get() {
+  			return this.state.currentTags;
+  		}
+  	}, {
+  		key: 'currentErrors',
+  		get: function get() {
+  			return this.state.currentErrors;
+  		}
+  	}, {
+  		key: 'hasError',
+  		get: function get() {
+  			return this.state.hasError;
+  		}
+  	}, {
+  		key: 'variablesState',
+  		get: function get() {
+  			return this.state.variablesState;
+  		}
+  	}, {
+  		key: 'state',
+  		get: function get() {
+  			return this._state;
+  		}
+  	}, {
+  		key: 'mainContentContainer',
+  		get: function get() {
+  			if (this._temporaryEvaluationContainer) {
+  				return this._temporaryEvaluationContainer;
+  			} else {
+  				return this._mainContentContainer;
+  			}
+  		}
+  	}, {
+  		key: 'canContinue',
+  		get: function get() {
+  			return this.state.currentContentObject != null && !this.state.hasError;
+  		}
+  	}, {
+  		key: 'globalTags',
+  		get: function get() {
+  			return this.TagsAtStartOfFlowContainerWithPathString("");
+  		}
+  	}]);
+  	return Story;
+  }(InkObject);
+
+  exports.Story = Story;
+
+}));
+
+////////////////////  END OF THE INCLUDE !!! /////////////////////////
 
 // ECMAScript 5 strict mode
 "use strict";
@@ -48,7 +5509,6 @@ cr.plugins_.Ink = function(runtime)
 		this.runtime = type.runtime;
 		this.output = "";
 		this.trackedVariables = [];
-		this.functionCalled = "";
 		
 		// any other properties you need, e.g...
 		// this.myValue = 0;
@@ -77,10 +5537,7 @@ cr.plugins_.Ink = function(runtime)
 		// return a Javascript object containing information about your object's state
 		// note you MUST use double-quote syntax (e.g. "property": value) to prevent
 		// Closure Compiler renaming and breaking the save format
-		return {
-			// e.g.
-			//"myValue": this.myValue
-		};
+		return inkStory.state.ToJson();
 	};
 	
 	// called when loading the full state of the game
@@ -91,6 +5548,7 @@ cr.plugins_.Ink = function(runtime)
 		// this.myValue = o["myValue"];
 		// note you MUST use double-quote syntax (e.g. o["property"]) to prevent
 		// Closure Compiler renaming and breaking the save format
+		inkStory.state.LoadJson(o);
 	};
 	
 	// only called if a layout object - draw to a canvas 2D context
@@ -192,14 +5650,7 @@ cr.plugins_.Ink = function(runtime)
 		};
 	};
 
-	Cnds.prototype.functionCalled = function(functionName){
-		/* if (this.functionCalled == functionName) {
-			return true;
-		} else {
-			return false;
-		} */
-		return true;
-	};
+	
 
 	pluginProto.cnds = new Cnds();
 	
@@ -250,37 +5701,19 @@ cr.plugins_.Ink = function(runtime)
 		inkStory.state.LoadJson(Json);
 	};
 
-	// To check !!!! Not implemented yet
-
-	Acts.prototype.returnValue = function(functionName, value, argumentsNumber){
-		/* if (argumentsNumber == 0) {
-			inkStory.BindExternalFunction (functionName, (arg1, arg2, arg3) => {
-				this.functionCalled = functionName;
-				this.runtime.trigger(cr.plugins_.Ink.prototype.cnds.functionCalled, this);
-				var arguments = [arg1, arg2, arg3];
-				return eval(value);
-			});
-		} else {
-			inkStory.BindExternalFunctionGeneral (functionName, (array) => {
-				this.functionCalled = functionName;
-				this.runtime.trigger(cr.plugins_.Ink.prototype.cnds.functionCalled, this);
-				arguments = array.slice(0);
-				return eval(value);
-			});
-		};
-		inkStory.BindExternalFunctionGeneral (functionName, (array) => {
-			this.functionCalled = functionName;
-			this.runtime.trigger(cr.plugins_.Ink.prototype.cnds.functionCalled, this);
-			arguments = array.slice(0);
-			return eval(value);
-		}); */
-		return true;
-	};
+	
 	
 	Acts.prototype.tracking = function(variableName){
 		this.trackedVariables.push(variableName);
 		inkStory.ObserveVariable (variableName, (variableName, newValue) => {
 			this.runtime.trigger(cr.plugins_.Ink.prototype.cnds.variableChanged, this);
+		});
+	};
+
+	Acts.prototype.bind = function(name){
+		inkStory.BindExternalFunctionGeneral (name, (param) => {
+			if (c2_callFunction)
+			return c2_callFunction(name, param);
 		});
 	};
 

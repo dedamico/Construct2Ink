@@ -3,7 +3,7 @@
 	return {
 		"name":			"Ink",				// as appears in 'insert object' dialog, can be changed as long as "id" stays the same
 		"id":			"Ink",				// this is used to identify this plugin and is saved to the project; never change it
-		"version":		"1.0",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
+		"version":		"1.1",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
 		"description":	"An ink (scripting language for writing interactive narrative) interpreter in javascript. Base code from y-lohse.",
 		"author":		"CeyFun",
 		"help url":		"https://github.com/y-lohse/inkjs",
@@ -63,8 +63,6 @@ AddCondition(1, cf_none, "Story created", "Data", "If the story is created", "Th
 AddCondition(2, cf_trigger, "Output updated", "Narration", "When the output is updated", "The last line of the output as been updated (usually because of the continue action).", "outputUpdated");
 AddStringParam("Variable Name", "The name of the observed variable that will trigger the event.");
 AddCondition(3, cf_trigger, "Variable changed", "Event", "{0} has changed", "The value of the observed variable has changed", "variableChanged");
-AddStringParam("Function Name", "The name of the external function that has been called by ink.");
-AddCondition(4, cf_trigger | cf_deprecated, "External function called", "Event", "{0} has been called", "A external function has been called", "functionCalled");
 
 ////////////////////////////////////////
 // Actions
@@ -96,12 +94,8 @@ AddNumberParam("Index of the choice", "Index of the choice selected.");
 AddAction(7, 0, "Choose a choice", "Navigation", "{0} is choosen", "Select a choice.", "choose");
 AddStringParam("Json to load", "The json data of the save.");
 AddAction(8, 0, "Load save", "Save/Load", "Load save Json", "Load save json data.", "loadJson");
-AddStringParam("Function Name", "The name of the function you want to make");
-AddAnyTypeParam("Return value", "The value/js function you want to return to the Ink function call. Arguments are stocked in an array called arrguments.");
-AddComboParamOption("3 arguments or less");
-AddComboParamOption("More than 3 arguments");
-AddComboParam("Number of arguments", "The number of the arguments of your function.", 0);
-AddAction(9, af_deprecated, "Register a javascript function", "Data", "Make a function ({0}) which return '{1}'", "Make a function you can call in the Ink.", "returnValue");
+AddStringParam("Function Name", "The name of the function to bind.");
+AddAction(9, 0, "Bind a function", "Data", "Bind {0} to a C2 function", "Bind an external function to a C2 one.", "bind");
 AddStringParam("Variable Name", "The name of the variable you want to track the value.");
 AddAction(10, 0, "Track an Ink variable", "Data", "{0} is tracked", "Track a value.", "tracking");
 
