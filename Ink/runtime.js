@@ -5537,7 +5537,7 @@ cr.plugins_.Ink = function(runtime)
 		// return a Javascript object containing information about your object's state
 		// note you MUST use double-quote syntax (e.g. "property": value) to prevent
 		// Closure Compiler renaming and breaking the save format
-		return inkStory.state.ToJson();
+		return this.inkStory.state.ToJson();
 	};
 	
 	// called when loading the full state of the game
@@ -5548,7 +5548,7 @@ cr.plugins_.Ink = function(runtime)
 		// this.myValue = o["myValue"];
 		// note you MUST use double-quote syntax (e.g. o["property"]) to prevent
 		// Closure Compiler renaming and breaking the save format
-		inkStory.state.LoadJson(o);
+		this.inkStory.state.LoadJson(o);
 	};
 	
 	// only called if a layout object - draw to a canvas 2D context
@@ -5577,8 +5577,8 @@ cr.plugins_.Ink = function(runtime)
 			"properties": [
 				{"name": "Json Data", "value": this.properties[0], "readonly": true},
 				{"name": "Output", "value": this.output, "readonly": true},
-				{"name": "Can Continue", "value": String(inkStory.canContinue), "readonly": true},
-				{"name": "Choice Count", "value": inkStory.currentChoices.length, "readonly": true}
+				{"name": "Can Continue", "value": String(this.inkStory.canContinue), "readonly": true},
+				{"name": "Choice Count", "value": this.inkStory.currentChoices.length, "readonly": true}
 				// Each property entry can use the following values:
 				// "name" (required): name of the property (must be unique within this section)
 				// "value" (required): a boolean, number or string for the value
@@ -5619,7 +5619,7 @@ cr.plugins_.Ink = function(runtime)
 	// ... other conditions here ...
 
 	Cnds.prototype.storyCreated = function(){
-		if (typeof inkStory != "undefined") {
+		if (typeof this.inkStory != "undefined") {
 			return true;
 		} else {
 			return false;
@@ -5627,14 +5627,14 @@ cr.plugins_.Ink = function(runtime)
 	};
 
 	Cnds.prototype.outputUpdated = function(){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			return false;
 		}
 		return true;
 	};
 
 	Cnds.prototype.variableChanged = function(variableName){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			return false;
 		}
 		if (this.trackedVariables.find(function(variable){
@@ -5674,44 +5674,44 @@ cr.plugins_.Ink = function(runtime)
 	};
 
 	Acts.prototype.setVariable = function(variableName, value){
-		inkStory.variablesState[variableName] = value;
+		this.inkStory.variablesState[variableName] = value;
 	};
 
 	Acts.prototype.gotoScene = function(sceneName){
-		inkStory.ChoosePathString(sceneName);
+		this.inkStory.ChoosePathString(sceneName);
 	};
 
 	Acts.prototype.continue = function(){
-		this.output = inkStory.Continue();
+		this.output = this.inkStory.Continue();
 	};
 
 	Acts.prototype.storyBuild = function(){
-		inkStory = new inkjs.Story(this.properties[0]);
+		this.inkStory = new inkjs.Story(this.properties[0]);
 	};
 
 	Acts.prototype.continueMax = function(){
-		this.output = inkStory.ContinueMaximally();
+		this.output = this.inkStory.ContinueMaximally();
 	};
 
 	Acts.prototype.choose = function(choiceIndex){
-		inkStory.ChooseChoiceIndex(choiceIndex);
+		this.inkStory.ChooseChoiceIndex(choiceIndex);
 	};
 
 	Acts.prototype.loadJson = function(Json){
-		inkStory.state.LoadJson(Json);
+		this.inkStory.state.LoadJson(Json);
 	};
 
 	
 	
 	Acts.prototype.tracking = function(variableName){
 		this.trackedVariables.push(variableName);
-		inkStory.ObserveVariable (variableName, (variableName, newValue) => {
+		this.inkStory.ObserveVariable (variableName, (variableName, newValue) => {
 			this.runtime.trigger(cr.plugins_.Ink.prototype.cnds.variableChanged, this);
 		});
 	};
 
 	Acts.prototype.bind = function(name){
-		inkStory.BindExternalFunctionGeneral (name, (param) => {
+		this.inkStory.BindExternalFunctionGeneral (name, (param) => {
 			if (c2_callFunction)
 			return c2_callFunction(name, param);
 		});
@@ -5737,7 +5737,7 @@ cr.plugins_.Ink = function(runtime)
 	// ... other expressions here ...
 
 	Exps.prototype.output = function(ret){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			ret.set_string("");
 		} else {
 		ret.set_string(String(this.output));
@@ -5745,50 +5745,50 @@ cr.plugins_.Ink = function(runtime)
 	};
 
 	Exps.prototype.choice = function(ret, index){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			ret.set_string("");
 		} else {
-		ret.set_string(inkStory.currentChoices[index].text);
+		ret.set_string(this.inkStory.currentChoices[index].text);
 		};
 	};
 
 	Exps.prototype.currentChoicesCount = function(ret){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			ret.set_int(0);
 		} else {
-		ret.set_int(inkStory.currentChoices.length);
+		ret.set_int(this.inkStory.currentChoices.length);
 		};
 	};
 
 	Exps.prototype.saveJson = function(ret){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			ret.set_string("");
 		} else {
-		ret.set_string(inkStory.state.ToJson());
+		ret.set_string(this.inkStory.state.ToJson());
 		};
 	};
 
 	Exps.prototype.variable = function(ret, variableName){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			ret.set_any("");
 		} else {
-		ret.set_any(inkStory.variablesState[variableName]);
+		ret.set_any(this.inkStory.variablesState[variableName]);
 		};
 	};
 
 	Exps.prototype.canContinue = function(ret){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			ret.set_string("false");
 		} else {
-		ret.set_string(String(inkStory.canContinue));
+		ret.set_string(String(this.inkStory.canContinue));
 		};
 	};
 
 	Exps.prototype.nbVisits = function(ret, knotName){
-		if (typeof inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined") {
 			ret.set_int(0);
 		} else {
-		ret.set_int(inkStory.state.VisitCountAtPathString(knotName));
+		ret.set_int(this.inkStory.state.VisitCountAtPathString(knotName));
 		};
 	};
 

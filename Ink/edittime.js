@@ -3,7 +3,7 @@
 	return {
 		"name":			"Ink",				// as appears in 'insert object' dialog, can be changed as long as "id" stays the same
 		"id":			"Ink",				// this is used to identify this plugin and is saved to the project; never change it
-		"version":		"1.1",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
+		"version":		"1.2",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
 		"description":	"An ink (scripting language for writing interactive narrative) interpreter in javascript. Base code from y-lohse.",
 		"author":		"CeyFun",
 		"help url":		"https://github.com/y-lohse/inkjs",
