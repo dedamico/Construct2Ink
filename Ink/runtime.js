@@ -5792,6 +5792,22 @@ cr.plugins_.Ink = function(runtime)
 		};
 	};
 
+	Exps.prototype.currentTags = function(ret, Index){
+		if (typeof this.inkStory == "undefined") {
+			ret.set_string("");
+		} else {
+		ret.set_string(this.inkStory.currentTags[Index]);
+		};
+	};
+
+	Exps.prototype.globalTags = function(ret, Index){
+		if (typeof this.inkStory == "undefined") {
+			ret.set_string("");
+		} else {
+		ret.set_string(this.inkStory.globalTags[Index]);
+		};
+	};
+
 	pluginProto.exps = new Exps();
 
 }());
