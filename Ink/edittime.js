@@ -3,7 +3,7 @@
 	return {
 		"name":			"Ink",				// as appears in 'insert object' dialog, can be changed as long as "id" stays the same
 		"id":			"Ink",				// this is used to identify this plugin and is saved to the project; never change it
-		"version":		"1.3",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
+		"version":		"1.4",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
 		"description":	"An ink (scripting language for writing interactive narrative) interpreter in javascript. Base code from y-lohse.",
 		"author":		"CeyFun",
 		"help url":		"https://github.com/y-lohse/inkjs",
@@ -128,6 +128,8 @@ AddNumberParam("Index", "0 based index to get the tag wanted");
 AddExpression(8, ef_return_string, "Tag wanted", "Data", "currentTags", "Return the current tag wanted.");
 AddNumberParam("Index", "0 based index to get the tag wanted");
 AddExpression(9, ef_return_string, "Global tag wanted", "Data", "globalTags", "Return the global tag wanted.");
+AddExpression(10, ef_return_number, "Number of current tag(s)", "Data", "nbCurrentTags", "Return the number of current tag(s).");
+AddExpression(11, ef_return_string, "Number of global tag(s)", "Data", "nbGlobalTags", "Return the number of global tags.");
 
 ////////////////////////////////////////
 ACESDone();

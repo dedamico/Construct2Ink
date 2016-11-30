@@ -5793,18 +5793,34 @@ cr.plugins_.Ink = function(runtime)
 	};
 
 	Exps.prototype.currentTags = function(ret, Index){
-		if (typeof this.inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined" | typeof this.inkStory.currentTags == "undefined") {
 			ret.set_string("");
 		} else {
 		ret.set_string(this.inkStory.currentTags[Index]);
 		};
 	};
 
+	Exps.prototype.nbCurrentTags = function(ret){
+		if (typeof this.inkStory == "undefined" | typeof this.inkStory.currentTags == "undefined") {
+			ret.set_int(0);
+		} else {
+		ret.set_int(this.inkStory.currentTags.length);
+		};
+	};
+
 	Exps.prototype.globalTags = function(ret, Index){
-		if (typeof this.inkStory == "undefined") {
+		if (typeof this.inkStory == "undefined" | typeof this.inkStory.currentTags == "undefined") {
 			ret.set_string("");
 		} else {
 		ret.set_string(this.inkStory.globalTags[Index]);
+		};
+	};
+
+	Exps.prototype.nbGlobalTags = function(ret){
+		if (typeof this.inkStory == "undefined" | typeof this.inkStory.currentTags == "undefined") {
+			ret.set_int(0);
+		} else {
+		ret.set_int(this.inkStory.globalTags.length);
 		};
 	};
 
