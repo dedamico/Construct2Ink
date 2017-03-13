@@ -4,22 +4,31 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define('inkjs', ['exports'], factory) :
   (factory((global.inkjs = global.inkjs || {})));
-}(this, function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
-  var babelHelpers = {};
-  babelHelpers.typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
   } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
   };
 
-  babelHelpers.classCallCheck = function (instance, Constructor) {
+
+
+
+
+
+
+
+
+
+
+  var classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
     }
   };
 
-  babelHelpers.createClass = function () {
+  var createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
         var descriptor = props[i];
@@ -37,7 +46,13 @@
     };
   }();
 
-  babelHelpers.extends = Object.assign || function (target) {
+
+
+
+
+
+
+  var _extends = Object.assign || function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
 
@@ -51,7 +66,9 @@
     return target;
   };
 
-  babelHelpers.inherits = function (subClass, superClass) {
+
+
+  var inherits = function (subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
     }
@@ -67,7 +84,17 @@
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   };
 
-  babelHelpers.possibleConstructorReturn = function (self, call) {
+
+
+
+
+
+
+
+
+
+
+  var possibleConstructorReturn = function (self, call) {
     if (!self) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
@@ -75,11 +102,9 @@
     return call && (typeof call === "object" || typeof call === "function") ? call : self;
   };
 
-  babelHelpers;
-
   var Path$1 = function () {
   	function Path() /*polymorphic constructor*/{
-  		babelHelpers.classCallCheck(this, Path);
+  		classCallCheck(this, Path);
 
   		this._isRelative;
   		this._components = [];
@@ -95,7 +120,7 @@
   		}
   	}
 
-  	babelHelpers.createClass(Path, [{
+  	createClass(Path, [{
   		key: "PathByAppendingPath",
   		value: function PathByAppendingPath(pathToAppend) {
   			var p = new Path();
@@ -143,17 +168,17 @@
   		}
   	}, {
   		key: "isRelative",
-  		get: function get() {
+  		get: function get$$1() {
   			return this._isRelative;
   		}
   	}, {
   		key: "components",
-  		get: function get() {
+  		get: function get$$1() {
   			return this._components;
   		}
   	}, {
   		key: "head",
-  		get: function get() {
+  		get: function get$$1() {
   			if (this.components.length > 0) {
   				return this.components[0];
   			} else {
@@ -162,7 +187,7 @@
   		}
   	}, {
   		key: "tail",
-  		get: function get() {
+  		get: function get$$1() {
   			if (this.components.length >= 2) {
   				var tailComps = this.components.slice(1, this.components.length); //careful, the original code uses length-1 here. This is because the second argument of List.GetRange is a number of elements to extract, wherease Array.slice uses an index
   				return new Path(tailComps);
@@ -172,12 +197,12 @@
   		}
   	}, {
   		key: "length",
-  		get: function get() {
+  		get: function get$$1() {
   			return this.components.length;
   		}
   	}, {
   		key: "lastComponent",
-  		get: function get() {
+  		get: function get$$1() {
   			if (this.components.length > 0) {
   				return this.components[this.components.length - 1];
   			} else {
@@ -186,7 +211,7 @@
   		}
   	}, {
   		key: "containsNamedComponent",
-  		get: function get() {
+  		get: function get$$1() {
   			for (var i = 0, l = this.components.length; i < l; i++) {
   				if (!this.components[i].isIndex) {
   					return true;
@@ -196,11 +221,11 @@
   		}
   	}, {
   		key: "componentsString",
-  		get: function get() {
+  		get: function get$$1() {
   			var compsStr = this.components.join(".");
   			if (this.isRelative) return "." + compsStr;else return compsStr;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			var _this = this;
 
   			this.components.length = 0;
@@ -220,7 +245,10 @@
 
   			var componentStrings = componentsStr.split('.');
   			componentStrings.forEach(function (str) {
-  				if (!isNaN(parseInt(str))) {
+  				//we need to distinguish between named components that start with a number, eg "42somewhere", and indexed components
+  				//the normal parseInt won't do for the detection because it's too relaxed.
+  				//see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt
+  				if (/^(\-|\+)?([0-9]+|Infinity)$/.test(str)) {
   					_this.components.push(new Component(parseInt(str)));
   				} else {
   					_this.components.push(new Component(str));
@@ -229,7 +257,7 @@
   		}
   	}], [{
   		key: "self",
-  		get: function get() {
+  		get: function get$$1() {
   			var path = new Path();
   			path._isRelative = true;
   			return path;
@@ -240,7 +268,7 @@
 
   var Component = function () {
   	function Component(indexOrName) {
-  		babelHelpers.classCallCheck(this, Component);
+  		classCallCheck(this, Component);
 
   		if (typeof indexOrName == 'string') {
   			this._index = -1;
@@ -251,7 +279,7 @@
   		}
   	}
 
-  	babelHelpers.createClass(Component, [{
+  	createClass(Component, [{
   		key: "toString",
   		value: function toString() {
   			if (this.isIndex) {
@@ -275,22 +303,22 @@
   		}
   	}, {
   		key: "index",
-  		get: function get() {
+  		get: function get$$1() {
   			return this._index;
   		}
   	}, {
   		key: "name",
-  		get: function get() {
+  		get: function get$$1() {
   			return this._name;
   		}
   	}, {
   		key: "isIndex",
-  		get: function get() {
+  		get: function get$$1() {
   			return this.index >= 0;
   		}
   	}, {
   		key: "isParent",
-  		get: function get() {
+  		get: function get$$1() {
   			return this.name == Path$1.parentId;
   		}
   	}], [{
@@ -305,15 +333,15 @@
   Path$1.parentId = "^";
   Path$1.Component = Component;
 
-  var InkObject = function () {
+  var Object$1 = function () {
   	function Object() {
-  		babelHelpers.classCallCheck(this, Object);
+  		classCallCheck(this, Object);
 
   		this.parent = null;
   		this._path = null;
   	}
 
-  	babelHelpers.createClass(Object, [{
+  	createClass(Object, [{
   		key: 'ResolvePath',
   		value: function ResolvePath(path) {
   			if (path.isRelative) {
@@ -402,7 +430,7 @@
   		}
   	}, {
   		key: 'path',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this._path == null) {
 
   				if (this.parent == null) {
@@ -439,7 +467,7 @@
   		}
   	}, {
   		key: 'rootContentContainer',
-  		get: function get() {
+  		get: function get$$1() {
   			var ancestor = this;
   			while (ancestor.parent) {
   				ancestor = ancestor.parent;
@@ -450,24 +478,414 @@
   	return Object;
   }();
 
+  var StringBuilder = function () {
+  	function StringBuilder(str) {
+  		classCallCheck(this, StringBuilder);
+
+  		str = typeof str !== 'undefined' ? str.toString() : '';
+  		this._string = str;
+  	}
+
+  	createClass(StringBuilder, [{
+  		key: 'Append',
+  		value: function Append(str) {
+  			this._string += str;
+  		}
+  	}, {
+  		key: 'AppendLine',
+  		value: function AppendLine(str) {
+  			if (typeof str !== 'undefined') this.Append(str);
+  			this._string += "\n";
+  		}
+  	}, {
+  		key: 'AppendFormat',
+  		value: function AppendFormat(format) {
+  			//taken from http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
+  			var args = Array.prototype.slice.call(arguments, 1);
+  			return format.replace(/{(\d+)}/g, function (match, number) {
+  				return typeof args[number] != 'undefined' ? args[number] : match;
+  			});
+  		}
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			return this._string;
+  		}
+  	}, {
+  		key: 'Length',
+  		get: function get$$1() {
+  			return this._string.length;
+  		}
+  	}]);
+  	return StringBuilder;
+  }();
+
+  var RawListItem = function () {
+  	function RawListItem(fullNameOrOriginName, itemName) {
+  		classCallCheck(this, RawListItem);
+
+  		if (itemName !== undefined) {
+  			this.originName = fullNameOrOriginName;
+  			this.itemName = itemName;
+  		} else {
+  			var nameParts = fullNameOrOriginName.toString().split('.');
+  			this.originName = nameParts[0];
+  			this.itemName = nameParts[1];
+  		}
+  	}
+
+  	createClass(RawListItem, [{
+  		key: 'isNull',
+  		value: function isNull() {
+  			return this.originName == null && this.itemName == null;
+  		}
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			return this.fullname;
+  		}
+  	}, {
+  		key: 'Equals',
+  		value: function Equals(obj) {
+  			if (obj instanceof RawListItem) {
+  				//			var otherItem = (RawListItem)obj;
+  				var otherItem = obj;
+  				return otherItem.itemName == this.itemName && otherItem.originName == this.originName;
+  			}
+
+  			return false;
+  		}
+  		//GetHashCode not implemented
+
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			//WARNING: experimental. RawListItem are structs and are used as keys inside hashes. In js, we can't use an object as a key, as the key needs to be a string. C# gets around that with the internal GetHashCode, and the js equivalent to that is toString. So here, toString acts as C#'s GetHashCode
+  			var originCode = '0';
+  			var itemCode = this.itemName ? this.itemName.toString() : 'null';
+  			if (this.originName != null) originCode = this.originName.toString();
+
+  			return originCode + itemCode;
+  		}
+  	}, {
+  		key: 'fullName',
+  		get: function get$$1() {
+  			return (this.originName !== null ? this.originName : "?") + "." + this.itemName;
+  		}
+  	}], [{
+  		key: 'Null',
+  		value: function Null() {
+  			return new RawListItem(null, null);
+  		}
+  	}]);
+  	return RawListItem;
+  }();
+
+  //in C#, rawlists are based on dictionnary; the equivalent of a dictionnary in js is Object, but we can't use that or it will conflate dictionnary items and RawList class properties.
+  //instead RawList-js has a special _values property wich contains the actual "Dictionnary", and a few Dictionnary methods are re-implemented on RawList. This also means directly iterating over the RawList won't work as expected. Maybe we can return a proxy if that's required.
+  var RawList = function () {
+  	function RawList(otherListOrSingleElement) {
+  		var _this = this;
+
+  		classCallCheck(this, RawList);
+
+  		this._keys = {};
+  		this._values = {};
+  		this.origins = null;
+  		this._originNames = null;
+
+  		//polymorphioc constructor
+  		if (otherListOrSingleElement) {
+  			if (otherListOrSingleElement instanceof RawList) {
+  				var otherList = otherListOrSingleElement;
+  				otherList.forEach(function (kv) {
+  					_this.Add(kv.Key, kv.Value);
+  				});
+
+  				this._originNames = otherList._originNames;
+  			} else if (otherListOrSingleElement.hasOwnProperty('Key') && otherListOrSingleElement.hasOwnProperty('Value')) {
+  				var singleElement = otherListOrSingleElement;
+  				this.Add(singleElement.Key, singleElement.Value);
+  			}
+  		}
+  	}
+
+  	createClass(RawList, [{
+  		key: 'forEach',
+  		value: function forEach(fn) {
+  			for (var key in this._values) {
+  				fn({
+  					Key: this._keys[key],
+  					Value: this._values[key]
+  				});
+  			}
+  		}
+  	}, {
+  		key: 'ContainsKey',
+  		value: function ContainsKey(key) {
+  			return key in this._values;
+  		}
+  	}, {
+  		key: 'Add',
+  		value: function Add(key, value) {
+  			this._keys[key] = key;
+  			this._values[key] = value;
+  		}
+  	}, {
+  		key: 'Remove',
+  		value: function Remove(key) {
+  			delete this._values[key];
+  			delete this._keys[key];
+  		}
+  	}, {
+  		key: 'SetInitialOriginName',
+  		value: function SetInitialOriginName(initialOriginName) {
+  			this._originNames = [initialOriginName];
+  		}
+  	}, {
+  		key: 'SetInitialOriginNames',
+  		value: function SetInitialOriginNames(initialOriginNames) {
+  			this._originNames = initialOriginNames.slice(); //store a copy
+  		}
+  	}, {
+  		key: 'Union',
+  		value: function Union(otherList) {
+  			var union = new RawList(this);
+  			otherList.forEach(function (kv) {
+  				union.Add(kv.Key, kv.Value);
+  			});
+  			return union;
+  		}
+  	}, {
+  		key: 'Intersect',
+  		value: function Intersect(otherList) {
+  			var intersection = new RawList();
+  			this.forEach(function (kv) {
+  				if (otherList.ContainsKey(kv.Key)) intersection.Add(kv.Key, kv.Value);
+  			});
+  			return intersection;
+  		}
+  	}, {
+  		key: 'Without',
+  		value: function Without(listToRemove) {
+  			var result = new RawList(this);
+  			listToRemove.forEach(function (kv) {
+  				result.Remove(kv.Key);
+  			});
+  			return result;
+  		}
+  	}, {
+  		key: 'Contains',
+  		value: function Contains(otherList) {
+  			var _this2 = this;
+
+  			var contains = true;
+  			otherList.forEach(function (kv) {
+  				if (!_this2.ContainsKey(kv.Key)) contains = false;
+  			});
+  			return contains;
+  		}
+  	}, {
+  		key: 'GreaterThan',
+  		value: function GreaterThan(otherList) {
+  			if (this.Count == 0) return false;
+  			if (otherList.Count == 0) return true;
+
+  			// All greater
+  			return this.minItem.Value > otherList.maxItem.Value;
+  		}
+  	}, {
+  		key: 'GreaterThanOrEquals',
+  		value: function GreaterThanOrEquals(otherList) {
+  			if (this.Count == 0) return false;
+  			if (otherList.Count == 0) return true;
+
+  			return this.minItem.Value >= otherList.minItem.Value && this.maxItem.Value >= otherList.maxItem.Value;
+  		}
+  	}, {
+  		key: 'LessThan',
+  		value: function LessThan(otherList) {
+  			if (otherList.Count == 0) return false;
+  			if (this.Count == 0) return true;
+
+  			return this.maxItem.Value < otherList.minItem.Value;
+  		}
+  	}, {
+  		key: 'LessThanOrEquals',
+  		value: function LessThanOrEquals(otherList) {
+  			if (otherList.Count == 0) return false;
+  			if (this.Count == 0) return true;
+
+  			return this.maxItem.Value <= otherList.maxItem.Value && this.minItem.Value <= otherList.minItem.Value;
+  		}
+  	}, {
+  		key: 'MaxAsList',
+  		value: function MaxAsList() {
+  			if (this.Count > 0) return new RawList(this.maxItem);else return new RawList();
+  		}
+  	}, {
+  		key: 'MinAsList',
+  		value: function MinAsList() {
+  			if (this.Count > 0) return new RawList(this.minItem);else return new RawList();
+  		}
+  	}, {
+  		key: 'Equals',
+  		value: function Equals(other) {
+  			//		var otherRawList = other as RawList;
+  			var otherRawList = other;
+  			if (otherRawList instanceof RawList === false) return false;
+  			if (otherRawList.Count != this.Count) return false;
+
+  			var equals = true;
+  			this.forEach(function (kv) {
+  				if (!otherRawList.ContainsKey(kv.Key)) equals = false;
+  			});
+
+  			return equals;
+  		}
+  		//GetHashCode not implemented
+
+  	}, {
+  		key: 'toString',
+  		value: function toString() {
+  			var ordered = [];
+  			this.forEach(function (kv) {
+  				ordered.push(kv);
+  			});
+  			ordered = ordered.sort(function (a, b) {
+  				return a.Value === b.Value ? 0 : a.Value > b.Value ? 1 : -1;
+  			});
+
+  			var sb = new StringBuilder();
+  			for (var i = 0; i < ordered.length; i++) {
+  				if (i > 0) sb.Append(", ");
+
+  				var item = ordered[i].Key;
+  				sb.Append(item.itemName);
+  			}
+
+  			return sb.toString();
+  		}
+  		//casting a RawList to a Number, for somereason, actually gives a number. This messes up the type detection when creating a Value from a RawList. Returning NaN here prevents that.
+
+  	}, {
+  		key: 'valueOf',
+  		value: function valueOf() {
+  			return NaN;
+  		}
+  	}, {
+  		key: 'Count',
+  		get: function get$$1() {
+  			return Object.keys(this._values).length;
+  		}
+  	}, {
+  		key: 'originOfMaxItem',
+  		get: function get$$1() {
+  			if (this.origins == null) return null;
+
+  			var maxOriginName = this.maxItem.Key.originName;
+  			var result = null;
+  			this.origins.every(function (origin) {
+  				if (origin.name == maxOriginName) {
+  					result = origin;
+  					return false;
+  				} else return true;
+  			});
+
+  			return result;
+  		}
+  	}, {
+  		key: 'originNames',
+  		get: function get$$1() {
+  			var _this3 = this;
+
+  			if (this.Count > 0) {
+  				if (this._originNames == null && this.Count > 0) this._originNames = [];else this._originNames.length = 0;
+
+  				this.forEach(function (itemAndValue) {
+  					_this3._originNames.push(itemAndValue.Key.originName);
+  				});
+  			}
+
+  			return this._originNames;
+  		}
+  	}, {
+  		key: 'maxItem',
+  		get: function get$$1() {
+  			var max = {
+  				Key: null,
+  				Value: null
+  			};
+  			this.forEach(function (kv) {
+  				if (max.Key === null || kv.Value > max.Value) max = kv;
+  			});
+
+  			return max;
+  		}
+  	}, {
+  		key: 'minItem',
+  		get: function get$$1() {
+  			var min = {
+  				Key: null,
+  				Value: null
+  			};
+  			this.forEach(function (kv) {
+  				if (min.Key === null || kv.Value < min.Value) min = kv;
+  			});
+
+  			return min;
+  		}
+  	}, {
+  		key: 'inverse',
+  		get: function get$$1() {
+  			var _this4 = this;
+
+  			var list = new RawList();
+  			if (this.origins != null) {
+  				this.origins.forEach(function (origin) {
+  					origin.items.forEach(function (itemAndValue) {
+  						if (!_this4.ContainsKey(itemAndValue.Key)) list.Add(itemAndValue.Key, itemAndValue.Value);
+  					});
+  				});
+  			}
+  			return list;
+  		}
+  	}, {
+  		key: 'all',
+  		get: function get$$1() {
+  			var list = new RawList();
+  			if (this.origins != null) {
+  				this.origins.forEach(function (origin) {
+  					origin.items.forEach(function (itemAndValue) {
+  						list.Add(itemAndValue.Key, itemAndValue.Value);
+  					});
+  				});
+  			}
+  			return list;
+  		}
+  	}]);
+  	return RawList;
+  }();
+
   var ValueType = {
   	// Used in coersion
   	Int: 0,
   	Float: 1,
-  	String: 2,
+  	List: 2,
+  	String: 3,
 
   	// Not used for coersion described above
-  	DivertTarget: 3,
-  	VariablePointer: 4
+  	DivertTarget: 4,
+  	VariablePointer: 5
   };
 
   var AbstractValue = function (_InkObject) {
-  	babelHelpers.inherits(AbstractValue, _InkObject);
+  	inherits(AbstractValue, _InkObject);
 
   	function AbstractValue(val) {
-  		babelHelpers.classCallCheck(this, AbstractValue);
+  		classCallCheck(this, AbstractValue);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(AbstractValue).call(this));
+  		var _this = possibleConstructorReturn(this, (AbstractValue.__proto__ || Object.getPrototypeOf(AbstractValue)).call(this));
 
   		_this._valueType;
   		_this._isTruthy;
@@ -475,7 +893,7 @@
   		return _this;
   	}
 
-  	babelHelpers.createClass(AbstractValue, [{
+  	createClass(AbstractValue, [{
   		key: 'Cast',
   		value: function Cast(newType) {
   			throw "Trying to casting an AbstractValue";
@@ -483,21 +901,21 @@
   	}, {
   		key: 'Copy',
   		value: function Copy(val) {
-  			return this.Create(val);
+  			return AbstractValue.Create(val);
   		}
   	}, {
   		key: 'valueType',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._valueType;
   		}
   	}, {
   		key: 'isTruthy',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._isTruthy;
   		}
   	}, {
   		key: 'valueObject',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._valueObject;
   		}
   	}], [{
@@ -517,42 +935,44 @@
   				return new StringValue(val);
   			} else if (val instanceof Path$1) {
   				return new DivertTargetValue(val);
+  			} else if (val instanceof RawList) {
+  				return new ListValue(val);
   			}
 
   			return null;
   		}
   	}]);
   	return AbstractValue;
-  }(InkObject);
+  }(Object$1);
 
   var Value = function (_AbstractValue) {
-  	babelHelpers.inherits(Value, _AbstractValue);
+  	inherits(Value, _AbstractValue);
 
   	function Value(val) {
-  		babelHelpers.classCallCheck(this, Value);
+  		classCallCheck(this, Value);
 
-  		var _this2 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Value).call(this));
+  		var _this2 = possibleConstructorReturn(this, (Value.__proto__ || Object.getPrototypeOf(Value)).call(this));
 
   		_this2.value = val;
   		return _this2;
   	}
 
-  	babelHelpers.createClass(Value, [{
+  	createClass(Value, [{
   		key: 'toString',
   		value: function toString() {
   			return this.value.toString();
   		}
   	}, {
   		key: 'value',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._value;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this._value = value;
   		}
   	}, {
   		key: 'valueObject',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.value;
   		}
   	}]);
@@ -560,18 +980,18 @@
   }(AbstractValue);
 
   var IntValue = function (_Value) {
-  	babelHelpers.inherits(IntValue, _Value);
+  	inherits(IntValue, _Value);
 
   	function IntValue(val) {
-  		babelHelpers.classCallCheck(this, IntValue);
+  		classCallCheck(this, IntValue);
 
-  		var _this3 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(IntValue).call(this, val || 0));
+  		var _this3 = possibleConstructorReturn(this, (IntValue.__proto__ || Object.getPrototypeOf(IntValue)).call(this, val || 0));
 
   		_this3._valueType = ValueType.Int;
   		return _this3;
   	}
 
-  	babelHelpers.createClass(IntValue, [{
+  	createClass(IntValue, [{
   		key: 'Cast',
   		value: function Cast(newType) {
   			if (newType == this.valueType) {
@@ -590,12 +1010,12 @@
   		}
   	}, {
   		key: 'isTruthy',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.value != 0;
   		}
   	}, {
   		key: 'valueType',
-  		get: function get() {
+  		get: function get$$1() {
   			return ValueType.Int;
   		}
   	}]);
@@ -603,18 +1023,18 @@
   }(Value);
 
   var FloatValue = function (_Value2) {
-  	babelHelpers.inherits(FloatValue, _Value2);
+  	inherits(FloatValue, _Value2);
 
   	function FloatValue(val) {
-  		babelHelpers.classCallCheck(this, FloatValue);
+  		classCallCheck(this, FloatValue);
 
-  		var _this4 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(FloatValue).call(this, val || 0.0));
+  		var _this4 = possibleConstructorReturn(this, (FloatValue.__proto__ || Object.getPrototypeOf(FloatValue)).call(this, val || 0.0));
 
   		_this4._valueType = ValueType.Float;
   		return _this4;
   	}
 
-  	babelHelpers.createClass(FloatValue, [{
+  	createClass(FloatValue, [{
   		key: 'Cast',
   		value: function Cast(newType) {
   			if (newType == this.valueType) {
@@ -633,12 +1053,12 @@
   		}
   	}, {
   		key: 'isTruthy',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._value != 0.0;
   		}
   	}, {
   		key: 'valueType',
-  		get: function get() {
+  		get: function get$$1() {
   			return ValueType.Float;
   		}
   	}]);
@@ -646,12 +1066,12 @@
   }(Value);
 
   var StringValue = function (_Value3) {
-  	babelHelpers.inherits(StringValue, _Value3);
+  	inherits(StringValue, _Value3);
 
   	function StringValue(val) {
-  		babelHelpers.classCallCheck(this, StringValue);
+  		classCallCheck(this, StringValue);
 
-  		var _this5 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(StringValue).call(this, val || ''));
+  		var _this5 = possibleConstructorReturn(this, (StringValue.__proto__ || Object.getPrototypeOf(StringValue)).call(this, val || ''));
 
   		_this5._valueType = ValueType.String;
 
@@ -669,7 +1089,7 @@
   		return _this5;
   	}
 
-  	babelHelpers.createClass(StringValue, [{
+  	createClass(StringValue, [{
   		key: 'Cast',
   		value: function Cast(newType) {
   			if (newType == this.valueType) {
@@ -699,27 +1119,27 @@
   		}
   	}, {
   		key: 'valueType',
-  		get: function get() {
+  		get: function get$$1() {
   			return ValueType.String;
   		}
   	}, {
   		key: 'isTruthy',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.value.length > 0;
   		}
   	}, {
   		key: 'isNewline',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._isNewline;
   		}
   	}, {
   		key: 'isInlineWhitespace',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._isInlineWhitespace;
   		}
   	}, {
   		key: 'isNonWhitespace',
-  		get: function get() {
+  		get: function get$$1() {
   			return !this.isNewline && !this.isInlineWhitespace;
   		}
   	}]);
@@ -727,18 +1147,18 @@
   }(Value);
 
   var DivertTargetValue = function (_Value4) {
-  	babelHelpers.inherits(DivertTargetValue, _Value4);
+  	inherits(DivertTargetValue, _Value4);
 
   	function DivertTargetValue(targetPath) {
-  		babelHelpers.classCallCheck(this, DivertTargetValue);
+  		classCallCheck(this, DivertTargetValue);
 
-  		var _this6 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(DivertTargetValue).call(this, targetPath));
+  		var _this6 = possibleConstructorReturn(this, (DivertTargetValue.__proto__ || Object.getPrototypeOf(DivertTargetValue)).call(this, targetPath));
 
   		_this6._valueType = ValueType.DivertTarget;
   		return _this6;
   	}
 
-  	babelHelpers.createClass(DivertTargetValue, [{
+  	createClass(DivertTargetValue, [{
   		key: 'Cast',
   		value: function Cast(newType) {
   			if (newType == this.valueType) return this;
@@ -752,15 +1172,15 @@
   		}
   	}, {
   		key: 'targetPath',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.value;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this.value = value;
   		}
   	}, {
   		key: 'isTruthy',
-  		get: function get() {
+  		get: function get$$1() {
   			throw "Shouldn't be checking the truthiness of a divert target";
   		}
   	}]);
@@ -768,19 +1188,19 @@
   }(Value);
 
   var VariablePointerValue = function (_Value5) {
-  	babelHelpers.inherits(VariablePointerValue, _Value5);
+  	inherits(VariablePointerValue, _Value5);
 
   	function VariablePointerValue(variableName, contextIndex) {
-  		babelHelpers.classCallCheck(this, VariablePointerValue);
+  		classCallCheck(this, VariablePointerValue);
 
-  		var _this7 = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(VariablePointerValue).call(this, variableName));
+  		var _this7 = possibleConstructorReturn(this, (VariablePointerValue.__proto__ || Object.getPrototypeOf(VariablePointerValue)).call(this, variableName));
 
   		_this7._valueType = ValueType.VariablePointer;
   		_this7.contextIndex = typeof contextIndex !== 'undefined' ? contextIndex : -1;
   		return _this7;
   	}
 
-  	babelHelpers.createClass(VariablePointerValue, [{
+  	createClass(VariablePointerValue, [{
   		key: 'Cast',
   		value: function Cast(newType) {
   			if (newType == this.valueType) return this;
@@ -799,28 +1219,102 @@
   		}
   	}, {
   		key: 'variableName',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.value;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this.value = value;
   		}
   	}, {
   		key: 'isTruthy',
-  		get: function get() {
+  		get: function get$$1() {
   			throw "Shouldn't be checking the truthiness of a variable pointer";
   		}
   	}]);
   	return VariablePointerValue;
   }(Value);
 
+  var ListValue = function (_Value6) {
+  	inherits(ListValue, _Value6);
+  	createClass(ListValue, [{
+  		key: 'Cast',
+  		value: function Cast(newType) {
+  			if (newType == ValueType.Int) {
+  				var max = this.value.maxItem;
+  				if (max.Key.isNull) return new IntValue(0);else return new IntValue(max.Value);
+  			} else if (newType == ValueType.Float) {
+  				var max = this.value.maxItem;
+  				if (max.Key.isNull) return new FloatValue(0.0);else return new FloatValue(parseFloat(max.Value));
+  			} else if (newType == ValueType.String) {
+  				var max = value.maxItem;
+  				if (max.Key.isNull) return new StringValue("");else {
+  					return new StringValue(max.Key.toString());
+  				}
+  			}
+
+  			if (newType == this.valueType) return this;
+
+  			throw "Unexpected type cast of Value to new ValueType";
+  		}
+  	}, {
+  		key: 'valueType',
+  		get: function get$$1() {
+  			return ValueType.List;
+  		}
+  	}, {
+  		key: 'isTruthy',
+  		get: function get$$1() {
+  			var isTruthy = false;
+  			this.value.forEach(function (kv) {
+  				var listItemIntValue = kv.Value;
+  				if (listItemIntValue != 0) isTruthy = true;
+  			});
+  			return isTruthy;
+  		}
+  	}]);
+
+  	function ListValue(listOrSingleItem, singleValue) {
+  		classCallCheck(this, ListValue);
+
+  		var _this8 = possibleConstructorReturn(this, (ListValue.__proto__ || Object.getPrototypeOf(ListValue)).call(this, null));
+
+  		_this8._valueType = ValueType.List;
+
+  		if (listOrSingleItem instanceof RawList) {
+  			_this8.value = new RawList(listOrSingleItem);
+  		} else if (listOrSingleItem !== undefined && singleValue !== undefined) {
+  			_this8.value = new RawList({
+  				Key: listOrSingleItem,
+  				Value: singleValue
+  			});
+  		} else {
+  			_this8.value = new RawList();
+  		}
+  		return _this8;
+  	}
+
+  	createClass(ListValue, null, [{
+  		key: 'RetainListOriginsForAssignment',
+  		value: function RetainListOriginsForAssignment(oldValue, newValue) {
+  			//		var oldList = oldValue as ListValue;
+  			var oldList = oldValue;
+  			//		var newList = newValue as ListValue;
+  			var newList = newValue;
+
+  			// When assigning the emtpy list, try to retain any initial origin names
+  			if (oldList instanceof ListValue && newList instanceof ListValue && newList.value.Count == 0) newList.value.SetInitialOriginNames(oldList.value.originNames);
+  		}
+  	}]);
+  	return ListValue;
+  }(Value);
+
   var StoryException = function (_Error) {
-  	babelHelpers.inherits(StoryException, _Error);
+  	inherits(StoryException, _Error);
 
   	function StoryException(message) {
-  		babelHelpers.classCallCheck(this, StoryException);
+  		classCallCheck(this, StoryException);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(StoryException).call(this, message));
+  		var _this = possibleConstructorReturn(this, (StoryException.__proto__ || Object.getPrototypeOf(StoryException)).call(this, message));
 
   		_this.message = message;
   		_this.name = 'StoryException';
@@ -830,56 +1324,14 @@
   	return StoryException;
   }(Error);
 
-  var StringBuilder = function () {
-  	function StringBuilder(str) {
-  		babelHelpers.classCallCheck(this, StringBuilder);
-
-  		str = typeof str !== 'undefined' ? str.toString() : '';
-  		this._string = str;
-  	}
-
-  	babelHelpers.createClass(StringBuilder, [{
-  		key: 'Append',
-  		value: function Append(str) {
-  			this._string += str;
-  		}
-  	}, {
-  		key: 'AppendLine',
-  		value: function AppendLine(str) {
-  			if (typeof str !== 'undefined') this.Append(str);
-  			this._string += "\n";
-  		}
-  	}, {
-  		key: 'AppendFormat',
-  		value: function AppendFormat(format) {
-  			//taken from http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
-  			var args = Array.prototype.slice.call(arguments, 1);
-  			return format.replace(/{(\d+)}/g, function (match, number) {
-  				return typeof args[number] != 'undefined' ? args[number] : match;
-  			});
-  		}
-  	}, {
-  		key: 'toString',
-  		value: function toString() {
-  			return this._string;
-  		}
-  	}, {
-  		key: 'Length',
-  		get: function get() {
-  			return this._string.length;
-  		}
-  	}]);
-  	return StringBuilder;
-  }();
-
   var Container = function (_InkObject) {
-  	babelHelpers.inherits(Container, _InkObject);
+  	inherits(Container, _InkObject);
+
   	//also implements INamedContent. Not sure how to do it cleanly in JS.
-
   	function Container() {
-  		babelHelpers.classCallCheck(this, Container);
+  		classCallCheck(this, Container);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Container).call(this));
+  		var _this = possibleConstructorReturn(this, (Container.__proto__ || Object.getPrototypeOf(Container)).call(this));
 
   		_this.name = '';
 
@@ -900,7 +1352,7 @@
   		return _this;
   	}
 
-  	babelHelpers.createClass(Container, [{
+  	createClass(Container, [{
   		key: 'AddContent',
   		value: function AddContent(contentObj) {
   			var _this2 = this;
@@ -933,7 +1385,7 @@
   	}, {
   		key: 'AddToNamedContentOnly',
   		value: function AddToNamedContentOnly(namedContentObj) {
-  			if (namedContentObj instanceof InkObject === false) console.warn("Can only add Runtime.Objects to a Runtime.Container");
+  			if (namedContentObj instanceof Object$1 === false) console.warn("Can only add Runtime.Objects to a Runtime.Container");
   			namedContentObj.parent = this;
 
   			this.namedContent[namedContentObj.name] = namedContentObj;
@@ -1099,20 +1551,20 @@
   		}
   	}, {
   		key: 'hasValidName',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.name != null && this.name.length > 0;
   		}
   	}, {
   		key: 'content',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._content;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this.AddContent(value);
   		}
   	}, {
   		key: 'namedOnlyContent',
-  		get: function get() {
+  		get: function get$$1() {
   			var namedOnlyContent = {};
 
   			for (var key in this.namedContent) {
@@ -1131,7 +1583,7 @@
 
   			return namedOnlyContent;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			var existingNamedOnly = this.namedOnlyContent;
   			if (existingNamedOnly != null) {
   				for (var key in existingNamedOnly) {
@@ -1149,7 +1601,7 @@
   		}
   	}, {
   		key: 'countFlags',
-  		get: function get() {
+  		get: function get$$1() {
   			var flags = 0;
   			if (this.visitsShouldBeCounted) flags |= this.CountFlags.Visits;
   			if (this.turnIndexShouldBeCounted) flags |= this.CountFlags.Turns;
@@ -1166,7 +1618,7 @@
 
   			return flags;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			var flag = value;
   			if ((flag & this.CountFlags.Visits) > 0) this.visitsShouldBeCounted = true;
   			if ((flag & this.CountFlags.Turns) > 0) this.turnIndexShouldBeCounted = true;
@@ -1174,14 +1626,14 @@
   		}
   	}, {
   		key: 'pathToFirstLeafContent',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this._pathToFirstLeafContent == null) this._pathToFirstLeafContent = this.path.PathByAppendingPath(this.internalPathToFirstLeafContent);
 
   			return this._pathToFirstLeafContent;
   		}
   	}, {
   		key: 'internalPathToFirstLeafContent',
-  		get: function get() {
+  		get: function get$$1() {
   			var path = new Path();
   			var container = this;
   			while (container instanceof Container) {
@@ -1195,21 +1647,21 @@
   		}
   	}]);
   	return Container;
-  }(InkObject);
+  }(Object$1);
 
   var Glue = function (_InkObject) {
-  	babelHelpers.inherits(Glue, _InkObject);
+  	inherits(Glue, _InkObject);
 
   	function Glue(type) {
-  		babelHelpers.classCallCheck(this, Glue);
+  		classCallCheck(this, Glue);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Glue).call(this));
+  		var _this = possibleConstructorReturn(this, (Glue.__proto__ || Object.getPrototypeOf(Glue)).call(this));
 
   		_this.glueType = type;
   		return _this;
   	}
 
-  	babelHelpers.createClass(Glue, [{
+  	createClass(Glue, [{
   		key: "toString",
   		value: function toString() {
   			switch (this.glueType) {
@@ -1225,22 +1677,22 @@
   		}
   	}, {
   		key: "isLeft",
-  		get: function get() {
+  		get: function get$$1() {
   			return this.glueType == GlueType.Left;
   		}
   	}, {
   		key: "isBi",
-  		get: function get() {
+  		get: function get$$1() {
   			return this.glueType == GlueType.Bidirectional;
   		}
   	}, {
   		key: "isRight",
-  		get: function get() {
+  		get: function get$$1() {
   			return this.glueType == GlueType.Right;
   		}
   	}]);
   	return Glue;
-  }(InkObject);
+  }(Object$1);
 
   var GlueType = {
   	Bidirectional: 0,
@@ -1249,18 +1701,18 @@
   };
 
   var ControlCommand = function (_InkObject) {
-  	babelHelpers.inherits(ControlCommand, _InkObject);
+  	inherits(ControlCommand, _InkObject);
 
   	function ControlCommand(commandType) {
-  		babelHelpers.classCallCheck(this, ControlCommand);
+  		classCallCheck(this, ControlCommand);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ControlCommand).call(this));
+  		var _this = possibleConstructorReturn(this, (ControlCommand.__proto__ || Object.getPrototypeOf(ControlCommand)).call(this));
 
   		_this._commandType = typeof commandType != 'undefined' ? commandType : CommandType.NotSet;
   		return _this;
   	}
 
-  	babelHelpers.createClass(ControlCommand, [{
+  	createClass(ControlCommand, [{
   		key: 'copy',
   		value: function copy() {
   			return new ControlCommand(this.commandType);
@@ -1272,7 +1724,7 @@
   		}
   	}, {
   		key: 'commandType',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._commandType;
   		}
   	}], [{
@@ -1370,9 +1822,19 @@
   		value: function End() {
   			return new ControlCommand(CommandType.End);
   		}
+  	}, {
+  		key: 'ListFromInt',
+  		value: function ListFromInt() {
+  			return new ControlCommand(CommandType.ListFromInt);
+  		}
+  	}, {
+  		key: 'ListRange',
+  		value: function ListRange() {
+  			return new ControlCommand(CommandType.ListRange);
+  		}
   	}]);
   	return ControlCommand;
-  }(InkObject);
+  }(Object$1);
 
   var CommandType = {
   	NotSet: -1,
@@ -1394,7 +1856,9 @@
   	SequenceShuffleIndex: 15,
   	StartThread: 16,
   	Done: 17,
-  	End: 18
+  	End: 18,
+  	ListFromInt: 19,
+  	ListRange: 20
   };
   CommandType.TOTAL_VALUES = Object.keys(CommandType).length - 1; //-1 because NotSet shoudn't count
   ControlCommand.CommandType = CommandType;
@@ -1405,12 +1869,12 @@
   };
 
   var Divert = function (_InkObject) {
-  	babelHelpers.inherits(Divert, _InkObject);
+  	inherits(Divert, _InkObject);
 
   	function Divert(stackPushType) {
-  		babelHelpers.classCallCheck(this, Divert);
+  		classCallCheck(this, Divert);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Divert).call(this));
+  		var _this = possibleConstructorReturn(this, (Divert.__proto__ || Object.getPrototypeOf(Divert)).call(this));
 
   		_this._targetPath;
   		_this._targetContent;
@@ -1432,7 +1896,7 @@
   		return _this;
   	}
 
-  	babelHelpers.createClass(Divert, [{
+  	createClass(Divert, [{
   		key: 'Equals',
   		value: function Equals(obj) {
   			//		var otherDivert = obj as Divert;
@@ -1484,7 +1948,7 @@
   		}
   	}, {
   		key: 'targetPath',
-  		get: function get() {
+  		get: function get$$1() {
   			// Resolve any relative paths to global ones as we come across them
   			if (this._targetPath != null && this._targetPath.isRelative) {
   				var targetObj = this.targetContent;
@@ -1495,13 +1959,13 @@
 
   			return this._targetPath;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this._targetPath = value;
   			this._targetContent = null;
   		}
   	}, {
   		key: 'targetContent',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this._targetContent == null) {
   				this._targetContent = this.ResolvePath(this._targetPath);
   			}
@@ -1510,12 +1974,12 @@
   		}
   	}, {
   		key: 'targetPathString',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this.targetPath == null) return null;
 
   			return this.CompactPathString(this.targetPath);
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			if (value == null) {
   				this.targetPath = null;
   			} else {
@@ -1524,20 +1988,20 @@
   		}
   	}, {
   		key: 'hasVariableTarget',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.variableDivertName != null;
   		}
   	}]);
   	return Divert;
-  }(InkObject);
+  }(Object$1);
 
   var ChoicePoint = function (_InkObject) {
-  	babelHelpers.inherits(ChoicePoint, _InkObject);
+  	inherits(ChoicePoint, _InkObject);
 
   	function ChoicePoint(onceOnly) {
-  		babelHelpers.classCallCheck(this, ChoicePoint);
+  		classCallCheck(this, ChoicePoint);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ChoicePoint).call(this));
+  		var _this = possibleConstructorReturn(this, (ChoicePoint.__proto__ || Object.getPrototypeOf(ChoicePoint)).call(this));
 
   		_this._pathOnChoice;
   		_this.hasCondition;
@@ -1550,7 +2014,7 @@
   		return _this;
   	}
 
-  	babelHelpers.createClass(ChoicePoint, [{
+  	createClass(ChoicePoint, [{
   		key: 'toString',
   		value: function toString() {
   			//		int? targetLineNum = DebugLineNumberOfPath (pathOnChoice);
@@ -1565,7 +2029,7 @@
   		}
   	}, {
   		key: 'pathOnChoice',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this._pathOnChoice != null && this._pathOnChoice.isRelative) {
   				var choiceTargetObj = this.choiceTarget;
   				if (choiceTargetObj) {
@@ -1574,26 +2038,26 @@
   			}
   			return this._pathOnChoice;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this._pathOnChoice = value;
   		}
   	}, {
   		key: 'choiceTarget',
-  		get: function get() {
+  		get: function get$$1() {
   			//return this.ResolvePath (_pathOnChoice) as Container;
   			return this.ResolvePath(this._pathOnChoice);
   		}
   	}, {
   		key: 'pathStringOnChoice',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.CompactPathString(this.pathOnChoice);
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this.pathOnChoice = new Path$1(value);
   		}
   	}, {
   		key: 'flags',
-  		get: function get() {
+  		get: function get$$1() {
   			var flags = 0;
   			if (this.hasCondition) flags |= 1;
   			if (this.hasStartContent) flags |= 2;
@@ -1602,7 +2066,7 @@
   			if (this.onceOnly) flags |= 16;
   			return flags;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this.hasCondition = (value & 1) > 0;
   			this.hasStartContent = (value & 2) > 0;
   			this.hasChoiceOnlyContent = (value & 4) > 0;
@@ -1611,22 +2075,22 @@
   		}
   	}]);
   	return ChoicePoint;
-  }(InkObject);
+  }(Object$1);
 
   var VariableReference = function (_InkObject) {
-  	babelHelpers.inherits(VariableReference, _InkObject);
+  	inherits(VariableReference, _InkObject);
 
   	function VariableReference(name) {
-  		babelHelpers.classCallCheck(this, VariableReference);
+  		classCallCheck(this, VariableReference);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(VariableReference).call(this));
+  		var _this = possibleConstructorReturn(this, (VariableReference.__proto__ || Object.getPrototypeOf(VariableReference)).call(this));
 
   		_this.name = name;
   		_this.pathForCount;
   		return _this;
   	}
 
-  	babelHelpers.createClass(VariableReference, [{
+  	createClass(VariableReference, [{
   		key: 'toString',
   		value: function toString() {
   			if (this.name != null) {
@@ -1638,30 +2102,30 @@
   		}
   	}, {
   		key: 'containerForCount',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.ResolvePath(this.pathForCount);
   		}
   	}, {
   		key: 'pathStringForCount',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this.pathForCount == null) return null;
 
   			return this.CompactPathString(this.pathForCount);
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			if (value == null) this.pathForCount = null;else this.pathForCount = new Path$1(value);
   		}
   	}]);
   	return VariableReference;
-  }(InkObject);
+  }(Object$1);
 
   var VariableAssignment = function (_InkObject) {
-  	babelHelpers.inherits(VariableAssignment, _InkObject);
+  	inherits(VariableAssignment, _InkObject);
 
   	function VariableAssignment(variableName, isNewDeclaration) {
-  		babelHelpers.classCallCheck(this, VariableAssignment);
+  		classCallCheck(this, VariableAssignment);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(VariableAssignment).call(this));
+  		var _this = possibleConstructorReturn(this, (VariableAssignment.__proto__ || Object.getPrototypeOf(VariableAssignment)).call(this));
 
   		_this._variableName = variableName || null;
   		_this._isNewDeclaration = !!isNewDeclaration;
@@ -1669,43 +2133,44 @@
   		return _this;
   	}
 
-  	babelHelpers.createClass(VariableAssignment, [{
+  	createClass(VariableAssignment, [{
   		key: "toString",
   		value: function toString() {
-  			return "VarAssign to " + this.variableName;;
+  			return "VarAssign to " + this.variableName;
   		}
   	}, {
   		key: "variableName",
-  		get: function get() {
+  		get: function get$$1() {
   			return this._variableName;
   		}
   	}, {
   		key: "isNewDeclaration",
-  		get: function get() {
+  		get: function get$$1() {
   			return this._isNewDeclaration;
   		}
   	}]);
   	return VariableAssignment;
-  }(InkObject);
+  }(Object$1);
 
   var Void = function (_InkObject) {
-    babelHelpers.inherits(Void, _InkObject);
+    inherits(Void, _InkObject);
 
     function Void() {
-      babelHelpers.classCallCheck(this, Void);
-      return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Void).apply(this, arguments));
+      classCallCheck(this, Void);
+      return possibleConstructorReturn(this, (Void.__proto__ || Object.getPrototypeOf(Void)).apply(this, arguments));
     }
 
     return Void;
-  }(InkObject);
+  }(Object$1);
 
+  //misses delegates, probably the returns from function calls
   var NativeFunctionCall = function (_InkObject) {
-  	babelHelpers.inherits(NativeFunctionCall, _InkObject);
+  	inherits(NativeFunctionCall, _InkObject);
 
   	function NativeFunctionCall(name) {
-  		babelHelpers.classCallCheck(this, NativeFunctionCall);
+  		classCallCheck(this, NativeFunctionCall);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(NativeFunctionCall).call(this));
+  		var _this = possibleConstructorReturn(this, (NativeFunctionCall.__proto__ || Object.getPrototypeOf(NativeFunctionCall)).call(this));
 
   		_this.name = name;
   		_this._numberOfParameters;
@@ -1718,7 +2183,7 @@
   		return _this;
   	}
 
-  	babelHelpers.createClass(NativeFunctionCall, [{
+  	createClass(NativeFunctionCall, [{
   		key: 'Call',
   		value: function Call(parameters) {
   			if (this._prototype) {
@@ -1729,14 +2194,20 @@
   				throw "Unexpected number of parameters";
   			}
 
+  			var hasList = false;
   			parameters.forEach(function (p) {
   				if (p instanceof Void) throw new StoryException("Attempting to perform operation on a void value. Did you forget to 'return' a value from a function you called here?");
+  				if (p instanceof ListValue) hasList = true;
   			});
+
+  			if (parameters.length == 2 && hasList) {
+  				return this.CallBinaryListOperation(parameters);
+  			}
 
   			var coercedParams = this.CoerceValuesToSingleType(parameters);
   			var coercedType = coercedParams[0].valueType;
 
-  			//Originally CallType gets a type parameter taht is used to do some casting, but we can do without.
+  			//Originally CallType gets a type parameter that is used to do some casting, but we can do without.
   			if (coercedType == ValueType.Int) {
   				return this.CallType(coercedParams);
   			} else if (coercedType == ValueType.Float) {
@@ -1744,6 +2215,8 @@
   			} else if (coercedType == ValueType.String) {
   				return this.CallType(coercedParams);
   			} else if (coercedType == ValueType.DivertTarget) {
+  				return this.CallType(coercedParams);
+  			} else if (coercedType == ValueType.List) {
   				return this.CallType(coercedParams);
   			}
 
@@ -1763,7 +2236,7 @@
 
   				var opForTypeObj = this._operationFuncs[valType];
   				if (!opForTypeObj) {
-  					throw new StoryException("Can not perform operation '" + this.name + "' on " + valType);
+  					throw new StoryException("Cannot perform operation '" + this.name + "' on " + valType);
   				}
 
   				// Binary
@@ -1794,9 +2267,71 @@
   			}
   		}
   	}, {
+  		key: 'CallBinaryListOperation',
+  		value: function CallBinaryListOperation(parameters) {
+  			// List-Int addition/subtraction returns a List (e.g. "alpha" + 1 = "beta")
+  			if ((this.name == "+" || this.name == "-") && parameters[0] instanceof ListValue && parameters[1] instanceof IntValue) return this.CallListIncrementOperation(parameters);
+
+  			//		var v1 = parameters [0] as Value;
+  			var v1 = parameters[0];
+  			//		var v2 = parameters [1] as Value;
+  			var v2 = parameters[1];
+
+  			// And/or with any other type requires coerscion to bool (int)
+  			if ((this.name == "&&" || this.name == "||") && (v1.valueType != ValueType.List || v2.valueType != ValueType.List)) {
+  				//			var op = _operationFuncs [ValueType.Int] as BinaryOp<int>;
+  				var op = this._operationFuncs[ValueType.Int];
+  				var result = op(v1.isTruthy ? 1 : 0, v2.isTruthy ? 1 : 0);
+  				return parseInt(result);
+  			}
+
+  			// Normal (list • list) operation
+  			if (v1.valueType == ValueType.List && v2.valueType == ValueType.List) return this.CallType([v1, v2]);
+
+  			throw new StoryException("Can not call use '" + this.name + "' operation on " + v1.valueType + " and " + v2.valueType);
+  		}
+  	}, {
+  		key: 'CallListIncrementOperation',
+  		value: function CallListIncrementOperation(listIntParams) {
+  			var _this2 = this;
+
+  			var listVal = listIntParams[0];
+  			var intVal = listIntParams[1];
+
+  			var resultRawList = new RawList();
+
+  			listVal.value.forEach(function (listItemWithValue) {
+  				var listItem = listItemWithValue.Key;
+  				var listItemValue = listItemWithValue.Value;
+
+  				// Find + or - operation
+  				var intOp = _this2._operationFuncs[ValueType.Int];
+
+  				// Return value unknown until it's evaluated
+  				var targetInt = intOp(listItemValue, intVal.value);
+
+  				// Find this item's origin (linear search should be ok, should be short haha)
+  				var itemOrigin = null;
+  				listVal.value.origins.forEach(function (origin) {
+  					if (origin.name == listItem.originName) {
+  						itemOrigin = origin;
+  						return false;
+  					}
+  				});
+  				if (itemOrigin != null) {
+  					var incrementedItem = itemOrigin.TryGetItemWithValue(targetInt);
+  					if (incrementedItem.exists) resultRawList.Add(incrementedItem.item, targetInt);
+  				}
+  			});
+
+  			return new ListValue(resultRawList);
+  		}
+  	}, {
   		key: 'CoerceValuesToSingleType',
   		value: function CoerceValuesToSingleType(parametersIn) {
   			var valType = ValueType.Int;
+
+  			var specialCaseList = null;
 
   			// Find out what the output type is
   			// "higher level" types infect both so that binary operations
@@ -1807,14 +2342,40 @@
   				if (val.valueType > valType) {
   					valType = val.valueType;
   				}
+
+  				if (val.valueType == ValueType.List) {
+  					//				 specialCaseList = val as ListValue;
+  					specialCaseList = val;
+  				}
   			});
 
   			// Coerce to this chosen type
   			var parametersOut = [];
-  			parametersIn.forEach(function (val) {
-  				var castedValue = val.Cast(valType);
-  				parametersOut.push(castedValue);
-  			});
+
+  			if (valType == ValueType.List) {
+  				parametersIn.forEach(function (val) {
+  					if (val.valueType == ValueType.List) {
+  						parametersOut.push(val);
+  					} else if (val.valueType == ValueType.Int) {
+  						var intVal = parseInt(val.valueObject);
+  						var list = specialCaseList.value.originOfMaxItem;
+
+  						var item = list.TryGetItemWithValue(intVal);
+  						if (item.exists) {
+  							var castedValue = new ListValue(item.item, intVal);
+  							parametersOut.push(castedValue);
+  						} else throw new StoryException("Could not find List item with the value " + intVal + " in " + list.name);
+  					} else throw new StoryException("Cannot mix Lists and " + val.valueType + " values in this operation");
+  				});
+  			}
+
+  			// Normal Coercing (with standard casting)
+  			else {
+  					parametersIn.forEach(function (val) {
+  						var castedValue = val.Cast(valType);
+  						parametersOut.push(castedValue);
+  					});
+  				}
 
   			return parametersOut;
   		}
@@ -1834,23 +2395,23 @@
   		}
   	}, {
   		key: 'name',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._name;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this._name = value;
   			if (!this._isPrototype) this._prototype = NativeFunctionCall._nativeFunctions[this._name];
   		}
   	}, {
   		key: 'numberOfParameters',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this._prototype) {
   				return this._prototype.numberOfParameters;
   			} else {
   				return this._numberOfParameters;
   			}
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this._numberOfParameters = value;
   		}
   	}], [{
@@ -1998,6 +2559,67 @@
   					return x === y ? 1 : 0;
   				});
 
+  				this.AddListBinaryOp(this.Add, function (x, y) {
+  					return x.Union(y);
+  				});
+  				this.AddListBinaryOp(this.And, function (x, y) {
+  					return x.Union(y);
+  				});
+  				this.AddListBinaryOp(this.Subtract, function (x, y) {
+  					return x.Without(y);
+  				});
+  				this.AddListBinaryOp(this.Has, function (x, y) {
+  					return x.Contains(y) ? 1 : 0;
+  				});
+  				this.AddListBinaryOp(this.Hasnt, function (x, y) {
+  					return x.Contains(y) ? 0 : 1;
+  				});
+  				this.AddListBinaryOp(this.Intersect, function (x, y) {
+  					return x.Intersect(y);
+  				});
+
+  				this.AddListBinaryOp(this.Equal, function (x, y) {
+  					return x.Equals(y) ? 1 : 0;
+  				});
+  				this.AddListBinaryOp(this.Greater, function (x, y) {
+  					return x.GreaterThan(y) ? 1 : 0;
+  				});
+  				this.AddListBinaryOp(this.Less, function (x, y) {
+  					return x.LessThan(y) ? 1 : 0;
+  				});
+  				this.AddListBinaryOp(this.GreaterThanOrEquals, function (x, y) {
+  					return x.GreaterThanOrEquals(y) ? 1 : 0;
+  				});
+  				this.AddListBinaryOp(this.LessThanOrEquals, function (x, y) {
+  					return x.LessThanOrEquals(y) ? 1 : 0;
+  				});
+  				this.AddListBinaryOp(this.NotEquals, function (x, y) {
+  					return !x.Equals(y) ? 1 : 0;
+  				});
+
+  				this.AddListUnaryOp(this.Not, function (x) {
+  					return x.Count == 0 ? 1 : 0;
+  				});
+
+  				this.AddListUnaryOp(this.Invert, function (x) {
+  					return x.inverse;
+  				});
+  				this.AddListUnaryOp(this.All, function (x) {
+  					return x.all;
+  				});
+  				this.AddListUnaryOp(this.ListMin, function (x) {
+  					return x.MinAsList();
+  				});
+  				this.AddListUnaryOp(this.ListMax, function (x) {
+  					return x.MaxAsList();
+  				});
+  				this.AddListUnaryOp(this.Count, function (x) {
+  					return x.Count;
+  				});
+  				this.AddListUnaryOp(this.ValueOfList, function (x) {
+  					return x.maxItem.Value;
+  				});
+
   				// Special case: The only operation you can do on divert target values
   				var divertTargetsEqual = function divertTargetsEqual(d1, d2) {
   					return d1.Equals(d2) ? 1 : 0;
@@ -2041,16 +2663,26 @@
   		value: function AddStringBinaryOp(name, op) {
   			this.AddOpToNativeFunc(name, 2, ValueType.String, op);
   		}
+  	}, {
+  		key: 'AddListBinaryOp',
+  		value: function AddListBinaryOp(name, op) {
+  			this.AddOpToNativeFunc(name, 2, ValueType.List, op);
+  		}
+  	}, {
+  		key: 'AddListUnaryOp',
+  		value: function AddListUnaryOp(name, op) {
+  			this.AddOpToNativeFunc(name, 1, ValueType.List, op);
+  		}
   	}]);
   	return NativeFunctionCall;
-  }(InkObject);
+  }(Object$1);
 
   NativeFunctionCall.Add = "+";
   NativeFunctionCall.Subtract = "-";
   NativeFunctionCall.Divide = "/";
   NativeFunctionCall.Multiply = "*";
   NativeFunctionCall.Mod = "%";
-  NativeFunctionCall.Negate = "~";
+  NativeFunctionCall.Negate = "_";
 
   NativeFunctionCall.Equal = "==";
   NativeFunctionCall.Greater = ">";
@@ -2066,37 +2698,48 @@
   NativeFunctionCall.Min = "MIN";
   NativeFunctionCall.Max = "MAX";
 
+  NativeFunctionCall.Has = "?";
+  NativeFunctionCall.Hasnt = "!?";
+  NativeFunctionCall.Intersect = "^";
+
+  NativeFunctionCall.ListMin = "LIST_MIN";
+  NativeFunctionCall.ListMax = "LIST_MAX";
+  NativeFunctionCall.All = "LIST_ALL";
+  NativeFunctionCall.Count = "LIST_COUNT";
+  NativeFunctionCall.ValueOfList = "LIST_VALUE";
+  NativeFunctionCall.Invert = "LIST_INVERT";
+
   NativeFunctionCall._nativeFunctions = null;
 
   var Tag = function (_InkObject) {
-  	babelHelpers.inherits(Tag, _InkObject);
+  	inherits(Tag, _InkObject);
 
   	function Tag(tagText) {
-  		babelHelpers.classCallCheck(this, Tag);
+  		classCallCheck(this, Tag);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Tag).call(this));
+  		var _this = possibleConstructorReturn(this, (Tag.__proto__ || Object.getPrototypeOf(Tag)).call(this));
 
   		_this._text = tagText.toString() || '';
   		return _this;
   	}
 
-  	babelHelpers.createClass(Tag, [{
+  	createClass(Tag, [{
   		key: 'toString',
   		value: function toString() {
   			return "# " + this._text;
   		}
   	}, {
   		key: 'text',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._text;
   		}
   	}]);
   	return Tag;
-  }(InkObject);
+  }(Object$1);
 
   var Choice = function () {
   	function Choice(choice) {
-  		babelHelpers.classCallCheck(this, Choice);
+  		classCallCheck(this, Choice);
 
   		this.text;
   		this.index;
@@ -2109,26 +2752,178 @@
   		if (choice) this.choicePoint = choice;
   	}
 
-  	babelHelpers.createClass(Choice, [{
+  	createClass(Choice, [{
   		key: "pathStringOnChoice",
-  		get: function get() {
+  		get: function get$$1() {
   			return this.choicePoint.pathStringOnChoice;
   		}
   	}, {
   		key: "sourcePath",
-  		get: function get() {
+  		get: function get$$1() {
   			return this.choicePoint.path.componentsString;
   		}
   	}]);
   	return Choice;
   }();
 
-  var JsonSerialisation = function () {
-  	function JsonSerialisation() {
-  		babelHelpers.classCallCheck(this, JsonSerialisation);
+  var ListDefinition = function () {
+  	function ListDefinition(name, items) {
+  		classCallCheck(this, ListDefinition);
+
+  		this._name = name || '';
+  		this._items = null;
+  		this._rawListItemsKeys = null;
+  		this._itemNameToValues = items || {};
   	}
 
-  	babelHelpers.createClass(JsonSerialisation, null, [{
+  	createClass(ListDefinition, [{
+  		key: 'forEachItems',
+  		value: function forEachItems(fn) {
+  			for (var key in this._rawListItemsKeys) {
+  				fn({
+  					Key: this._rawListItemsKeys[key],
+  					Value: this._items[key]
+  				});
+  			}
+  		}
+  	}, {
+  		key: 'ValueForItem',
+  		value: function ValueForItem(item) {
+  			var intVal = this._itemNameToValues[item.itemName];
+  			if (intVal !== undefined) return intVal;else return 0;
+  		}
+  	}, {
+  		key: 'ContainsItem',
+  		value: function ContainsItem(item) {
+  			if (item.originName != this.name) return false;
+
+  			return item.itemName in this._itemNameToValues;
+  		}
+  	}, {
+  		key: 'TryGetItemWithValue',
+  		value: function TryGetItemWithValue(val, item) {
+  			//item was an out
+  			//the original function returns a boolean and has a second parameter called item that is an `out`. Both are needed and we can't just return the item because it'll always be truthy. Instead, we return an object containing the bool an dthe item
+  			for (var key in this._itemNameToValues) {
+  				if (this._itemNameToValues[key] == val) {
+  					item = new RawListItem(this.name, key);
+  					return {
+  						item: item,
+  						exists: true
+  					};
+  				}
+  			}
+
+  			item = RawListItem.Null;
+  			return {
+  				item: item,
+  				exists: false
+  			};
+  		}
+  	}, {
+  		key: 'ListRange',
+  		value: function ListRange(min, max) {
+  			var rawList = new RawList();
+  			for (var key in this._itemNameToValues) {
+  				if (this._itemNameToValues[key] >= min && this._itemNameToValues[key] <= max) {
+  					var item = new RawListItem(this.name, key);
+  					rawList.Add(item, this._itemNameToValues[key]);
+  				}
+  			}
+  			return new ListValue(rawList);
+  		}
+  	}, {
+  		key: 'name',
+  		get: function get$$1() {
+  			return this._name;
+  		}
+  	}, {
+  		key: 'items',
+  		get: function get$$1() {
+  			if (this._items == null) {
+  				this._items = {};
+  				this._rawListItemsKeys = {};
+  				for (var key in this._itemNameToValues) {
+  					var item = new RawListItem(this.name, key);
+  					this._rawListItemsKeys[item] = item;
+  					this._items[item] = this._itemNameToValues[key];
+  				}
+  			}
+  			this._items.forEach = this.forEachItems.bind(this);
+
+  			return this._items;
+  		}
+  	}]);
+  	return ListDefinition;
+  }();
+
+  var ListDefinitionsOrigin = function () {
+  	function ListDefinitionsOrigin(lists) {
+  		var _this = this;
+
+  		classCallCheck(this, ListDefinitionsOrigin);
+
+  		this._lists = {};
+
+  		lists.forEach(function (list) {
+  			_this._lists[list.name] = list;
+  		});
+  	}
+
+  	createClass(ListDefinitionsOrigin, [{
+  		key: 'TryGetDefinition',
+  		value: function TryGetDefinition(name, def) {
+  			//initially, this function returns a boolean and the second parameter is an out.
+  			return name in this._lists ? this._lists[name] : def;
+  		}
+  	}, {
+  		key: 'FindSingleItemListWithName',
+  		value: function FindSingleItemListWithName(name) {
+  			var item = RawListItem.Null;
+  			var list = null;
+
+  			var nameParts = name.split('.');
+  			if (nameParts.length == 2) {
+  				item = new RawListItem(nameParts[0], nameParts[1]);
+  				list = this.TryGetDefinition(item.originName, list);
+  			} else {
+  				for (var key in this._lists) {
+  					var listWithItem = this._lists[key];
+  					item = new RawListItem(key, name);
+  					if (listWithItem.ContainsItem(item)) {
+  						list = listWithItem;
+  						break;
+  					}
+  				}
+  			}
+
+  			if (list != null) {
+  				var itemValue = list.ValueForItem(item);
+  				return new ListValue(item, itemValue);
+  			}
+
+  			return null;
+  		}
+  	}, {
+  		key: 'lists',
+  		get: function get$$1() {
+  			var listOfLists = [];
+
+  			for (var key in this._lists) {
+  				listOfLists.push(this._lists[key]);
+  			}
+  			return listOfLists;
+  		}
+  	}]);
+  	return ListDefinitionsOrigin;
+  }();
+
+  var JsonSerialisation = function () {
+  	function JsonSerialisation() {
+  		classCallCheck(this, JsonSerialisation);
+  	}
+
+  	createClass(JsonSerialisation, null, [{
   		key: 'ListToJArray',
   		value: function ListToJArray(serialisables) {
   			var _this = this;
@@ -2174,7 +2969,7 @@
   			for (var key in dictionary) {
   				//			var runtimeObj = keyVal.Value as Runtime.Object;
   				var runtimeObj = dictionary[key];
-  				if (runtimeObj instanceof InkObject) jsonObj[key] = this.RuntimeObjectToJToken(runtimeObj);
+  				if (runtimeObj instanceof Object$1) jsonObj[key] = this.RuntimeObjectToJToken(runtimeObj);
   			}
 
   			return jsonObj;
@@ -2225,6 +3020,7 @@
   				}
 
   				// Native functions
+  				if (str == "L^") str = "^";
   				if (NativeFunctionCall.CallExistsWithName(str)) return NativeFunctionCall.CallWithName(str);
 
   				// Pop
@@ -2234,7 +3030,7 @@
   				if (str == "void") return new Void();
   			}
 
-  			if ((typeof token === 'undefined' ? 'undefined' : babelHelpers.typeof(token)) === 'object' && token instanceof Array === false) {
+  			if ((typeof token === 'undefined' ? 'undefined' : _typeof(token)) === 'object' && token instanceof Array === false) {
   				var obj = token;
   				var propValue;
 
@@ -2336,6 +3132,28 @@
   					return new Tag(propValue.toString());
   				}
 
+  				//list value
+  				if (propValue = obj["list"]) {
+  					//				var listContent = (Dictionary<string, object>)propValue;
+  					var listContent = propValue;
+  					var rawList = new RawList();
+  					if (propValue = obj["origins"]) {
+  						//					var namesAsObjs = (List<object>)propValue;
+  						var namesAsObjs = propValue;
+  						//					rawList.SetInitialOriginNames(namesAsObjs.Cast<string>().ToList());
+  						rawList.SetInitialOriginNames(namesAsObjs);
+  					}
+
+  					for (var key in listContent) {
+  						var nameToVal = listContent[key];
+  						var item = new RawListItem(key);
+  						var val = parseInt(nameToVal);
+  						rawList.Add(item, val);
+  					}
+
+  					return new ListValue(rawList);
+  				}
+
   				if (obj["originalChoicePath"] != null) return this.JObjectToChoice(obj);
   			}
 
@@ -2403,6 +3221,12 @@
   				if (strVal.isNewline) return "\n";else return "^" + strVal.value;
   			}
 
+  			//		var listVal = obj as ListValue;
+  			var listVal = obj;
+  			if (listVal instanceof ListValue) {
+  				return this.InkListToJObject(listVal);
+  			}
+
   			//		var divTargetVal = obj as DivertTargetValue;
   			var divTargetVal = obj;
   			if (divTargetVal instanceof DivertTargetValue) return {
@@ -2430,7 +3254,13 @@
 
   			//		var nativeFunc = obj as Runtime.NativeFunctionCall;
   			var nativeFunc = obj;
-  			if (nativeFunc instanceof NativeFunctionCall) return nativeFunc.name;
+  			if (nativeFunc instanceof NativeFunctionCall) {
+  				var name = nativeFunc.name;
+
+  				// Avoid collision with ^ used to indicate a string
+  				if (name == "^") name = "L^";
+  				return name;
+  			}
 
   			// Variable reference
   			//		var varRef = obj as VariableReference;
@@ -2582,6 +3412,75 @@
   			jObj["originalThreadIndex"] = choice.originalThreadIndex;
   			return jObj;
   		}
+  	}, {
+  		key: 'InkListToJObject',
+  		value: function InkListToJObject(listVal) {
+  			var rawList = listVal.value;
+
+  			var dict = {};
+
+  			var content = {};
+
+  			rawList.forEach(function (itemAndValue) {
+  				var item = itemAndValue.Key;
+  				var val = itemAndValue.Value;
+  				content[item.toString()] = val;
+  			});
+
+  			dict["list"] = content;
+
+  			if (rawList.Count == 0 && rawList.originNames != null && rawList.originNames.length > 0) {
+  				//			dict["origins"] = rawList.originNames.Cast<object> ().ToList ();
+  				dict["origins"] = rawList.originNames;
+  			}
+
+  			return dict;
+  		}
+  	}, {
+  		key: 'ListDefinitionsToJToken',
+  		value: function ListDefinitionsToJToken(origin) {
+  			var result = {};
+
+  			origin.lists.forEach(function (def) {
+  				var listDefJson = {};
+  				def.items.forEach(function (itemToVal) {
+  					var item = itemToVal.Key;
+  					var val = itemToVal.Value;
+  					listDefJson[item.itemName] = val;
+  				});
+
+  				result[def.name] = listDefJson;
+  			});
+
+  			return result;
+  		}
+  	}, {
+  		key: 'JTokenToListDefinitions',
+  		value: function JTokenToListDefinitions(obj) {
+  			//		var defsObj = (Dictionary<string, object>)obj;
+  			var defsObj = obj;
+
+  			var allDefs = [];
+
+  			for (var key in defsObj) {
+  				var name = key.toString();
+  				//			var listDefJson = (Dictionary<string, object>)kv.Value;
+  				var listDefJson = defsObj[key];
+
+  				// Cast (string, object) to (string, int) for items
+  				var items = {};
+
+  				for (var nameValueKey in listDefJson) {
+  					var nameValue = listDefJson[nameValueKey];
+  					items[nameValueKey] = parseInt(nameValue);
+  				}
+
+  				var def = new ListDefinition(name, items);
+  				allDefs.push(def);
+  			}
+
+  			return new ListDefinitionsOrigin(allDefs);
+  		}
   	}]);
   	return JsonSerialisation;
   }();
@@ -2607,6 +3506,8 @@
   _controlCommandNames[ControlCommand.CommandType.StartThread] = "thread";
   _controlCommandNames[ControlCommand.CommandType.Done] = "done";
   _controlCommandNames[ControlCommand.CommandType.End] = "end";
+  _controlCommandNames[ControlCommand.CommandType.ListFromInt] = "listInt";
+  _controlCommandNames[ControlCommand.CommandType.ListRange] = "range";
 
   for (var i$1 = 0; i$1 < ControlCommand.CommandType.TOTAL_VALUES; ++i$1) {
   	if (_controlCommandNames[i$1] == null) throw "Control command not accounted for in serialisation";
@@ -2614,7 +3515,7 @@
 
   var Element = function () {
   	function Element(type, container, contentIndex, inExpressionEvaluation) {
-  		babelHelpers.classCallCheck(this, Element);
+  		classCallCheck(this, Element);
 
   		this.currentContainer = container;
   		this.currentContentIndex = contentIndex;
@@ -2623,23 +3524,23 @@
   		this.type = type;
   	}
 
-  	babelHelpers.createClass(Element, [{
+  	createClass(Element, [{
   		key: 'Copy',
   		value: function Copy() {
   			var copy = new Element(this.type, this.currentContainer, this.currentContentIndex, this.inExpressionEvaluation);
-  			babelHelpers.extends(copy.temporaryVariables, this.temporaryVariables);
+  			_extends(copy.temporaryVariables, this.temporaryVariables);
   			return copy;
   		}
   	}, {
   		key: 'currentObject',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this.currentContainer && this.currentContentIndex < this.currentContainer.content.length) {
   				return this.currentContainer.content[this.currentContentIndex];
   			}
 
   			return null;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			var currentObj = value;
   			if (currentObj == null) {
   				this.currentContainer = null;
@@ -2668,7 +3569,7 @@
   	function Thread(jsonToken, storyContext) {
   		var _this = this;
 
-  		babelHelpers.classCallCheck(this, Thread);
+  		classCallCheck(this, Thread);
 
   		this.callstack = [];
   		this.threadIndex = 0;
@@ -2715,7 +3616,7 @@
   		}
   	}
 
-  	babelHelpers.createClass(Thread, [{
+  	createClass(Thread, [{
   		key: 'Copy',
   		value: function Copy() {
   			var copy = new Thread();
@@ -2728,7 +3629,7 @@
   		}
   	}, {
   		key: 'jsonToken',
-  		get: function get() {
+  		get: function get$$1() {
   			var threadJObj = {};
 
   			var jThreadCallstack = [];
@@ -2759,7 +3660,7 @@
   	function CallStack(copyOrrootContentContainer) {
   		var _this2 = this;
 
-  		babelHelpers.classCallCheck(this, CallStack);
+  		classCallCheck(this, CallStack);
 
   		this._threads = [];
   		this._threadCounter = 0;
@@ -2776,7 +3677,7 @@
   		}
   	}
 
-  	babelHelpers.createClass(CallStack, [{
+  	createClass(CallStack, [{
   		key: 'CanPop',
   		value: function CanPop(type) {
   			if (!this.canPop) return false;
@@ -2815,8 +3716,8 @@
   			if (this.canPopThread) {
   				this._threads.splice(this._threads.indexOf(this.currentThread), 1); //should be equivalent to a pop()
   			} else {
-  					throw "Can't pop thread";
-  				}
+  				throw "Can't pop thread";
+  			}
   		}
   	}, {
   		key: 'SetJsonToken',
@@ -2881,6 +3782,9 @@
   				throw new StoryException("Could not find temporary variable to set: " + name);
   			}
 
+  			var oldValue;
+  			if (oldValue = contextElement.temporaryVariables[name]) ListValue.RetainListOriginsForAssignment(oldValue, value);
+
   			contextElement.temporaryVariables[name] = value;
   		}
   	}, {
@@ -2908,10 +3812,10 @@
   		}
   	}, {
   		key: 'currentThread',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._threads[this._threads.length - 1];
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			if (this._threads.length != 1) console.warn("Shouldn't be directly setting the current thread when we have a stack of them");
 
   			this._threads.length = 0;
@@ -2919,44 +3823,48 @@
   		}
   	}, {
   		key: 'callStack',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.currentThread.callstack;
   		}
   	}, {
   		key: 'elements',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.callStack;
   		}
   	}, {
   		key: 'currentElement',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.callStack[this.callStack.length - 1];
   		}
   	}, {
   		key: 'currentElementIndex',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.callStack.length - 1;
   		}
   	}, {
   		key: 'canPop',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.callStack.length > 1;
   		}
   	}, {
   		key: 'canPopThread',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._threads.length > 1;
   		}
   	}]);
   	return CallStack;
   }();
 
+  //still needs: 
+  // - varchanged events
+  // - see if the internal getenumarators are needed
   var VariablesState = function () {
-  	function VariablesState(callStack) {
-  		babelHelpers.classCallCheck(this, VariablesState);
+  	function VariablesState(callStack, listDefsOrigin) {
+  		classCallCheck(this, VariablesState);
 
   		this._globalVariables = {};
   		this._callStack = callStack;
+  		this._listDefsOrigin = listDefsOrigin;
 
   		this._batchObservingVariableChanges = null;
   		this._changedVariables = null;
@@ -2970,10 +3878,10 @@
   		try {
   			//the proxy is used to allow direct manipulation of global variables. It first tries to access the objetcs own property, and if none is found it delegates the call to the $ method, defined below
   			var p = new Proxy(this, {
-  				get: function get(target, name) {
+  				get: function get$$1(target, name) {
   					return name in target ? target[name] : target.$(name);
   				},
-  				set: function set(target, name, value) {
+  				set: function set$$1(target, name, value) {
   					if (name in target) target[name] = value;else target.$(name, value);
   					return true; //returning a fasly value make sthe trap fail
   				}
@@ -2986,7 +3894,7 @@
   		}
   	}
 
-  	babelHelpers.createClass(VariablesState, [{
+  	createClass(VariablesState, [{
   		key: 'ObserveVariableChange',
 
 
@@ -3009,15 +3917,16 @@
   		}
   	}, {
   		key: 'CopyFrom',
-  		value: function CopyFrom(varState) {
-  			this._globalVariables = varState._globalVariables;
-  			this.variableChangedEvent = varState.variableChangedEvent;
+  		value: function CopyFrom(toCopy) {
+  			this._globalVariables = _extends({}, toCopy._globalVariables);
 
-  			if (varState.batchObservingVariableChanges != this.batchObservingVariableChanges) {
+  			this.variableChangedEvent = toCopy.variableChangedEvent;
 
-  				if (varState.batchObservingVariableChanges) {
+  			if (toCopy.batchObservingVariableChanges != this.batchObservingVariableChanges) {
+
+  				if (toCopy.batchObservingVariableChanges) {
   					this._batchObservingVariableChanges = true;
-  					this._changedVariables = varState._changedVariables;
+  					this._changedVariables = toCopy._changedVariables;
   				} else {
   					this._batchObservingVariableChanges = false;
   					this._changedVariables = null;
@@ -3048,6 +3957,9 @@
   			// 0 context = global
   			if (contextIndex == 0 || contextIndex == -1) {
   				if (varValue = this._globalVariables[name]) return varValue;
+
+  				var listItemValue = this._listDefsOrigin.FindSingleItemListWithName(name);
+  				if (listItemValue) return listItemValue;
   			}
 
   			// Temporary
@@ -3110,10 +4022,22 @@
   			}
   		}
   	}, {
+  		key: 'RetainListOriginsForAssignment',
+  		value: function RetainListOriginsForAssignment(oldValue, newValue) {
+  			//		var oldList = oldValue as ListValue;
+  			var oldList = oldValue;
+  			//		var newList = newValue as ListValue;
+  			var newList = newValue;
+
+  			if (oldList instanceof ListValue && newList instanceof ListValue && newList.value.Count == 0) newList.value.SetInitialOriginNames(oldList.value.originNames);
+  		}
+  	}, {
   		key: 'SetGlobal',
   		value: function SetGlobal(variableName, value) {
   			var oldValue = null;
   			oldValue = this._globalVariables[variableName];
+
+  			ListValue.RetainListOriginsForAssignment(oldValue, value);
 
   			this._globalVariables[variableName] = value;
 
@@ -3136,7 +4060,7 @@
   			var valueOfVariablePointedTo = this.GetRawVariableWithName(varPointer.variableName, contextIndex);
 
   			// Extra layer of indirection:
-  			// When accessing a pointer to a pointer (e.g. when calling nested or
+  			// When accessing a pointer to a pointer (e.g. when calling nested or 
   			// recursive functions that take a variable references, ensure we don't create
   			// a chain of indirection by just returning the final target.
   			//		var doubleRedirectionPointer = valueOfVariablePointedTo as VariablePointerValue;
@@ -3186,11 +4110,19 @@
   			}
   		}
   	}, {
+  		key: 'callStack',
+  		get: function get$$1() {
+  			return this._callStack;
+  		},
+  		set: function set$$1(callStack) {
+  			this._callStack = callStack;
+  		}
+  	}, {
   		key: 'batchObservingVariableChanges',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._batchObservingVariableChanges;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			var _this2 = this;
 
   			value = !!value;
@@ -3199,7 +4131,7 @@
   				this._changedVariables = [];
   			}
 
-  			// Finished observing variables in a batch - now send
+  			// Finished observing variables in a batch - now send 
   			// notifications for changed variables all in one go.
   			else {
   					if (this._changedVariables != null) {
@@ -3214,10 +4146,10 @@
   		}
   	}, {
   		key: 'jsonToken',
-  		get: function get() {
+  		get: function get$$1() {
   			return JsonSerialisation.DictionaryRuntimeObjsToJObject(this._globalVariables);
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this._globalVariables = JsonSerialisation.JObjectToDictionaryRuntimeObjs(value);
   		}
   	}]);
@@ -3228,13 +4160,13 @@
   //Ink uses a seedable PRNG of which there is none in native javascript.
   var PRNG = function () {
   	function PRNG(seed) {
-  		babelHelpers.classCallCheck(this, PRNG);
+  		classCallCheck(this, PRNG);
 
   		this._seed = seed % 2147483647;
   		if (this._seed <= 0) this._seed += 2147483646;
   	}
 
-  	babelHelpers.createClass(PRNG, [{
+  	createClass(PRNG, [{
   		key: "next",
   		value: function next() {
   			return this._seed = this._seed * 16807 % 2147483647;
@@ -3250,17 +4182,20 @@
 
   var StoryState = function () {
   	function StoryState(story) {
-  		babelHelpers.classCallCheck(this, StoryState);
+  		classCallCheck(this, StoryState);
 
   		//actual constructor
   		this.story = story;
 
   		this._outputStream = [];
+  		this._outputStreamTextDirty = true;
+  		this._outputStreamTagsDirty = true;
+  		this.OutputStreamDirty();
 
   		this._evaluationStack = [];
 
   		this.callStack = new CallStack(story.rootContentContainer);
-  		this._variablesState = new VariablesState(this.callStack);
+  		this._variablesState = new VariablesState(this.callStack, story.listDefinitions);
 
   		this._visitCounts = {};
   		this._turnIndices = {};
@@ -3273,6 +4208,8 @@
   		this.previousRandom = 0;
 
   		this._currentChoices = [];
+  		this._currentText = null;
+  		this._currentTags = null;
   		this._currentErrors = null;
 
   		this.didSafeExit = false;
@@ -3284,7 +4221,7 @@
   		this.GoToStart();
   	}
 
-  	babelHelpers.createClass(StoryState, [{
+  	createClass(StoryState, [{
   		key: 'MatchRightGlueForLeftGlue',
   		value: function MatchRightGlueForLeftGlue(leftGlue) {
   			if (!leftGlue.isLeft) return null;
@@ -3316,10 +4253,33 @@
   		key: 'ResetOutput',
   		value: function ResetOutput() {
   			this._outputStream.length = 0;
+  			this.OutputStreamDirty();
   		}
   	}, {
   		key: 'PushEvaluationStack',
   		value: function PushEvaluationStack(obj) {
+  			var _this = this;
+
+  			//		var listValue = obj as ListValue;
+  			var listValue = obj;
+  			if (listValue instanceof ListValue) {
+
+  				// Update origin when list is has something to indicate the list origin
+  				var rawList = listValue.value;
+  				var names = rawList.originNames;
+  				if (names != null) {
+  					var origins = [];
+
+  					names.forEach(function (n) {
+  						var def = null;
+  						def = _this.story.listDefinitions.TryGetDefinition(n, def);
+  						if (origins.indexOf(def) < 0) origins.push(def);
+  					});
+
+  					rawList.origins = origins;
+  				}
+  			}
+
   			this.evaluationStack.push(obj);
   		}
   	}, {
@@ -3345,7 +4305,7 @@
   	}, {
   		key: 'PushToOutputStream',
   		value: function PushToOutputStream(obj) {
-  			var _this = this;
+  			var _this2 = this;
 
   			//		var text = obj as StringValue;
   			var text = obj;
@@ -3353,13 +4313,14 @@
   				var listText = this.TrySplittingHeadTailWhitespace(text);
   				if (listText != null) {
   					listText.forEach(function (textObj) {
-  						_this.PushToOutputStreamIndividual(textObj);
+  						_this2.PushToOutputStreamIndividual(textObj);
   					});
   					return;
   				}
   			}
 
   			this.PushToOutputStreamIndividual(obj);
+  			this.OutputStreamDirty();
   		}
   	}, {
   		key: 'TrySplittingHeadTailWhitespace',
@@ -3438,7 +4399,7 @@
 
   				if (glue.isLeft) matchingRightGlue = this.MatchRightGlueForLeftGlue(glue);
 
-  				// Left/Right glue is auto-generated for inline expressions
+  				// Left/Right glue is auto-generated for inline expressions 
   				// where we want to absorb newlines but only in a certain direction.
   				// "Bi" glue is written by the user in their ink with <>
   				if (glue.isLeft || glue.isBi) {
@@ -3458,7 +4419,7 @@
   						includeInOutput = false;
   					}
 
-  					// Able to completely reset when
+  					// Able to completely reset when 
   					else if (text.isNonWhitespace) {
   							this.RemoveExistingGlue();
   						}
@@ -3469,6 +4430,7 @@
 
   			if (includeInOutput) {
   				this._outputStream.push(obj);
+  				this.OutputStreamDirty();
   			}
   		}
   	}, {
@@ -3528,6 +4490,8 @@
   					}
   				}
   			}
+
+  			this.OutputStreamDirty();
   		}
   	}, {
   		key: 'TrimFromExistingGlue',
@@ -3538,6 +4502,8 @@
   				var txt = this._outputStream[i];
   				if (txt instanceof StringValue && !txt.isNonWhitespace) this._outputStream.splice(i, 1);else i++;
   			}
+
+  			this.OutputStreamDirty();
   		}
   	}, {
   		key: 'RemoveExistingGlue',
@@ -3551,6 +4517,8 @@
   					break;
   				}
   			}
+
+  			this.OutputStreamDirty();
   		}
   	}, {
   		key: 'ForceEnd',
@@ -3559,7 +4527,7 @@
   				this.callStack.PopThread();
   			}while (this.callStack.canPop) {
   				this.callStack.Pop();
-  			}this.currentChoices.length = 0;
+  			}this._currentChoices.length = 0;
 
   			this.currentContentObject = null;
   			this.previousContentObject = null;
@@ -3570,7 +4538,7 @@
   		key: 'SetChosenPath',
   		value: function SetChosenPath(path) {
   			// Changing direction, assume we need to clear current set of choices
-  			this.currentChoices.length = 0;
+  			this._currentChoices.length = 0;
 
   			this.currentPath = path;
 
@@ -3580,7 +4548,7 @@
   		key: 'StartExternalFunctionEvaluation',
   		value: function StartExternalFunctionEvaluation(funcContainer, args) {
   			// We'll start a new callstack, so keep hold of the original,
-  			// as well as the evaluation stack so we know if the function
+  			// as well as the evaluation stack so we know if the function 
   			// returned something
   			this._originalCallstack = this.callStack;
   			this._originalEvaluationStackHeight = this.evaluationStack.length;
@@ -3588,6 +4556,8 @@
   			// Create a new base call stack element.
   			this.callStack = new CallStack(funcContainer);
   			this.callStack.currentElement.type = PushPopType.Function;
+
+  			this._variablesState.callStack = this.callStack;
 
   			// By setting ourselves in external function evaluation mode,
   			// we're saying it's okay to end the flow without a Done or End,
@@ -3601,7 +4571,7 @@
   						throw "ink arguments when calling EvaluateFunction must be int, float or string";
   					}
 
-  					this.evaluationStack.push(Value.Create(args[i]));
+  					this.PushEvaluationStack(Value.Create(args[i]));
   				}
   			}
   		}
@@ -3621,7 +4591,7 @@
   		value: function CompleteExternalFunctionEvaluation() {
   			// Do we have a returned value?
   			// Potentially pop multiple values off the stack, in case we need
-  			// to clean up after ourselves (e.g. caller of EvaluateFunction may
+  			// to clean up after ourselves (e.g. caller of EvaluateFunction may 
   			// have passed too many arguments, and we currently have no way to check for that)
   			var returnedObj = null;
   			while (this.evaluationStack.length > this._originalEvaluationStackHeight) {
@@ -3633,6 +4603,8 @@
   			this.callStack = this._originalCallstack;
   			this._originalCallstack = null;
   			this._originalEvaluationStackHeight = 0;
+
+  			this._variablesState.callStack = this.callStack;
 
   			if (returnedObj) {
   				if (returnedObj instanceof Void) return null;
@@ -3664,6 +4636,12 @@
   			this._currentErrors.push(message);
   		}
   	}, {
+  		key: 'OutputStreamDirty',
+  		value: function OutputStreamDirty() {
+  			this._outputStreamTextDirty = true;
+  			this._outputStreamTagsDirty = true;
+  		}
+  	}, {
   		key: 'VisitCountAtPathString',
   		value: function VisitCountAtPathString(pathString) {
   			var visitCountOut;
@@ -3677,7 +4655,9 @@
   			var copy = new StoryState(this.story);
 
   			copy.outputStream.push.apply(copy.outputStream, this._outputStream);
-  			copy.currentChoices.push.apply(copy.currentChoices, this.currentChoices);
+  			this.OutputStreamDirty();
+
+  			copy._currentChoices.push.apply(copy._currentChoices, this._currentChoices);
 
   			if (this.hasError) {
   				copy.currentErrors = [];
@@ -3686,7 +4666,7 @@
 
   			copy.callStack = new CallStack(this.callStack);
 
-  			copy._variablesState = new VariablesState(copy.callStack);
+  			copy._variablesState = new VariablesState(copy.callStack, this.story.listDefinitions);
   			copy.variablesState.CopyFrom(this.variablesState);
 
   			copy.evaluationStack.push.apply(copy.evaluationStack, this.evaluationStack);
@@ -3695,8 +4675,17 @@
 
   			copy.previousContentObject = this.previousContentObject;
 
-  			copy._visitCounts = this._visitCounts;
-  			copy._turnIndices = this._turnIndices;
+  			copy._isExternalFunctionEvaluation = this._isExternalFunctionEvaluation;
+
+  			copy._visitCounts = {};
+  			for (var keyValue in this._visitCounts) {
+  				copy._visitCounts[keyValue] = this._visitCounts[keyValue];
+  			}
+  			copy._turnIndices = {};
+  			for (var keyValue in this._turnIndices) {
+  				copy._turnIndices[keyValue] = this._turnIndices[keyValue];
+  			}
+
   			copy._currentTurnIndex = this.currentTurnIndex;
   			copy.storySeed = this.storySeed;
   			copy.previousRandom = this.previousRandom;
@@ -3717,63 +4706,77 @@
   		}
   	}, {
   		key: 'currentChoices',
-  		get: function get() {
+  		get: function get$$1() {
+  			// If we can continue generating text content rather than choices,
+  			// then we reflect the choice list as being empty, since choices
+  			// should always come at the end.
+  			if (this.canContinue) return [];
+  			return this._currentChoices;
+  		}
+  	}, {
+  		key: 'generatedChoices',
+  		get: function get$$1() {
   			return this._currentChoices;
   		}
   	}, {
   		key: 'currentErrors',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._currentErrors;
   		}
   	}, {
   		key: 'visitCounts',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._visitCounts;
   		}
   	}, {
   		key: 'turnIndices',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._turnIndices;
   		}
   	}, {
   		key: 'currentTurnIndex',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._currentTurnIndex;
   		}
   	}, {
   		key: 'variablesState',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._variablesState;
   		}
   	}, {
   		key: 'currentContentObject',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.callStack.currentElement.currentObject;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this.callStack.currentElement.currentObject = value;
   		}
   	}, {
+  		key: 'canContinue',
+  		get: function get$$1() {
+  			return this.currentContentObject != null && !this.hasError;
+  		}
+  	}, {
   		key: 'hasError',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.currentErrors != null && this.currentErrors.length > 0;
   		}
   	}, {
   		key: 'inExpressionEvaluation',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.callStack.currentElement.inExpressionEvaluation;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this.callStack.currentElement.inExpressionEvaluation = value;
   		}
   	}, {
   		key: 'evaluationStack',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._evaluationStack;
   		}
   	}, {
   		key: 'outputStreamEndsInNewline',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this._outputStream.length > 0) {
 
   				for (var i = this._outputStream.length - 1; i >= 0; i--) {
@@ -3791,7 +4794,7 @@
   		}
   	}, {
   		key: 'outputStreamContainsContent',
-  		get: function get() {
+  		get: function get$$1() {
   			for (var i = 0; i < this._outputStream.length; i++) {
   				if (this._outputStream[i] instanceof StringValue) return true;
   			}
@@ -3799,7 +4802,7 @@
   		}
   	}, {
   		key: 'currentGlueIndex',
-  		get: function get() {
+  		get: function get$$1() {
   			for (var i = this._outputStream.length - 1; i >= 0; i--) {
   				var c = this._outputStream[i];
   				//			var glue = c as Glue;
@@ -3811,7 +4814,7 @@
   		}
   	}, {
   		key: 'currentRightGlue',
-  		get: function get() {
+  		get: function get$$1() {
   			for (var i = this._outputStream.length - 1; i >= 0; i--) {
   				var c = this._outputStream[i];
   				//			var glue = c as Glue;
@@ -3823,7 +4826,7 @@
   		}
   	}, {
   		key: 'inStringEvaluation',
-  		get: function get() {
+  		get: function get$$1() {
   			for (var i = this._outputStream.length - 1; i >= 0; i--) {
   				//			var cmd = this._outputStream[i] as ControlCommand;
   				var cmd = this._outputStream[i];
@@ -3836,75 +4839,86 @@
   		}
   	}, {
   		key: 'currentText',
-  		get: function get() {
-  			var sb = new StringBuilder();
+  		get: function get$$1() {
+  			if (this._outputStreamTextDirty) {
+  				var sb = new StringBuilder();
 
-  			this._outputStream.forEach(function (outputObj) {
-  				//			var textContent = outputObj as StringValue;
-  				var textContent = outputObj;
-  				if (textContent instanceof StringValue) {
-  					sb.Append(textContent.value);
-  				}
-  			});
+  				this._outputStream.forEach(function (outputObj) {
+  					//			var textContent = outputObj as StringValue;
+  					var textContent = outputObj;
+  					if (textContent instanceof StringValue) {
+  						sb.Append(textContent.value);
+  					}
+  				});
 
-  			return sb.toString();
+  				this._currentText = sb.toString();
+  				this._outputStreamTextDirty = false;
+  			}
+
+  			return this._currentText;
   		}
   	}, {
   		key: 'currentTags',
-  		get: function get() {
-  			var tags = [];
+  		get: function get$$1() {
+  			var _this3 = this;
 
-  			this._outputStream.forEach(function (outputObj) {
-  				//			var tag = outputObj as Tag;
-  				var tag = outputObj;
-  				if (tag instanceof Tag) {
-  					tags.push(tag.text);
-  				}
-  			});
+  			if (this._outputStreamTagsDirty) {
+  				this._currentTags = [];
 
-  			return tags;
+  				this._outputStream.forEach(function (outputObj) {
+  					//			var tag = outputObj as Tag;
+  					var tag = outputObj;
+  					if (tag instanceof Tag) {
+  						_this3._currentTags.push(tag.text);
+  					}
+  				});
+
+  				this._outputStreamTagsDirty = false;
+  			}
+
+  			return this._currentTags;
   		}
   	}, {
   		key: 'outputStream',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._outputStream;
   		}
   	}, {
   		key: 'currentPath',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this.currentContentObject == null) return null;
 
   			return this.currentContentObject.path;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			if (value != null) this.currentContentObject = this.story.ContentAtPath(value);else this.currentContentObject = null;
   		}
   	}, {
   		key: 'currentContainer',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.callStack.currentElement.currentContainer;
   		}
   	}, {
   		key: 'previousContentObject',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.callStack.currentThread.previousContentObject;
   		},
-  		set: function set(value) {
+  		set: function set$$1(value) {
   			this.callStack.currentThread.previousContentObject = value;
   		}
   	}, {
   		key: 'jsonToken',
-  		get: function get() {
-  			var _this2 = this;
+  		get: function get$$1() {
+  			var _this4 = this;
 
   			var obj = {};
 
   			var choiceThreads = null;
-  			this.currentChoices.forEach(function (c) {
+  			this._currentChoices.forEach(function (c) {
   				c.originalChoicePath = c.choicePoint.path.componentsString;
   				c.originalThreadIndex = c.threadAtGeneration.threadIndex;
 
-  				if (_this2.callStack.ThreadWithIndex(c.originalThreadIndex) == null) {
+  				if (_this4.callStack.ThreadWithIndex(c.originalThreadIndex) == null) {
   					if (choiceThreads == null) choiceThreads = {};
 
   					choiceThreads[c.originalThreadIndex.toString()] = c.threadAtGeneration.jsonToken;
@@ -3920,7 +4934,7 @@
 
   			obj["outputStream"] = JsonSerialisation.ListToJArray(this._outputStream);
 
-  			obj["currentChoices"] = JsonSerialisation.ListToJArray(this.currentChoices);
+  			obj["currentChoices"] = JsonSerialisation.ListToJArray(this._currentChoices);
 
   			if (this.divertedTargetObject != null) obj["currentDivertTarget"] = this.divertedTargetObject.path.componentsString;
 
@@ -3936,8 +4950,8 @@
 
   			return obj;
   		},
-  		set: function set(value) {
-  			var _this3 = this;
+  		set: function set$$1(value) {
+  			var _this5 = this;
 
   			var jObject = value;
 
@@ -3954,6 +4968,7 @@
   			this._evaluationStack = JsonSerialisation.JArrayToRuntimeObjList(jObject["evalStack"]);
 
   			this._outputStream = JsonSerialisation.JArrayToRuntimeObjList(jObject["outputStream"]);
+  			this.OutputStreamDirty();
 
   			//		currentChoices = Json.JArrayToRuntimeObjList<Choice>((JArray)jObject ["currentChoices"]);
   			this._currentChoices = JsonSerialisation.JArrayToRuntimeObjList(jObject["currentChoices"]);
@@ -3972,15 +4987,15 @@
   			//		var jChoiceThreads = jObject["choiceThreads"] as JObject;
   			var jChoiceThreads = jObject["choiceThreads"];
 
-  			this.currentChoices.forEach(function (c) {
-  				c.choicePoint = _this3.story.ContentAtPath(new Path$1(c.originalChoicePath));
+  			this._currentChoices.forEach(function (c) {
+  				c.choicePoint = _this5.story.ContentAtPath(new Path$1(c.originalChoicePath));
 
-  				var foundActiveThread = _this3.callStack.ThreadWithIndex(c.originalThreadIndex);
+  				var foundActiveThread = _this5.callStack.ThreadWithIndex(c.originalThreadIndex);
   				if (foundActiveThread != null) {
   					c.threadAtGeneration = foundActiveThread;
   				} else {
   					var jSavedChoiceThread = jChoiceThreads[c.originalThreadIndex.toString()];
-  					c.threadAtGeneration = new CallStack.Thread(jSavedChoiceThread, _this3.story);
+  					c.threadAtGeneration = new CallStack.Thread(jSavedChoiceThread, _this5.story);
   				}
   			});
   		}
@@ -3988,8 +5003,8 @@
   	return StoryState;
   }();
 
-  StoryState.kInkSaveStateVersion = 5;
-  StoryState.kMinCompatibleLoadVersion = 4;
+  StoryState.kInkSaveStateVersion = 6;
+  StoryState.kMinCompatibleLoadVersion = 6;
 
   if (!Number.isInteger) {
   	Number.isInteger = function isInteger(nVal) {
@@ -3998,23 +5013,29 @@
   }
 
   var Story = function (_InkObject) {
-  	babelHelpers.inherits(Story, _InkObject);
+  	inherits(Story, _InkObject);
 
-  	function Story(jsonString) {
-  		babelHelpers.classCallCheck(this, Story);
+  	function Story(jsonString, lists) {
+  		classCallCheck(this, Story);
 
-  		var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Story).call(this));
+  		var _this = possibleConstructorReturn(this, (Story.__proto__ || Object.getPrototypeOf(Story)).call(this));
 
-  		_this.inkVersionCurrent = 15;
-  		_this.inkVersionMinimumCompatible = 15;
+  		lists = lists || null;
+
+  		_this.inkVersionCurrent = 16;
+  		_this.inkVersionMinimumCompatible = 16;
 
   		_this._variableObservers = null;
   		_this._externals = {};
+  		_this._prevContainerSet = null;
+  		_this._listDefinitions = null;
 
   		if (jsonString instanceof Container) {
   			_this._mainContentContainer = jsonString;
+
+  			if (lists != null) _this._listDefinitions = new ListDefinitionsOrigin(lists);
   		} else {
-  			//the original version only accepts a string as a constructor, but this is javascript and it's almost easier to get a JSON value than a string, so we're silently accepting btoh
+  			//the original version only accepts a string as a constructor, but this is javascript and it's almost easier to get a JSON value than a string, so we're silently accepting both
   			var rootObject = typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
 
   			var versionObj = rootObject["inkVersion"];
@@ -4032,6 +5053,11 @@
   			var rootToken = rootObject["root"];
   			if (rootToken == null) throw "Root node for ink not found. Are you sure it's a valid .ink.json file?";
 
+  			var listDefsObj;
+  			if (listDefsObj = rootObject["listDefs"]) {
+  				_this._listDefinitions = JsonSerialisation.JTokenToListDefinitions(listDefsObj);
+  			}
+
   			_this._mainContentContainer = JsonSerialisation.JTokenToRuntimeObject(rootToken);
 
   			_this._hasValidatedExternals = null;
@@ -4042,7 +5068,7 @@
   		return _this;
   	}
 
-  	babelHelpers.createClass(Story, [{
+  	createClass(Story, [{
   		key: 'ToJsonString',
   		value: function ToJsonString() {
   			var rootContainerJsonList = JsonSerialisation.RuntimeObjectToJToken(this._mainContentContainer);
@@ -4050,6 +5076,8 @@
   			var rootObject = {};
   			rootObject["inkVersion"] = this.inkVersionCurrent;
   			rootObject["root"] = rootContainerJsonList;
+
+  			if (this._listDefinitions != null) rootObject["listDefs"] = JsonSerialisation.ListDefinitionsToJToken(this._listDefinitions);
 
   			return JSON.stringify(rootObject);
   		}
@@ -4120,7 +5148,7 @@
   				//    which are actually built out of text content.
   				// So we have to take a snapshot of the state, continue prospectively,
   				// and rewind if necessary.
-  				// This code is slightly fragile :-/
+  				// This code is slightly fragile :-/ 
   				//
 
   				do {
@@ -4171,7 +5199,13 @@
   							// We're going to continue stepping in case we see glue or some
   							// non-text content such as choices.
   							if (this.canContinue) {
-  								stateAtLastNewline = this.StateSnapshot();
+  								// Don't bother to record the state beyond the current newline.
+  								// e.g.:
+  								// Hello world\n			// record state at the end of here
+  								// ~ complexCalculation()   // don't actually need this unless it generates text
+  								if (stateAtLastNewline == null) {
+  									stateAtLastNewline = this.StateSnapshot();
+  								}
   							}
 
   							// Can't continue, so we're about to exit - make sure we
@@ -4195,7 +5229,7 @@
   						this.Error("Thread available to pop, threads should always be flat by the end of evaluation?");
   					}
 
-  					if (this.currentChoices.length == 0 && !this.state.didSafeExit && this._temporaryEvaluationContainer == null) {
+  					if (this.state.generatedChoices.length == 0 && !this.state.didSafeExit && this._temporaryEvaluationContainer == null) {
   						if (this.state.callStack.CanPop(PushPopType.Tunnel)) {
   							this.Error("unexpectedly reached end of content. Do you need a '->->' to return from a tunnel?");
   						} else if (this.state.callStack.CanPop(PushPopType.Function)) {
@@ -4296,7 +5330,7 @@
   			if (choicePoint instanceof ChoicePoint) {
   				var choice = this.ProcessChoice(choicePoint);
   				if (choice) {
-  					this.state.currentChoices.push(choice);
+  					this.state.generatedChoices.push(choice);
   				}
 
   				currentContentObj = null;
@@ -4363,12 +5397,12 @@
   			if (!newContentObject) return;
 
   			// First, find the previously open set of containers
-  			var prevContainerSet = [];
+  			this._prevContainerSet = [];
   			if (previousContentObject) {
   				//			Container prevAncestor = previousContentObject as Container ?? previousContentObject.parent as Container;
   				var prevAncestor = previousContentObject instanceof Container ? previousContentObject : previousContentObject.parent;
   				while (prevAncestor instanceof Container) {
-  					prevContainerSet.push(prevAncestor);
+  					this._prevContainerSet.push(prevAncestor);
   					//				prevAncestor = prevAncestor.parent as Container;
   					prevAncestor = prevAncestor.parent;
   				}
@@ -4379,7 +5413,7 @@
   			var currentChildOfContainer = newContentObject;
   			//		Container currentContainerAncestor = currentChildOfContainer.parent as Container;
   			var currentContainerAncestor = currentChildOfContainer.parent;
-  			while (currentContainerAncestor instanceof Container && prevContainerSet.indexOf(currentContainerAncestor) < 0) {
+  			while (currentContainerAncestor instanceof Container && this._prevContainerSet.indexOf(currentContainerAncestor) < 0) {
 
   				// Check whether this ancestor container is being entered at the start,
   				// by checking whether the child object is the first.
@@ -4655,7 +5689,7 @@
   							break;
 
   						case ControlCommand.CommandType.ChoiceCount:
-  							var choiceCount = this.currentChoices.length;
+  							var choiceCount = this.state.generatedChoices.length;
   							this.state.PushEvaluationStack(new IntValue(choiceCount));
   							break;
 
@@ -4749,6 +5783,79 @@
   							this.state.ForceEnd();
   							break;
 
+  						case ControlCommand.CommandType.ListFromInt:
+  							//				var intVal = state.PopEvaluationStack () as IntValue;
+  							var intVal = parseInt(this.state.PopEvaluationStack());
+  							//				var listNameVal = state.PopEvaluationStack () as StringValue;
+  							var listNameVal = this.state.PopEvaluationStack().toString();
+
+  							var generatedListValue = null;
+
+  							var foundListDef;
+  							if (foundListDef = this.listDefinitions.TryGetDefinition(listNameVal.value, foundListDef)) {
+  								var foundItem = foundListDef.TryGetItemWithValue(intVal.value);
+  								if (foundItem.exists) {
+  									generatedListValue = new ListValue(foundItem.item, intVal.value);
+  								}
+  							} else {
+  								throw new StoryException("Failed to find LIST called " + listNameVal.value);
+  							}
+
+  							if (generatedListValue == null) generatedListValue = new ListValue();
+
+  							this.state.PushEvaluationStack(generatedListValue);
+  							break;
+
+  						case ControlCommand.CommandType.ListRange:
+  							var max = this.state.PopEvaluationStack();
+  							var min = this.state.PopEvaluationStack();
+
+  							//				var targetList = state.PopEvaluationStack () as ListValue;
+  							var targetList = this.state.PopEvaluationStack();
+
+  							if (targetList instanceof ListValue === false || targetList == null || min == null || max == null) throw new StoryException("Expected list, minimum and maximum for LIST_RANGE");
+
+  							// Allow either int or a particular list item to be passed for the bounds,
+  							// so wrap up a function to handle this casting for us.
+
+  							var IntBound = function IntBound(obj) {
+  								//					var listValue = obj as ListValue;
+  								var listValue = obj;
+  								if (listValue instanceof ListValue) {
+  									return parseInt(listValue.value.maxItem.Value);
+  								}
+
+  								//					var intValue = obj as IntValue;
+  								var intValue = obj;
+  								if (intValue instanceof IntValue) {
+  									return intValue.value;
+  								}
+
+  								return -1;
+  							};
+
+  							var minVal = IntBound(min);
+  							var maxVal = IntBound(max);
+  							if (minVal == -1) throw new StoryException("Invalid min range bound passed to LIST_VALUE(): " + min);
+
+  							if (maxVal == -1) throw new StoryException("Invalid max range bound passed to LIST_VALUE(): " + max);
+
+  							// Extract the range of items from the origin list
+  							var result = new ListValue();
+  							var origins = targetList.value.origins;
+
+  							if (origins != null) {
+  								origins.forEach(function (origin) {
+  									var rangeFromOrigin = origin.ListRange(minVal, maxVal);
+  									rangeFromOrigin.value.forEach(function (kv) {
+  										result.value.Add(kv.Key, kv.Value);
+  									});
+  								});
+  							}
+
+  							this.state.PushEvaluationStack(result);
+  							break;
+
   						default:
   							this.Error("unhandled ControlCommand: " + evalCommand);
   							break;
@@ -4795,7 +5902,7 @@
   									}
   								}
 
-  							this.state.evaluationStack.push(foundValue);
+  							this.state.PushEvaluationStack(foundValue);
 
   							return true;
   						}
@@ -4805,7 +5912,7 @@
   								var func = contentObj;
   								var funcParams = this.state.PopEvaluationStack(func.numberOfParameters);
   								var result = func.Call(funcParams);
-  								this.state.evaluationStack.push(result);
+  								this.state.PushEvaluationStack(result);
   								return true;
   							}
 
@@ -4832,7 +5939,7 @@
   			var choices = this.currentChoices;
   			if (choiceIdx < 0 || choiceIdx > choices.length) console.warn("choice out of range");
 
-  			// Replace callstack with the one from the thread at the choosing point,
+  			// Replace callstack with the one from the thread at the choosing point, 
   			// so that we can jump into the right place in the flow.
   			// This is important in case the flow was forked by a new thread, which
   			// can create multiple leading edges for the story, each of
@@ -4958,7 +6065,7 @@
   			var returnObj = null;
   			if (funcResult != null) {
   				returnObj = Value.Create(funcResult);
-  				if (returnObj == null) console.warn("Could not create ink value from returned object of type " + (typeof funcResult === 'undefined' ? 'undefined' : babelHelpers.typeof(funcResult)));
+  				if (returnObj == null) console.warn("Could not create ink value from returned object of type " + (typeof funcResult === 'undefined' ? 'undefined' : _typeof(funcResult)));
   			} else {
   				returnObj = new Void();
   			}
@@ -5391,7 +6498,7 @@
   		}
   	}, {
   		key: 'currentChoices',
-  		get: function get() {
+  		get: function get$$1() {
   			// Don't include invisible choices for external usage.
   			var choices = [];
 
@@ -5406,37 +6513,42 @@
   		}
   	}, {
   		key: 'currentText',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.state.currentText;
   		}
   	}, {
   		key: 'currentTags',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.state.currentTags;
   		}
   	}, {
   		key: 'currentErrors',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.state.currentErrors;
   		}
   	}, {
   		key: 'hasError',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.state.hasError;
   		}
   	}, {
   		key: 'variablesState',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.state.variablesState;
   		}
   	}, {
+  		key: 'listDefinitions',
+  		get: function get$$1() {
+  			return this._listDefinitions;
+  		}
+  	}, {
   		key: 'state',
-  		get: function get() {
+  		get: function get$$1() {
   			return this._state;
   		}
   	}, {
   		key: 'mainContentContainer',
-  		get: function get() {
+  		get: function get$$1() {
   			if (this._temporaryEvaluationContainer) {
   				return this._temporaryEvaluationContainer;
   			} else {
@@ -5445,21 +6557,24 @@
   		}
   	}, {
   		key: 'canContinue',
-  		get: function get() {
-  			return this.state.currentContentObject != null && !this.state.hasError;
+  		get: function get$$1() {
+  			return this.state.canContinue;
   		}
   	}, {
   		key: 'globalTags',
-  		get: function get() {
+  		get: function get$$1() {
   			return this.TagsAtStartOfFlowContainerWithPathString("");
   		}
   	}]);
   	return Story;
-  }(InkObject);
+  }(Object$1);
 
   exports.Story = Story;
 
-}));
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
 
 ////////////////////  END OF THE INCLUDE !!! /////////////////////////
 
